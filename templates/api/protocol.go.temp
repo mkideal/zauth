@@ -1,0 +1,27 @@
+---
+date: 2016-12-04 23:31
+author: mkideal
+file: {{join "" "handle_" (underScore (trimSuffix "Req" .Name)) ".go"}}
+cond: {{hasSuffix "Req" .Name}}
+notexist: true
+---
+{{context.AutoGenDeclaration}}
+
+package {{context.Pkg.Name}}
+
+import (
+	"net/http"
+
+	"github.com/mkideal/log"
+	"github.com/mkideal/pkg/netutil/httputil"
+)
+
+{{$cmd := trimSuffix "Req" .Name}}
+func (svr *Server) handle{{$cmd}}(w http.ResponseWriter, r *http.Request) {
+	argv, err := parse{{$cmd}}(r)
+	if err != nil {
+		log.Warn("{{$cmd}} parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		return
+	}
+	log.WithJSON(argv).Debug("{{$cmd}} request, IP=%v", httputil.IP(r))
+}

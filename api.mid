@@ -1,0 +1,72 @@
+package server;
+
+// 查看帮助
+protocol HelpReq {
+	string version; `dft:"v1"`
+	string cmd;
+}
+
+protocol HelpRes {
+}
+
+// oauth2.0 接口 access_token
+protocol AccessTokenReq `method:"POST"` {
+	string grantType; // 授权类型
+
+    // grantType 为 GrantAuthenticationCode 时的承诺书
+    string code;        // 授权码
+    string redirectURI; // 重定向URI
+
+    // grantType 为 GrantPassword 时的参数
+    string username; // 账号
+    string password; // 密码
+
+    // grantType 为 GrantRefreshToken 时的参数
+    string refreshToken; // 刷新用token
+}
+
+protocol AccessTokenRes {
+}
+
+// oauth2.0 接口 authorize
+protocol AuthorizeReq `method:"POST"` {
+    string clientId;
+    string responseType;
+    string scope;
+    string state;
+}
+
+protocol AuthorizeRes {
+}
+
+// client 检查
+protocol AuthorizeCheckReq {
+    string clientId;
+}
+
+protocol AuthorizeCheckRes {
+}
+
+// 获取 token 信息
+protocol TokenInfoReq `method:"POST"` {
+    string accessToken;
+}
+
+protocol TokenInfoRes {
+}
+
+// 注册
+protocol SignupReq `method:"POST"` {
+}
+
+// 登陆
+protocol SigninReq `method:"POST"` {
+}
+
+// 登出
+protocol LogoutReq `method:"POST"` {
+}
+
+// 用户信息
+protocol UserReq {
+}

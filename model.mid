@@ -1,0 +1,97 @@
+package model;
+
+// 账号类型
+enum AccountType {
+	Normal   = 0, // 大小写字母开头,只允许字母,数字和下划线,长度2~20
+	Mobile   = 1, // 手机号
+	Email    = 2, // 邮箱
+	QQ       = 3, // 从此往下均为第三方账号,所有第三方账号的account前面均加 <type># 前缀
+	WeChat   = 4, // 比如 QQ 的加前缀 3#
+	Github   = 5, // 微信的加前缀 4#
+	Facebook = 6, // 依此类推...
+    Twitter  = 7, // 这样做的目的在于确保 account 字段的唯一性
+}
+
+// 身份证件类型
+enum IdCardType {
+    IdCard   = 0, // 身份证
+    Passport = 1, // 护照
+}
+
+// 性别
+enum Gender {
+    Secret = 0, // 保密
+    Male   = 1, // 男
+    Female = 2, // 女
+}
+
+// 用户信息
+protocol User {
+	// 核心信息
+
+	int64 id;                # `key:"true"` // 随机唯一Id
+	AccountType accountType; #              // 账号类型
+	string account;          #              // 账号
+	string nickname;         #              // 昵称
+	string avatar;           #              // 头像
+	string QRCode;           #              // 二维码
+
+	// 身份信息
+
+	Gender gender;         # // 性别
+	string birthday;       # // 生日
+	IdCardType idCardType; # // 身份证件类型
+	string idCard;         # // 证件唯一标识
+
+	// 安全信息
+
+	string encryptedPassword; # // 加密后密码
+	string passwordSalt;      # // 加密密码的盐
+
+	// 注册登陆信息
+
+	string createdAt;   # // 账号创建时间
+	string createdIP;   # // 账号创建时IP
+	string lastLoginAt; # // 最后登陆时间
+	string lastLoginIP; # // 最后登陆时IP
+}
+
+// 访问客户端
+protocol Client {
+    string id;          # `key:"true"`
+    string secret;      # 
+    string name;        # 
+    string scopes;      # 
+    string description; # 
+    string callbackURL; # 
+}
+
+// 访问令牌
+protocol AccessToken {
+    int64 id;             # `key:"true"` // 递增唯一Id
+    int64 uid;            #              // 用户Id
+    string createdAt;     #              // 创建时间
+    string modifiedAt;    #              // 修改时间
+    string expireAt;      #              // 到期时间
+    string token;         #              // 令牌
+    string refreshToken;  #              // 刷新用令牌
+    string resourceOwner; #              // 资源所有者
+    string clientId;      #              // 客户Id
+    string scopes;        #              // 可访问权限范围
+}
+
+// 手机验证码
+protocol TelnoVerifyCode {
+    int64 id;         # `key:"true"` // 递增唯一Id
+    string telno;     #              // 手机号码
+    string code;      #              // 验证码
+    string expiredAt; #              // 到期时间
+}
+
+// 邮箱验证码
+protocol EmailVerifyCode {
+    int64 id;         # `key:"true"` // 递增唯一Id
+    string email;     #              // email 地址
+    string code;      #              // 验证码
+    string expiredAt; #              // 到期时间
+}
