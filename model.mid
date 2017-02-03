@@ -80,6 +80,20 @@ protocol AccessToken {
     string scopes;        #              // 可访问权限范围
 }
 
+// 认证请求
+protocol AuthorizationRequest {
+    int64 id;                 # `key:"true"` // 递增唯一Id
+    string createdAt;         #              // 创建时间
+    string authorizationCode; #              // 认证码
+    int64 uid;                #              // 用户Id
+    string redirectURI;       #              // 重定向URI
+    string responseType;      #              // 返回类型
+    string state;             #              // 自定义状态
+    string clientId;          #              // 客户端Id
+    string grantedScopes;     #              // 授权范围
+    string requestedScopes;   #              // 请求范围
+}
+
 // 手机验证码
 protocol TelnoVerifyCode {
     int64 id;         # `key:"true"` // 递增唯一Id
@@ -94,4 +108,10 @@ protocol EmailVerifyCode {
     string email;     #              // email 地址
     string code;      #              // 验证码
     string expiredAt; #              // 到期时间
+}
+
+protocol Session {
+    string id;
+    int64 uid;
+    int64 expire;
 }

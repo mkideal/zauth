@@ -1,5 +1,11 @@
 package server;
 
+// 通用错误返回
+protocol ErrorRes {
+    int code;
+    string description;
+}
+
 // 查看帮助
 protocol HelpReq {
 	string version; `dft:"v1"`
@@ -12,8 +18,9 @@ protocol HelpRes {
 // oauth2.0 接口 access_token
 protocol AccessTokenReq `method:"POST"` {
 	string grantType; // 授权类型
+	string scope;     // token使用范围
 
-    // grantType 为 GrantAuthenticationCode 时的承诺书
+    // grantType 为 GrantAuthenticationCode 时的参数
     string code;        // 授权码
     string redirectURI; // 重定向URI
 
@@ -26,17 +33,20 @@ protocol AccessTokenReq `method:"POST"` {
 }
 
 protocol AccessTokenRes {
+	string tokenType;
+	string scope;
+	string accessToken;
+	string refreshToken;
+	string expireAt;
 }
 
 // oauth2.0 接口 authorize
 protocol AuthorizeReq `method:"POST"` {
     string clientId;
     string responseType;
+    int64 uid;
     string scope;
     string state;
-}
-
-protocol AuthorizeRes {
 }
 
 // client 检查

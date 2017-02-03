@@ -2,7 +2,7 @@
 date: 2016-12-04 23:31
 author: mkideal
 file: {{join "" "handle_" (underScore (trimSuffix "Req" .Name)) ".go"}}
-cond: {{hasSuffix "Req" .Name}}
+cond: {{hasSuffix "Req" .Name | string}}
 notexist: true
 ---
 {{context.AutoGenDeclaration}}

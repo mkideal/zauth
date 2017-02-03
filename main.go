@@ -34,7 +34,7 @@ var root = &cli.Command{
 	Fn: func(ctx *cli.Context) error {
 		argv := ctx.Argv().(*argT)
 		if argv.Version {
-			ctx.String("v" + etc.Version + "\n")
+			printVersion(ctx)
 			return nil
 		}
 
@@ -83,7 +83,7 @@ var daemon = &cli.Command{
 	Fn: func(ctx *cli.Context) error {
 		argv := ctx.Argv().(*argT)
 		if argv.Version {
-			ctx.String("v" + etc.Version + "\n")
+			printVersion(ctx)
 			return nil
 		}
 		return cli.Daemon(ctx, successPrefix)
@@ -95,4 +95,8 @@ func main() {
 	cli.Root(root,
 		cli.Tree(daemon),
 	).Run(os.Args[1:])
+}
+
+func printVersion(ctx *cli.Context) {
+	ctx.String("v" + etc.Version + "\n")
 }
