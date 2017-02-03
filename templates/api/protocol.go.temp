@@ -21,6 +21,7 @@ func (svr *Server) handle{{$cmd}}(w http.ResponseWriter, r *http.Request) {
 	argv, err := parse{{$cmd}}(r)
 	if err != nil {
 		log.Warn("{{$cmd}} parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("{{$cmd}} request, IP=%v", httputil.IP(r))

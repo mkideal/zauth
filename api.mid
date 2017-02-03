@@ -8,7 +8,7 @@ protocol ErrorRes {
 
 // 查看帮助
 protocol HelpReq {
-	string version; `dft:"v1"`
+	string version;
 	string cmd;
 }
 

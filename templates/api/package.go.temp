@@ -51,9 +51,7 @@ type {{$type}} int
 {{define "T_struct"}}
 {{$type := .Name}}
 {{.Doc}}type {{$type}} struct {
-	{{range $field := .Extends}}{{context.BuildType $field}}
-	{{end}}
-	{{range $field := .Fields}}{{$field.Name | title}} {{context.BuildType $field.Type}}{{$field.Comment}}
+	{{range $field := .Fields}}{{$field.Name | title}} {{context.BuildType $field.Type}} `json:"{{$field.Name}}"`{{$field.Comment}}
 	{{end}}
 }
 {{end}}
@@ -62,9 +60,7 @@ type {{$type}} int
 {{$bean := .}}
 {{$type := $bean.Name}}
 {{.Doc}}type {{$type}} struct {
-	{{range $field := $bean.Extends}}{{context.BuildType $field}}
-	{{end}}
-	{{range $field := $bean.Fields}}{{$field.Name | title}} {{context.BuildType $field.Type}}{{$field.Comment}}
+	{{range $field := $bean.Fields}}{{$field.Name | title}} {{context.BuildType $field.Type}} `json:"{{$field.Name}}"`{{$field.Comment}}
 	{{end}}
 }
 {{if hasSuffix "Req" $type}}

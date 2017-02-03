@@ -25,10 +25,16 @@ func (svr *Server) registerHandler(mux *httputil.ServeMux, pattern, method strin
 	mux.Handle(pattern, httputil.NewHandlerFunc(method, h))
 }
 
+// 通用错误返回
+type ErrorRes struct {
+	Code        int    `json:"code"`
+	Description string `json:"description"`
+}
+
 // 查看帮助
 type HelpReq struct {
-	Version string
-	Cmd     string
+	Version string `json:"version"`
+	Cmd     string `json:"cmd"`
 }
 
 func (HelpReq) CommandName() string { return "Help" }
@@ -55,13 +61,13 @@ type HelpRes struct {
 
 // oauth2.0 接口 access_token
 type AccessTokenReq struct {
-	GrantType    string // 授权类型
-	Scope        string // token使用范围
-	Code         string // 授权码
-	RedirectURI  string // 重定向URI
-	Username     string // 账号
-	Password     string // 密码
-	RefreshToken string // 刷新用token
+	GrantType    string `json:"grantType"`    // 授权类型
+	Scope        string `json:"scope"`        // token使用范围
+	Code         string `json:"code"`         // 授权码
+	RedirectURI  string `json:"redirectURI"`  // 重定向URI
+	Username     string `json:"username"`     // 账号
+	Password     string `json:"password"`     // 密码
+	RefreshToken string `json:"refreshToken"` // 刷新用token
 
 }
 
@@ -105,20 +111,20 @@ func parseAccessToken(r *http.Request) (*AccessTokenReq, error) {
 }
 
 type AccessTokenRes struct {
-	TokenType    string
-	Scope        string
-	AccessToken  string
-	RefreshToken string
-	ExpireAt     string
+	TokenType    string `json:"tokenType"`
+	Scope        string `json:"scope"`
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	ExpireAt     string `json:"expireAt"`
 }
 
 // oauth2.0 接口 authorize
 type AuthorizeReq struct {
-	ClientId     string
-	ResponseType string
-	Uid          int64
-	Scope        string
-	State        string
+	ClientId     string `json:"clientId"`
+	ResponseType string `json:"responseType"`
+	Uid          int64  `json:"uid"`
+	Scope        string `json:"scope"`
+	State        string `json:"state"`
 }
 
 func (AuthorizeReq) CommandName() string { return "Authorize" }
@@ -154,7 +160,7 @@ func parseAuthorize(r *http.Request) (*AuthorizeReq, error) {
 
 // client 检查
 type AuthorizeCheckReq struct {
-	ClientId string
+	ClientId string `json:"clientId"`
 }
 
 func (AuthorizeCheckReq) CommandName() string { return "AuthorizeCheck" }
@@ -177,7 +183,7 @@ type AuthorizeCheckRes struct {
 
 // 获取 token 信息
 type TokenInfoReq struct {
-	AccessToken string
+	AccessToken string `json:"accessToken"`
 }
 
 func (TokenInfoReq) CommandName() string { return "TokenInfo" }

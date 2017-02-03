@@ -11,6 +11,7 @@ func (svr *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	argv, err := parseLogout(r)
 	if err != nil {
 		log.Warn("Logout parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("Logout request, IP=%v", httputil.IP(r))

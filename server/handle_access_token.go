@@ -14,6 +14,7 @@ func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
 	argv, err := parseAccessToken(r)
 	if err != nil {
 		log.Warn("AccessToken parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("AccessToken request, IP=%v", httputil.IP(r))

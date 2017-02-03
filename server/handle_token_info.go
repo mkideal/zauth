@@ -11,6 +11,7 @@ func (svr *Server) handleTokenInfo(w http.ResponseWriter, r *http.Request) {
 	argv, err := parseTokenInfo(r)
 	if err != nil {
 		log.Warn("TokenInfo parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("TokenInfo request, IP=%v", httputil.IP(r))

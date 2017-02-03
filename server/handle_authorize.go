@@ -16,6 +16,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 	argv, err := parseAuthorize(r)
 	if err != nil {
 		log.Warn("Authorize parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("Authorize request, IP=%v", httputil.IP(r))

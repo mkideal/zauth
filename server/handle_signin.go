@@ -11,6 +11,7 @@ func (svr *Server) handleSignin(w http.ResponseWriter, r *http.Request) {
 	argv, err := parseSignin(r)
 	if err != nil {
 		log.Warn("Signin parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("Signin request, IP=%v", httputil.IP(r))
