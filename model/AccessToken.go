@@ -11,7 +11,7 @@ type AccessToken struct {
 	RefreshToken  string // 刷新用令牌
 	ResourceOwner string // 资源所有者
 	ClientId      string // 客户Id
-	Scopes        string // 可访问权限范围
+	Scope         string // 可访问权限范围
 
 }
 
@@ -25,7 +25,7 @@ type AccessTokenMeta struct {
 	F_refreshToken  string
 	F_resourceOwner string
 	F_clientId      string
-	F_scopes        string
+	F_scope         string
 }
 
 func (AccessTokenMeta) Name() string {
@@ -58,7 +58,7 @@ func (AccessTokenMeta) Field(i int, v AccessToken) (string, interface{}) {
 	case 8:
 		return "clientId", v.ClientId
 	case 9:
-		return "scopes", v.Scopes
+		return "scope", v.Scope
 
 	}
 	return "", nil
@@ -86,7 +86,7 @@ func (AccessTokenMeta) FieldPtr(i int, v *AccessToken) (string, interface{}) {
 	case 8:
 		return "clientId", &v.ClientId
 	case 9:
-		return "scopes", &v.Scopes
+		return "scope", &v.Scope
 
 	}
 	return "", nil
@@ -103,5 +103,5 @@ var AccessTokenMetaVar = AccessTokenMeta{
 	F_refreshToken:  "refreshToken",
 	F_resourceOwner: "resourceOwner",
 	F_clientId:      "clientId",
-	F_scopes:        "scopes",
+	F_scope:         "scope",
 }

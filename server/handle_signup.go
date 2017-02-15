@@ -5,14 +5,32 @@ import (
 
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
+
+	"bitbucket.org/mkideal/accountd/api"
+	"bitbucket.org/mkideal/accountd/model"
 )
 
 func (svr *Server) handleSignup(w http.ResponseWriter, r *http.Request) {
-	argv, err := parseSignup(r)
+	argv := new(api.SignupReq)
+	err := argv.Parse(r)
 	if err != nil {
 		log.Warn("Signup parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("Signup request, IP=%v", httputil.IP(r))
+	user := new(model.User)
+	user.AccountType = model.AccountType(argv.AccountType)
+	// TODO: 检查 accountType,暂时不支持第三方账号注册
+	user.CreatedIP = httputil.IP(r)
+	user.Account = argv.Account
+	if err := svr.userRepo.AddUser(user); err != nil {
+		svr.response(w, http.StatusInternalServerError, err)
+	}
+	res := api.SignupRes{
+		Uid:      user.Id,
+		Account:  user.Account,
+		Nickname: user.Nickname,
+	}
+	svr.response(w, http.StatusOK, res)
 }

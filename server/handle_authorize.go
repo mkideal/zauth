@@ -8,12 +8,14 @@ import (
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
 
+	"bitbucket.org/mkideal/accountd/api"
 	"bitbucket.org/mkideal/accountd/model"
 	"bitbucket.org/mkideal/accountd/oauth2"
 )
 
 func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
-	argv, err := parseAuthorize(r)
+	argv := new(api.AuthorizeReq)
+	err := argv.Parse(r)
 	if err != nil {
 		log.Warn("Authorize parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)

@@ -1,24 +1,27 @@
 ---
 date: 2016-12-04 23:31
 author: mkideal
-file: {{join "" "handle_" (underScore (trimSuffix "Req" .Name)) ".go"}}
+file: {{joinPath (outdir) (join ""  "../server/handle_" (underScore (trimSuffix "Req" .Name)) ".go")}}
 cond: {{hasSuffix "Req" .Name | string}}
 notexist: true
 ---
 {{context.AutoGenDeclaration}}
 
-package {{context.Pkg.Name}}
+package server
 
 import (
 	"net/http"
 
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
+
+	"bitbucket.org/mkideal/accountd/api"
 )
 
 {{$cmd := trimSuffix "Req" .Name}}
 func (svr *Server) handle{{$cmd}}(w http.ResponseWriter, r *http.Request) {
-	argv, err := parse{{$cmd}}(r)
+	argv := new(api.{{$cmd}}Req)
+	err := argv.Parse(r)
 	if err != nil {
 		log.Warn("{{$cmd}} parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)

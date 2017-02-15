@@ -1,8 +1,21 @@
-package server;
+package api;
+
+enum ErrorCode {
+	UserNotFound   = 101,
+	TokenNotFound  = 102,
+	ClientNotFound = 103,
+    SessionNotFound = 104,
+
+    IncorrectPassword  = 201,
+    IllegalUsername    = 201,
+    IllegalAccountType = 202,
+    IllegalPassword    = 203,
+    MissingArgument    = 204,
+}
 
 // 通用错误返回
 protocol ErrorRes {
-    int code;
+    int code; // ErrorCode
     string description;
 }
 
@@ -55,6 +68,8 @@ protocol AuthorizeCheckReq {
 }
 
 protocol AuthorizeCheckRes {
+    string application;
+    string username;
 }
 
 // 获取 token 信息
@@ -63,20 +78,83 @@ protocol TokenInfoReq `method:"POST"` {
 }
 
 protocol TokenInfoRes {
+	int64 uid;
+	string account;
+	string scope;
+	string expireAt;
 }
 
 // 注册
 protocol SignupReq `method:"POST"` {
+	int accountType; // 账号类型:参见 model.AccountType 枚举
+	string account;  // 账号:当 accountType 为第三方账号时为openId
+	string password; // 密码:当 accountType 为第三方账号时不需要
+    string nickname; // 昵称,可选
+}
+
+protocol SignupRes {
+    int64 uid;
+    string account;
+    string nickname;
+}
+
+// 快捷注册
+protocol AutoSignupReq `method:"POST"` {
+}
+
+protocol AutoSignupRes {
+    int64 uid;
+    string accessToken;
+    string refreshToken;
+    string expireAt;
+}
+
+// 检查账号是否存在
+protocol AccountExistReq {
+    string username;
+}
+
+protocol AccountExistRes {
+    bool existed;
 }
 
 // 登陆
 protocol SigninReq `method:"POST"` {
+	int accountType; // 账号类型:参见 model.AccountType 枚举
+	string account;  // 账号:当 accountType 为第三方账号时为openId
+	string password; // 密码:当 accountType 为第三方账号时不需要
+}
+
+protocol SigninRes {
+    UserInfo info;
 }
 
 // 登出
-protocol LogoutReq `method:"POST"` {
+protocol SignoutReq `method:"POST"` {
+    int64 uid;
+}
+
+protocol SignoutRes {
 }
 
 // 用户信息
 protocol UserReq {
+	int64 uid;
+	string account;
+}
+
+protocol UserRes {
+	UserInfo info;
+}
+
+struct UserInfo {
+	int64 id;
+	string account;
+	string nickname;
+	string avatar;
+	string QRCode;
+	int gender;
+	string birthday;
+	string lastLoginAt;
+	string lastLoginIP;
 }

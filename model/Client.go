@@ -5,7 +5,7 @@ type Client struct {
 	Id          string
 	Secret      string
 	Name        string
-	Scopes      string
+	Scope       string
 	Description string
 	CallbackURL string
 }
@@ -14,7 +14,7 @@ type ClientMeta struct {
 	F_id          string
 	F_secret      string
 	F_name        string
-	F_scopes      string
+	F_scope       string
 	F_description string
 	F_callbackURL string
 }
@@ -37,7 +37,7 @@ func (ClientMeta) Field(i int, v Client) (string, interface{}) {
 	case 2:
 		return "name", v.Name
 	case 3:
-		return "scopes", v.Scopes
+		return "scope", v.Scope
 	case 4:
 		return "description", v.Description
 	case 5:
@@ -57,7 +57,7 @@ func (ClientMeta) FieldPtr(i int, v *Client) (string, interface{}) {
 	case 2:
 		return "name", &v.Name
 	case 3:
-		return "scopes", &v.Scopes
+		return "scope", &v.Scope
 	case 4:
 		return "description", &v.Description
 	case 5:
@@ -72,7 +72,7 @@ var ClientMetaVar = ClientMeta{
 	F_id:          "id",
 	F_secret:      "secret",
 	F_name:        "name",
-	F_scopes:      "scopes",
+	F_scope:       "scope",
 	F_description: "description",
 	F_callbackURL: "callbackURL",
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/mkideal/pkg/netutil"
 	"github.com/mkideal/pkg/netutil/httputil"
 
+	"bitbucket.org/mkideal/accountd/api"
 	"bitbucket.org/mkideal/accountd/model"
 	"bitbucket.org/mkideal/accountd/oauth2"
 )
@@ -115,6 +116,13 @@ func (svr *Server) response(w http.ResponseWriter, status int, v interface{}) er
 	return httputil.JSONResponse(w, status, v, svr.config.Mode == Debug)
 }
 
+func (svr *Server) responseErrorCode(w http.ResponseWriter, code api.ErrorCode, description string) error {
+	res := api.ErrorRes{Code: int(code), Description: description}
+	return httputil.JSONResponse(w, http.StatusOK, res, svr.config.Mode == Debug)
+}
+
+// get and set token/session
+
 func (svr *Server) getTokenFromHeader(r *http.Request) string {
 	authorization := r.Header.Get("Authorization")
 	bearer := oauth2.TokenHeaderPrefix
@@ -123,8 +131,6 @@ func (svr *Server) getTokenFromHeader(r *http.Request) string {
 	}
 	return ""
 }
-
-// get and set session
 
 func (svr *Server) getSession(r *http.Request) *model.Session {
 	cookie := r.FormValue("cookie")
@@ -142,10 +148,19 @@ func (svr *Server) getSession(r *http.Request) *model.Session {
 
 func (svr *Server) setSession(w http.ResponseWriter, r *http.Request, uid int64) (session *model.Session, err error) {
 	session = svr.getSession(r)
+	duration := time.Hour * 24 * 3650 // 10 years
+	if svr.config.SessionExpireDuration > 0 {
+		duration = time.Duration(svr.config.SessionExpireDuration) * time.Second
+	}
+	expireAt := time.Now().Add(duration)
 	if session != nil {
-		svr.sessionRepo.SetSessionUserId(session.Id, uid)
+		session.Uid = uid
+		session.ExpireAt = model.FormatTime(expireAt)
+		if err = svr.sessionRepo.UpdateSession(session); err != nil {
+			return
+		}
 	} else {
-		session, err = svr.sessionRepo.NewSession(uid)
+		session, err = svr.sessionRepo.NewSession(uid, model.FormatTime(expireAt))
 		if err != nil {
 			return
 		}
@@ -153,10 +168,47 @@ func (svr *Server) setSession(w http.ResponseWriter, r *http.Request, uid int64)
 	cookie := &http.Cookie{
 		Name:    svr.config.CookieKey,
 		Value:   session.Id,
-		Expires: time.Unix(session.Expire, 0),
-		MaxAge:  int(svr.config.SessionExpireDuration),
+		Expires: expireAt,
+		MaxAge:  int(duration / time.Second),
 	}
 	log.Debug("SetCookie %s for user %d", session.Id, uid)
 	http.SetCookie(w, cookie)
 	return
+}
+
+func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request) *model.Client {
+	clientId, clientSecret, ok := r.BasicAuth()
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		log.Warn("%s: Client BasicAuth failure", cmd)
+		return nil
+	}
+	client, err := svr.clientRepo.FindClient(clientId)
+	if err != nil {
+		log.Error("%s: FindClient %s error: %v", cmd, clientId, err)
+		return nil
+	}
+	if client == nil {
+		log.Info("%s: Client %s not found", cmd, clientId)
+		return nil
+	}
+	if !model.ValidateClint(client, clientSecret) {
+		log.Info("%s: Client %s secret invalid", cmd, clientId)
+		return nil
+	}
+	return client
+}
+
+func makeUserInfo(user *model.User) api.UserInfo {
+	return api.UserInfo{
+		Id:          user.Id,
+		Account:     user.Account,
+		Nickname:    user.Nickname,
+		Avatar:      user.Avatar,
+		QRCode:      user.QRCode,
+		Gender:      int(user.Gender),
+		Birthday:    user.Birthday,
+		LastLoginAt: user.LastLoginAt,
+		LastLoginIP: user.LastLoginIP,
+	}
 }

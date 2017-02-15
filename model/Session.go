@@ -1,15 +1,15 @@
 package model
 
 type Session struct {
-	Id     string
-	Uid    int64
-	Expire int64
+	Id       string
+	Uid      int64
+	ExpireAt string
 }
 
 type SessionMeta struct {
-	F_id     string
-	F_uid    string
-	F_expire string
+	F_id       string
+	F_uid      string
+	F_expireAt string
 }
 
 func (SessionMeta) Name() string {
@@ -28,7 +28,7 @@ func (SessionMeta) Field(i int, v Session) (string, interface{}) {
 	case 1:
 		return "uid", v.Uid
 	case 2:
-		return "expire", v.Expire
+		return "expireAt", v.ExpireAt
 
 	}
 	return "", nil
@@ -42,7 +42,7 @@ func (SessionMeta) FieldPtr(i int, v *Session) (string, interface{}) {
 	case 1:
 		return "uid", &v.Uid
 	case 2:
-		return "expire", &v.Expire
+		return "expireAt", &v.ExpireAt
 
 	}
 	return "", nil
@@ -50,7 +50,7 @@ func (SessionMeta) FieldPtr(i int, v *Session) (string, interface{}) {
 
 var SessionMetaVar = SessionMeta{
 
-	F_id:     "id",
-	F_uid:    "uid",
-	F_expire: "expire",
+	F_id:       "id",
+	F_uid:      "uid",
+	F_expireAt: "expireAt",
 }

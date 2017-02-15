@@ -6,12 +6,14 @@ import (
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
 
+	"bitbucket.org/mkideal/accountd/api"
 	"bitbucket.org/mkideal/accountd/model"
 	"bitbucket.org/mkideal/accountd/oauth2"
 )
 
 func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
-	argv, err := parseAccessToken(r)
+	argv := new(api.AccessTokenReq)
+	err := argv.Parse(r)
 	if err != nil {
 		log.Warn("AccessToken parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
@@ -52,7 +54,7 @@ func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *AccessTokenReq, client *model.Client) error {
+func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *api.AccessTokenReq, client *model.Client) error {
 	ar, err := svr.authRepo.FindAuthRequest(client.Id, argv.Code)
 	if err != nil {
 		return err
@@ -74,9 +76,9 @@ func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *AccessT
 	log.WithJSON(accessToken).Debug("new token")
 	svr.authRepo.RemoveAuthRequest(ar.Id)
 
-	svr.response(w, http.StatusOK, AccessTokenRes{
+	svr.response(w, http.StatusOK, api.AccessTokenRes{
 		TokenType:    oauth2.TokenType,
-		Scope:        accessToken.Scopes,
+		Scope:        accessToken.Scope,
 		AccessToken:  accessToken.Token,
 		RefreshToken: accessToken.RefreshToken,
 		ExpireAt:     accessToken.ExpireAt,
@@ -84,22 +86,22 @@ func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *AccessT
 	return nil
 }
 
-func (svr *Server) grantByPassword(w http.ResponseWriter, argv *AccessTokenReq, client *model.Client, clientSecret string) error {
+func (svr *Server) grantByPassword(w http.ResponseWriter, argv *api.AccessTokenReq, client *model.Client, clientSecret string) error {
 	return oauth2.NewError(oauth2.ErrorUnsupportedGrantType, "grantByPassword-not-implemented")
 }
 
-func (svr *Server) grantByRefreshToken(w http.ResponseWriter, argv *AccessTokenReq, client *model.Client, clientSecret string) error {
+func (svr *Server) grantByRefreshToken(w http.ResponseWriter, argv *api.AccessTokenReq, client *model.Client, clientSecret string) error {
 	if !model.ValidateClint(client, clientSecret) {
-		return oauth2.NewError(oauth2.ErrorInvalidGrant, "user-not-found")
+		return oauth2.NewError(oauth2.ErrorInvalidGrant, "invalid-client-secret")
 	}
 	accessToken, err := svr.tokenRepo.RefreshToken(client, argv.RefreshToken, argv.Scope)
 	if err != nil {
 		return err
 	}
 
-	svr.response(w, http.StatusOK, AccessTokenRes{
+	svr.response(w, http.StatusOK, api.AccessTokenRes{
 		TokenType:    oauth2.TokenType,
-		Scope:        accessToken.Scopes,
+		Scope:        accessToken.Scope,
 		AccessToken:  accessToken.Token,
 		RefreshToken: accessToken.RefreshToken,
 		ExpireAt:     accessToken.ExpireAt,
