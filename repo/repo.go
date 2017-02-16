@@ -1,4 +1,4 @@
-package server
+package repo
 
 import (
 	"bitbucket.org/mkideal/accountd/model"
@@ -35,4 +35,7 @@ type SessionRepository interface {
 	FindSessionByUid(uid int64) (*model.Session, error)
 	UpdateSession(session *model.Session) error
 	RemoveSession(sessionId string) error
+}
+
+type sqlRepository struct {
 }

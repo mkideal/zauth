@@ -15,6 +15,7 @@ import (
 	"bitbucket.org/mkideal/accountd/api"
 	"bitbucket.org/mkideal/accountd/model"
 	"bitbucket.org/mkideal/accountd/oauth2"
+	"bitbucket.org/mkideal/accountd/repo"
 )
 
 const (
@@ -40,11 +41,11 @@ type Server struct {
 	config Config
 
 	// repositories
-	userRepo    UserRepository
-	clientRepo  ClientRepository
-	authRepo    AuthorizationRequestRepository
-	tokenRepo   TokenRepository
-	sessionRepo SessionRepository
+	userRepo    repo.UserRepository
+	clientRepo  repo.ClientRepository
+	authRepo    repo.AuthorizationRequestRepository
+	tokenRepo   repo.TokenRepository
+	sessionRepo repo.SessionRepository
 
 	running int32
 }
@@ -55,6 +56,10 @@ func New(config Config) *Server {
 	}
 	// TODO: initialize repositories
 	return svr
+}
+
+func (svr *Server) registerHandler(mux *httputil.ServeMux, pattern, method string, h http.HandlerFunc) {
+	mux.Handle(pattern, httputil.NewHandlerFunc(method, h))
 }
 
 func (svr *Server) Run() error {
@@ -118,7 +123,7 @@ func (svr *Server) response(w http.ResponseWriter, status int, v interface{}) er
 
 func (svr *Server) responseErrorCode(w http.ResponseWriter, code api.ErrorCode, description string) error {
 	res := api.ErrorRes{Code: int(code), Description: description}
-	return httputil.JSONResponse(w, http.StatusOK, res, svr.config.Mode == Debug)
+	return httputil.JSONResponse(w, http.StatusExpectationFailed, res, svr.config.Mode == Debug)
 }
 
 // get and set token/session

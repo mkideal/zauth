@@ -59,12 +59,12 @@ protocol User {
 
 // 访问客户端
 protocol Client {
-    string id;          # `key:"true"`
-    string secret;      # 
-    string name;        # 
-    string scope;       # 
-    string description; # 
-    string callbackURL; # 
+    string id;          # `key:"true"` // oauth 客户端唯一Id
+    string secret;      #              // 密码
+    string name;        #              // 应用名称
+    string description; #              // 应用描述
+    string scope;       #              // 授权范围
+    string callbackURL; #              // 回调地址
 }
 
 // 访问令牌
@@ -112,7 +112,7 @@ protocol EmailVerifyCode {
 }
 
 protocol Session {
-    string id;
-    int64 uid;
-    string expireAt;
+    string id;       # `key:"true"` // 唯一Id,用作cookie
+    int64 uid;       #              // 关联的用户Id
+    string expireAt; #              // 到期时间
 }

@@ -4,8 +4,6 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/mkideal/pkg/netutil/httputil"
 )
 
@@ -21,8 +19,4 @@ func (svr *Server) registerAllHandlers(mux *httputil.ServeMux) {
 	svr.registerHandler(mux, "/v1/signup", "POST", svr.handleSignup)
 	svr.registerHandler(mux, "/v1/token_info", "POST", svr.handleTokenInfo)
 	svr.registerHandler(mux, "/v1/user", "GET", svr.handleUser)
-}
-
-func (svr *Server) registerHandler(mux *httputil.ServeMux, pattern, method string, h http.HandlerFunc) {
-	mux.Handle(pattern, httputil.NewHandlerFunc(method, h))
 }
