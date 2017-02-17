@@ -1,16 +1,18 @@
 package api;
 
 enum ErrorCode {
-	UserNotFound   = 101,
-	TokenNotFound  = 102,
-	ClientNotFound = 103,
-    SessionNotFound = 104,
+	UserNotFound    = 101,
+	TokenNotFound   = 102,
+	ClientNotFound  = 103,
+	SessionNotFound = 104,
 
-    IncorrectPassword  = 201,
-    IllegalUsername    = 201,
-    IllegalAccountType = 202,
-    IllegalPassword    = 203,
-    MissingArgument    = 204,
+    IncorrectPassword     = 201,
+    IncorrectClientSecret = 202,
+
+    IllegalUsername    = 301,
+    IllegalAccountType = 302,
+    IllegalPassword    = 303,
+    MissingArgument    = 304,
 }
 
 // 通用错误返回

@@ -6,15 +6,16 @@ package api
 type ErrorCode int
 
 const (
-	ErrorCode_UserNotFound       ErrorCode = 101
-	ErrorCode_TokenNotFound      ErrorCode = 102
-	ErrorCode_ClientNotFound     ErrorCode = 103
-	ErrorCode_SessionNotFound    ErrorCode = 104
-	ErrorCode_IncorrectPassword  ErrorCode = 201
-	ErrorCode_IllegalUsername    ErrorCode = 201
-	ErrorCode_IllegalAccountType ErrorCode = 202
-	ErrorCode_IllegalPassword    ErrorCode = 203
-	ErrorCode_MissingArgument    ErrorCode = 204
+	ErrorCode_UserNotFound          ErrorCode = 101
+	ErrorCode_TokenNotFound         ErrorCode = 102
+	ErrorCode_ClientNotFound        ErrorCode = 103
+	ErrorCode_SessionNotFound       ErrorCode = 104
+	ErrorCode_IncorrectPassword     ErrorCode = 201
+	ErrorCode_IncorrectClientSecret ErrorCode = 202
+	ErrorCode_IllegalUsername       ErrorCode = 301
+	ErrorCode_IllegalAccountType    ErrorCode = 302
+	ErrorCode_IllegalPassword       ErrorCode = 303
+	ErrorCode_MissingArgument       ErrorCode = 304
 )
 
 // 通用错误返回

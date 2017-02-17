@@ -25,9 +25,9 @@ const (
 
 type Config struct {
 	Port                  uint16 `cli:"p,port" usage:"HTTP port" dft:"5200"`
-	Mode                  string `cli:"m,mode" usage:"run mode: debug/release" dft:"release"`
+	Mode                  string `cli:"m,mode" usage:"running mode: debug/release" dft:"release"`
 	CookieKey             string `cli:"cookie" usage:"cookie key" dft:"accountd"`
-	SessionExpireDuration int64  `cli:"session-expire-duration" usage:"session expire duration" dft:"3600"`
+	SessionExpireDuration int64  `cli:"session-expire-duration" usage:"session expire duration(seconds)" dft:"3600"`
 
 	Pages
 }
@@ -55,6 +55,12 @@ func New(config Config) *Server {
 		config: config,
 	}
 	// TODO: initialize repositories
+	sqlRepo := repo.SqlRepository{}
+	svr.userRepo = repo.NewUserRepository(sqlRepo)
+	svr.clientRepo = repo.NewClientRepository(sqlRepo)
+	svr.authRepo = repo.NewAuthorizationRequestRepository(sqlRepo)
+	svr.tokenRepo = repo.NewTokenRepository(sqlRepo)
+	svr.sessionRepo = repo.NewSessionRepository(sqlRepo)
 	return svr
 }
 
@@ -185,20 +191,23 @@ func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request
 	clientId, clientSecret, ok := r.BasicAuth()
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
-		log.Warn("%s: Client BasicAuth failure", cmd)
+		log.Info("%s: Client BasicAuth failure", cmd)
 		return nil
 	}
 	client, err := svr.clientRepo.GetClient(clientId)
 	if err != nil {
 		log.Error("%s: GetClient %s error: %v", cmd, clientId, err)
+		svr.response(w, http.StatusInternalServerError, err)
 		return nil
 	}
 	if client == nil {
 		log.Info("%s: Client %s not found", cmd, clientId)
+		svr.responseErrorCode(w, api.ErrorCode_ClientNotFound, "client-not-found")
 		return nil
 	}
 	if !model.ValidateClint(client, clientSecret) {
 		log.Info("%s: Client %s secret invalid", cmd, clientId)
+		svr.responseErrorCode(w, api.ErrorCode_IncorrectClientSecret, "incorrect-client-secret")
 		return nil
 	}
 	return client

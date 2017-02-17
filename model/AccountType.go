@@ -7,7 +7,7 @@ type AccountType int
 // 账号类型
 const (
 	AccountType_Normal   AccountType = 0 // 大小写字母开头,只允许字母,数字和下划线,长度2~20
-	AccountType_Auto     AccountType = 1 // 自动生成账号(快捷注册),account 就是uid
+	AccountType_Auto     AccountType = 1 // 自动生成账号(快捷注册),account 就是下划线加uid
 	AccountType_Telno    AccountType = 2 // 手机号
 	AccountType_Email    AccountType = 3 // 邮箱
 	AccountType_QQ       AccountType = 4 // 从此往下均为第三方账号,所有第三方账号的account前面均加 <type># 前缀

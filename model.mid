@@ -3,7 +3,7 @@ package model;
 // 账号类型
 enum AccountType {
     Normal   = 0, // 大小写字母开头,只允许字母,数字和下划线,长度2~20
-    Auto     = 1, // 自动生成账号(快捷注册),account 就是uid
+    Auto     = 1, // 自动生成账号(快捷注册),account 就是下划线加uid
     Telno    = 2, // 手机号
     Email    = 3, // 邮箱
     QQ       = 4, // 从此往下均为第三方账号,所有第三方账号的account前面均加 <type># 前缀
@@ -54,7 +54,7 @@ protocol User {
 	string createdAt;   # `bits:"32"` // 账号创建时间
 	string createdIP;   # `bits:"32"` // 账号创建时IP
 	string lastLoginAt; # `bits:"32"` // 最后登陆时间
-	string lastLoginIP; # `bits:"32"`  // 最后登陆时IP
+	string lastLoginIP; # `bits:"32"` // 最后登陆时IP
 }
 
 // 访问客户端
@@ -98,9 +98,9 @@ protocol AuthorizationRequest {
 // 手机验证码
 protocol TelnoVerifyCode {
     int64 id;         # `key:"true"` // 递增唯一Id
-    string telno;     # `bits:"32"`             // 手机号码
-    string code;      # `bits:"64"`             // 验证码
-    string expiredAt; # `bits:"32"`             // 到期时间
+    string telno;     # `bits:"32"`  // 手机号码
+    string code;      # `bits:"64"`  // 验证码
+    string expiredAt; # `bits:"32"`  // 到期时间
 }
 
 // 邮箱验证码
@@ -111,6 +111,7 @@ protocol EmailVerifyCode {
     string expiredAt; # `bits:"32"`  // 到期时间
 }
 
+// Web 会话
 protocol Session {
     string id;       # `key:"true"` // 唯一Id,用作cookie
     int64 uid;       #              // 关联的用户Id

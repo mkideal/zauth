@@ -17,7 +17,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 	argv := new(api.AuthorizeReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Warn("Authorize parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Authorize parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
@@ -44,10 +44,12 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 
 	client, err := svr.clientRepo.GetClient(argv.ClientId)
 	if err != nil {
+		log.Error("%s: get client %s error: %v", argv.CommandName(), argv.ClientId, err)
 		svr.errorResponse(argv.CommandName(), w, err)
 		return
 	}
 	if client == nil {
+		log.Info("%s: client %s not found", argv.CommandName(), argv.ClientId)
 		svr.oauthErrorResponse(argv.CommandName(), w, oauth2.ErrorInvalidClient)
 		return
 	}
@@ -56,6 +58,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 
 	if argv.ResponseType != oauth2.ResponseCode {
 		authErr := oauth2.NewError(oauth2.ErrorUnsupportedResponseType, "must-be-code")
+		log.Info("%s: response_type must be `code`, but got `%s`", argv.CommandName(), argv.ResponseType)
 		params := authErr.EncodeWith(values)
 		uri := fmt.Sprintf("%s?%s", client.CallbackURL, params)
 		http.Redirect(w, r, uri, http.StatusFound)
@@ -64,6 +67,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 
 	ar, err := svr.authRepo.NewAuthRequest(client, argv.Uid, argv.State, argv.Scope, oauth2.ResponseCode)
 	if err != nil {
+		log.Error("%s: NewAuthRequest error: %v", argv.CommandName(), err)
 		authErr := oauth2.WrapError(err)
 		params := authErr.EncodeWith(values)
 		uri := fmt.Sprintf("%s?%s", client.CallbackURL, params)

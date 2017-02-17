@@ -15,7 +15,7 @@ func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
 	argv := new(api.AccessTokenReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Warn("AccessToken parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("AccessToken parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
@@ -31,10 +31,12 @@ func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
 
 	client, err := svr.clientRepo.GetClient(clientId)
 	if err != nil {
+		log.Error("%s: get client %s error: %v", argv.CommandName(), clientId, err)
 		svr.errorResponse(argv.CommandName(), w, err)
 		return
 	}
 	if client == nil {
+		log.Info("%s: client %s not found", argv.CommandName(), clientId)
 		svr.oauthErrorResponse(argv.CommandName(), w, oauth2.ErrorInvalidClient)
 		return
 	}
@@ -50,6 +52,7 @@ func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
 		svr.oauthErrorResponse(argv.CommandName(), w, oauth2.ErrorUnsupportedGrantType)
 	}
 	if err != nil {
+		log.Error("%s: grant error: %v", argv.CommandName(), err)
 		svr.errorResponse(argv.CommandName(), w, err)
 	}
 }

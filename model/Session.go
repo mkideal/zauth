@@ -17,6 +17,7 @@ var (
 
 // Table
 
+// Web 会话
 type Session struct {
 	Id       string `xorm:"pk TEXT"`     // 唯一Id,用作cookie
 	Uid      int64  `xorm:"BIGINT(20)"`  // 关联的用户Id

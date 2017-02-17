@@ -77,7 +77,7 @@ var root = &cli.Command{
 
 var daemon = &cli.Command{
 	Name: "daemon",
-	Desc: "startup service as a daemon process",
+	Desc: "startup service as a background process",
 	Argv: func() interface{} { return new(argT) },
 
 	Fn: func(ctx *cli.Context) error {

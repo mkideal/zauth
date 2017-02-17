@@ -14,7 +14,7 @@ func (svr *Server) handleSignup(w http.ResponseWriter, r *http.Request) {
 	argv := new(api.SignupReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Warn("Signup parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Signup parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
@@ -25,7 +25,9 @@ func (svr *Server) handleSignup(w http.ResponseWriter, r *http.Request) {
 	user.CreatedIP = httputil.IP(r)
 	user.Account = argv.Account
 	if err := svr.userRepo.AddUser(user, argv.Password); err != nil {
+		log.Error("%s: add user %s error: %v", argv.CommandName(), user.Account, err)
 		svr.response(w, http.StatusInternalServerError, err)
+		return
 	}
 	res := api.SignupRes{
 		Uid:      user.Id,

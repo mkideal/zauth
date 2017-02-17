@@ -15,7 +15,7 @@ func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 	argv := new(api.UserReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Warn("User parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("User parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
@@ -26,9 +26,12 @@ func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 	} else if argv.Account != "" {
 		user, err = svr.userRepo.GetUserByAccount(argv.Account)
 	} else {
-		svr.responseErrorCode(w, api.ErrorCode_MissingArgument, "missing uid and account")
+		log.Info("%s: missing arguments uid and account", argv.CommandName())
+		svr.responseErrorCode(w, api.ErrorCode_MissingArgument, "missing arguments uid and account")
+		return
 	}
 	if err != nil {
+		log.Error("%s: get user error: %v", argv.CommandName(), err)
 		svr.response(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -39,6 +42,7 @@ func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 		} else {
 			desc = fmt.Sprintf("account %s not found", argv.Account)
 		}
+		log.Info("%s: %s", argv.CommandName(), desc)
 		svr.responseErrorCode(w, api.ErrorCode_UserNotFound, desc)
 		return
 	}

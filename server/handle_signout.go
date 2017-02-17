@@ -13,7 +13,7 @@ func (svr *Server) handleSignout(w http.ResponseWriter, r *http.Request) {
 	argv := new(api.SignoutReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Warn("Signout parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Signout parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
@@ -21,6 +21,7 @@ func (svr *Server) handleSignout(w http.ResponseWriter, r *http.Request) {
 	session := svr.getSession(r)
 	if session != nil {
 		if err := svr.sessionRepo.RemoveSession(session.Id); err != nil {
+			log.Error("%s: remove session %s error: %v", argv.CommandName(), session.Id, err)
 			svr.response(w, http.StatusInternalServerError, err)
 			return
 		}

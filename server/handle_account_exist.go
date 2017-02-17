@@ -14,17 +14,19 @@ func (svr *Server) handleAccountExist(w http.ResponseWriter, r *http.Request) {
 	argv := new(api.AccountExistReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Warn("AccountExist parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("AccountExist parse arguments error: %v, IP=%v", err, httputil.IP(r))
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
 	log.WithJSON(argv).Debug("AccountExist request, IP=%v", httputil.IP(r))
 	if !model.IsNormalUsername(argv.Username) {
+		log.Info("%s: illegal username: `%s`", argv.CommandName(), argv.Username)
 		svr.responseErrorCode(w, api.ErrorCode_IllegalUsername, "illegal-username-format")
 		return
 	}
 	found, err := svr.userRepo.AccountExist(argv.Username)
 	if err != nil {
+		log.Error("%s: find account %s error: %v", argv.CommandName(), argv.Username, err)
 		svr.response(w, http.StatusInternalServerError, err)
 		return
 	}
