@@ -29,7 +29,7 @@ func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Debug("%s: clientId=%s, clientSecret=%s", argv.CommandName(), clientId, clientSecret)
 
-	client, err := svr.clientRepo.FindClient(clientId)
+	client, err := svr.clientRepo.GetClient(clientId)
 	if err != nil {
 		svr.errorResponse(argv.CommandName(), w, err)
 		return
@@ -55,14 +55,14 @@ func (svr *Server) handleAccessToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *api.AccessTokenReq, client *model.Client) error {
-	ar, err := svr.authRepo.FindAuthRequest(client.Id, argv.Code)
+	ar, err := svr.authRepo.GetAuthRequest(client.Id, argv.Code)
 	if err != nil {
 		return err
 	}
 	if ar == nil {
 		return oauth2.NewError(oauth2.ErrorInvalidGrant, "code-not-found")
 	}
-	user, err := svr.userRepo.FindUser(ar.Uid)
+	user, err := svr.userRepo.GetUser(ar.Uid)
 	if err != nil {
 		return err
 	}

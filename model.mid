@@ -30,67 +30,67 @@ enum Gender {
 protocol User {
 	// 核心信息
 
-	int64 id;                # `key:"true"` // 随机唯一Id
-	AccountType accountType; #              // 账号类型
-	string account;          #              // 账号
-	string nickname;         #              // 昵称
-	string avatar;           #              // 头像
-	string QRCode;           #              // 二维码
+	int64 id;                # `key:"true"`   // 随机唯一Id
+	AccountType accountType; #                // 账号类型
+	string account;          # `bits:"128"`   // 账号
+	string nickname;         # `bits:"32"`    // 昵称
+	string avatar;           # `avatar:"256"` // 头像
+	string QRCode;           #                // 二维码
 
 	// 身份信息
 
-	Gender gender;         # // 性别
-	string birthday;       # // 生日
-	IdCardType idCardType; # // 身份证件类型
-	string idCard;         # // 证件唯一标识
+	Gender gender;         #             // 性别
+	string birthday;       # `bits:"32"` // 生日
+	IdCardType idCardType; #             // 身份证件类型
+	string idCard;         # `bits:"64"` // 证件唯一标识
 
 	// 安全信息
 
-	string encryptedPassword; # // 加密后密码
-	string passwordSalt;      # // 加密密码的盐
+	string encryptedPassword; # `bits:"64"` // 加密后密码
+	string passwordSalt;      # `bits:"64"` // 加密密码的盐
 
 	// 注册登陆信息
 
-	string createdAt;   # // 账号创建时间
-	string createdIP;   # // 账号创建时IP
-	string lastLoginAt; # // 最后登陆时间
-	string lastLoginIP; # // 最后登陆时IP
+	string createdAt;   # `bits:"32"` // 账号创建时间
+	string createdIP;   # `bits:"32"` // 账号创建时IP
+	string lastLoginAt; # `bits:"32"` // 最后登陆时间
+	string lastLoginIP; # `bits:"32"`  // 最后登陆时IP
 }
 
 // 访问客户端
 protocol Client {
-    string id;          # `key:"true"` // oauth 客户端唯一Id
-    string secret;      #              // 密码
-    string name;        #              // 应用名称
-    string description; #              // 应用描述
-    string scope;       #              // 授权范围
-    string callbackURL; #              // 回调地址
+    string id;          # `key:"true" bits:"64"` // oauth 客户端唯一Id
+    string secret;      # `bits:"64"`            // 密码
+    string name;        # `bits:"64"`            // 应用名称
+    string description; #                        // 应用描述
+    string scope;       #                        // 授权范围
+    string callbackURL; # `bits:"256"`           // 回调地址
 }
 
 // 访问令牌
 protocol AccessToken {
     int64 id;             # `key:"true"` // 递增唯一Id
     int64 uid;            #              // 用户Id
-    string createdAt;     #              // 创建时间
-    string modifiedAt;    #              // 修改时间
-    string expireAt;      #              // 到期时间
-    string token;         #              // 令牌
-    string refreshToken;  #              // 刷新用令牌
-    string resourceOwner; #              // 资源所有者
-    string clientId;      #              // 客户Id
+    string createdAt;     # `bits:"32"`  // 创建时间
+    string modifiedAt;    # `bits:"32"`  // 修改时间
+    string expireAt;      # `bits:"32"`  // 到期时间
+    string token;         # `bits:"64"`  // 令牌
+    string refreshToken;  # `bits:"64"`  // 刷新用令牌
+    string resourceOwner; # `bits:"64"`  // 资源所有者
+    string clientId;      # `bits:"64"`  // 客户Id
     string scope;         #              // 可访问权限范围
 }
 
 // 认证请求
 protocol AuthorizationRequest {
     int64 id;                 # `key:"true"` // 递增唯一Id
-    string createdAt;         #              // 创建时间
-    string authorizationCode; #              // 认证码
+    string createdAt;         # `bits:"32"`  // 创建时间
+    string authorizationCode; # `bits:"64"`  // 认证码
     int64 uid;                #              // 用户Id
-    string redirectURI;       #              // 重定向URI
-    string responseType;      #              // 返回类型
-    string state;             #              // 自定义状态
-    string clientId;          #              // 客户端Id
+    string redirectURI;       # `bits:"256"` // 重定向URI
+    string responseType;      # `bits:"64"`  // 返回类型
+    string state;             # `bits:"128"` // 自定义状态
+    string clientId;          # `bits:"64"`  // 客户端Id
     string grantedScopes;     #              // 授权范围
     string requestedScopes;   #              // 请求范围
 }
@@ -98,21 +98,21 @@ protocol AuthorizationRequest {
 // 手机验证码
 protocol TelnoVerifyCode {
     int64 id;         # `key:"true"` // 递增唯一Id
-    string telno;     #              // 手机号码
-    string code;      #              // 验证码
-    string expiredAt; #              // 到期时间
+    string telno;     # `bits:"32"`             // 手机号码
+    string code;      # `bits:"64"`             // 验证码
+    string expiredAt; # `bits:"32"`             // 到期时间
 }
 
 // 邮箱验证码
 protocol EmailVerifyCode {
     int64 id;         # `key:"true"` // 递增唯一Id
-    string email;     #              // email 地址
-    string code;      #              // 验证码
-    string expiredAt; #              // 到期时间
+    string email;     # `bits:"64"`  // email 地址
+    string code;      # `bits:"64"`  // 验证码
+    string expiredAt; # `bits:"32"`  // 到期时间
 }
 
 protocol Session {
     string id;       # `key:"true"` // 唯一Id,用作cookie
     int64 uid;       #              // 关联的用户Id
-    string expireAt; #              // 到期时间
+    string expireAt; # `bits:"32"`  // 到期时间
 }

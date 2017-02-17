@@ -19,12 +19,13 @@ var (
 
 // 访问客户端
 type Client struct {
-	Id          string `xorm:"pk TEXT"`
-	Secret      string `xorm:"TEXT"`
-	Name        string `xorm:"TEXT"`
-	Scope       string `xorm:"TEXT"`
-	Description string `xorm:"TEXT"`
-	CallbackURL string `xorm:"TEXT"`
+	Id          string `xorm:"pk VARCHAR(64)"` // oauth 客户端唯一Id
+	Secret      string `xorm:"VARCHAR(64)"`    // 密码
+	Name        string `xorm:"VARCHAR(64)"`    // 应用名称
+	Description string `xorm:"TEXT"`           // 应用描述
+	Scope       string `xorm:"TEXT"`           // 授权范围
+	CallbackURL string `xorm:"VARCHAR(256)"`   // 回调地址
+
 }
 
 func NewClient() *Client {
@@ -44,10 +45,10 @@ func (x Client) GetField(field string) (interface{}, bool) {
 		return x.Secret, true
 	case ClientMetaVar.F_name:
 		return x.Name, true
-	case ClientMetaVar.F_scope:
-		return x.Scope, true
 	case ClientMetaVar.F_description:
 		return x.Description, true
+	case ClientMetaVar.F_scope:
+		return x.Scope, true
 	case ClientMetaVar.F_callback_url:
 		return x.CallbackURL, true
 	}
@@ -60,10 +61,10 @@ func (x *Client) SetField(field, value string) error {
 		x.Secret = value
 	case ClientMetaVar.F_name:
 		x.Name = value
-	case ClientMetaVar.F_scope:
-		x.Scope = value
 	case ClientMetaVar.F_description:
 		x.Description = value
+	case ClientMetaVar.F_scope:
+		x.Scope = value
 	case ClientMetaVar.F_callback_url:
 		x.CallbackURL = value
 	}
@@ -74,8 +75,8 @@ func (x *Client) SetField(field, value string) error {
 type ClientMeta struct {
 	F_secret       string
 	F_name         string
-	F_scope        string
 	F_description  string
+	F_scope        string
 	F_callback_url string
 }
 
@@ -85,16 +86,16 @@ func (ClientMeta) Fields() []string { return _client_fields }
 var ClientMetaVar = &ClientMeta{
 	F_secret:       "secret",
 	F_name:         "name",
-	F_scope:        "scope",
 	F_description:  "description",
+	F_scope:        "scope",
 	F_callback_url: "callback_url",
 }
 
 var _client_fields = []string{
 	ClientMetaVar.F_secret,
 	ClientMetaVar.F_name,
-	ClientMetaVar.F_scope,
 	ClientMetaVar.F_description,
+	ClientMetaVar.F_scope,
 	ClientMetaVar.F_callback_url,
 }
 

@@ -24,7 +24,7 @@ func (svr *Server) handleSignup(w http.ResponseWriter, r *http.Request) {
 	// TODO: 检查 accountType,暂时不支持第三方账号注册
 	user.CreatedIP = httputil.IP(r)
 	user.Account = argv.Account
-	if err := svr.userRepo.AddUser(user); err != nil {
+	if err := svr.userRepo.AddUser(user, argv.Password); err != nil {
 		svr.response(w, http.StatusInternalServerError, err)
 	}
 	res := api.SignupRes{

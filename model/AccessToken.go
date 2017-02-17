@@ -21,13 +21,13 @@ var (
 type AccessToken struct {
 	Id            int64  `xorm:"pk BIGINT(20)"` // 递增唯一Id
 	Uid           int64  `xorm:"BIGINT(20)"`    // 用户Id
-	CreatedAt     string `xorm:"TEXT"`          // 创建时间
-	ModifiedAt    string `xorm:"TEXT"`          // 修改时间
-	ExpireAt      string `xorm:"TEXT"`          // 到期时间
-	Token         string `xorm:"TEXT"`          // 令牌
-	RefreshToken  string `xorm:"TEXT"`          // 刷新用令牌
-	ResourceOwner string `xorm:"TEXT"`          // 资源所有者
-	ClientId      string `xorm:"TEXT"`          // 客户Id
+	CreatedAt     string `xorm:"VARCHAR(32)"`   // 创建时间
+	ModifiedAt    string `xorm:"VARCHAR(32)"`   // 修改时间
+	ExpireAt      string `xorm:"VARCHAR(32)"`   // 到期时间
+	Token         string `xorm:"VARCHAR(64)"`   // 令牌
+	RefreshToken  string `xorm:"VARCHAR(64)"`   // 刷新用令牌
+	ResourceOwner string `xorm:"VARCHAR(64)"`   // 资源所有者
+	ClientId      string `xorm:"VARCHAR(64)"`   // 客户Id
 	Scope         string `xorm:"TEXT"`          // 可访问权限范围
 
 }

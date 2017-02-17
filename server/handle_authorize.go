@@ -29,7 +29,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 	)
 	session = svr.getSession(r)
 	if session != nil {
-		user, err = svr.userRepo.FindUser(session.Uid)
+		user, err = svr.userRepo.GetUser(session.Uid)
 	}
 	if user == nil || err != nil {
 		r.ParseForm()
@@ -42,7 +42,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := svr.clientRepo.FindClient(argv.ClientId)
+	client, err := svr.clientRepo.GetClient(argv.ClientId)
 	if err != nil {
 		svr.errorResponse(argv.CommandName(), w, err)
 		return
@@ -62,7 +62,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ar, err := svr.authRepo.NewAuthRequest(client.Id, argv.Uid, argv.State, argv.Scope)
+	ar, err := svr.authRepo.NewAuthRequest(client, argv.Uid, argv.State, argv.Scope, oauth2.ResponseCode)
 	if err != nil {
 		authErr := oauth2.WrapError(err)
 		params := authErr.EncodeWith(values)

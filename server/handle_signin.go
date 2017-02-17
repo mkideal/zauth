@@ -23,7 +23,7 @@ func (svr *Server) handleSignin(w http.ResponseWriter, r *http.Request) {
 	if account == "" {
 		svr.response(w, http.StatusBadRequest, "invalid accountType or account")
 	}
-	user, err := svr.userRepo.FindUserByAccount(account)
+	user, err := svr.userRepo.GetUserByAccount(account)
 	if err != nil {
 		svr.response(w, http.StatusInternalServerError, err)
 		return

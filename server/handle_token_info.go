@@ -23,7 +23,7 @@ func (svr *Server) handleTokenInfo(w http.ResponseWriter, r *http.Request) {
 		argv.AccessToken = token
 	}
 
-	accessToken, err := svr.tokenRepo.FindToken(argv.AccessToken)
+	accessToken, err := svr.tokenRepo.GetToken(argv.AccessToken)
 	if err != nil {
 		svr.response(w, http.StatusInternalServerError, err)
 	}

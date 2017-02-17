@@ -18,9 +18,10 @@ var (
 // Table
 
 type Session struct {
-	Id       string `xorm:"pk TEXT"`
-	Uid      int64  `xorm:"BIGINT(20)"`
-	ExpireAt string `xorm:"TEXT"`
+	Id       string `xorm:"pk TEXT"`     // 唯一Id,用作cookie
+	Uid      int64  `xorm:"BIGINT(20)"`  // 关联的用户Id
+	ExpireAt string `xorm:"VARCHAR(32)"` // 到期时间
+
 }
 
 func NewSession() *Session {

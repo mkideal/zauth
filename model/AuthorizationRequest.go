@@ -20,13 +20,13 @@ var (
 // 认证请求
 type AuthorizationRequest struct {
 	Id                int64  `xorm:"pk BIGINT(20)"` // 递增唯一Id
-	CreatedAt         string `xorm:"TEXT"`          // 创建时间
-	AuthorizationCode string `xorm:"TEXT"`          // 认证码
+	CreatedAt         string `xorm:"VARCHAR(32)"`   // 创建时间
+	AuthorizationCode string `xorm:"VARCHAR(64)"`   // 认证码
 	Uid               int64  `xorm:"BIGINT(20)"`    // 用户Id
-	RedirectURI       string `xorm:"TEXT"`          // 重定向URI
-	ResponseType      string `xorm:"TEXT"`          // 返回类型
-	State             string `xorm:"TEXT"`          // 自定义状态
-	ClientId          string `xorm:"TEXT"`          // 客户端Id
+	RedirectURI       string `xorm:"VARCHAR(256)"`  // 重定向URI
+	ResponseType      string `xorm:"VARCHAR(64)"`   // 返回类型
+	State             string `xorm:"VARCHAR(128)"`  // 自定义状态
+	ClientId          string `xorm:"VARCHAR(64)"`   // 客户端Id
 	GrantedScopes     string `xorm:"TEXT"`          // 授权范围
 	RequestedScopes   string `xorm:"TEXT"`          // 请求范围
 

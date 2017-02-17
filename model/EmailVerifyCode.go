@@ -20,9 +20,9 @@ var (
 // 邮箱验证码
 type EmailVerifyCode struct {
 	Id        int64  `xorm:"pk BIGINT(20)"` // 递增唯一Id
-	Email     string `xorm:"TEXT"`          // email 地址
-	Code      string `xorm:"TEXT"`          // 验证码
-	ExpiredAt string `xorm:"TEXT"`          // 到期时间
+	Email     string `xorm:"VARCHAR(64)"`   // email 地址
+	Code      string `xorm:"VARCHAR(64)"`   // 验证码
+	ExpiredAt string `xorm:"VARCHAR(32)"`   // 到期时间
 
 }
 

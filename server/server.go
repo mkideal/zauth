@@ -147,7 +147,7 @@ func (svr *Server) getSession(r *http.Request) *model.Session {
 		cookie = c.Value
 	}
 	log.Trace("cookie: %s", cookie)
-	session, _ := svr.sessionRepo.FindSession(cookie)
+	session, _ := svr.sessionRepo.GetSession(cookie)
 	return session
 }
 
@@ -188,9 +188,9 @@ func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request
 		log.Warn("%s: Client BasicAuth failure", cmd)
 		return nil
 	}
-	client, err := svr.clientRepo.FindClient(clientId)
+	client, err := svr.clientRepo.GetClient(clientId)
 	if err != nil {
-		log.Error("%s: FindClient %s error: %v", cmd, clientId, err)
+		log.Error("%s: GetClient %s error: %v", cmd, clientId, err)
 		return nil
 	}
 	if client == nil {

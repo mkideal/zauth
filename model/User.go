@@ -19,22 +19,22 @@ var (
 
 // 用户信息
 type User struct {
-	Id                int64       `xorm:"pk BIGINT(20)"` // 随机唯一Id
-	AccountType       AccountType `xorm:"BIGINT(20)"`    // 账号类型
-	Account           string      `xorm:"TEXT"`          // 账号
-	Nickname          string      `xorm:"TEXT"`          // 昵称
-	Avatar            string      `xorm:"TEXT"`          // 头像
-	QRCode            string      `xorm:"TEXT"`          // 二维码
-	Gender            Gender      `xorm:"BIGINT(20)"`    // 性别
-	Birthday          string      `xorm:"TEXT"`          // 生日
-	IdCardType        IdCardType  `xorm:"BIGINT(20)"`    // 身份证件类型
-	IdCard            string      `xorm:"TEXT"`          // 证件唯一标识
-	EncryptedPassword string      `xorm:"TEXT"`          // 加密后密码
-	PasswordSalt      string      `xorm:"TEXT"`          // 加密密码的盐
-	CreatedAt         string      `xorm:"TEXT"`          // 账号创建时间
-	CreatedIP         string      `xorm:"TEXT"`          // 账号创建时IP
-	LastLoginAt       string      `xorm:"TEXT"`          // 最后登陆时间
-	LastLoginIP       string      `xorm:"TEXT"`          // 最后登陆时IP
+	Id                int64       `xorm:"pk BIGINT(20)"`     // 随机唯一Id
+	AccountType       AccountType `xorm:"BIGINT(20)"`        // 账号类型
+	Account           string      `xorm:"VARCHAR(128)"`      // 账号
+	Nickname          string      `xorm:"VARCHAR(32)"`       // 昵称
+	Avatar            string      `avatar:"256" xorm:"TEXT"` // 头像
+	QRCode            string      `xorm:"TEXT"`              // 二维码
+	Gender            Gender      `xorm:"BIGINT(20)"`        // 性别
+	Birthday          string      `xorm:"VARCHAR(32)"`       // 生日
+	IdCardType        IdCardType  `xorm:"BIGINT(20)"`        // 身份证件类型
+	IdCard            string      `xorm:"VARCHAR(64)"`       // 证件唯一标识
+	EncryptedPassword string      `xorm:"VARCHAR(64)"`       // 加密后密码
+	PasswordSalt      string      `xorm:"VARCHAR(64)"`       // 加密密码的盐
+	CreatedAt         string      `xorm:"VARCHAR(32)"`       // 账号创建时间
+	CreatedIP         string      `xorm:"VARCHAR(32)"`       // 账号创建时IP
+	LastLoginAt       string      `xorm:"VARCHAR(32)"`       // 最后登陆时间
+	LastLoginIP       string      `xorm:"VARCHAR(32)"`       // 最后登陆时IP
 
 }
 

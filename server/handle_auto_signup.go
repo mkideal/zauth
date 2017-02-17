@@ -26,7 +26,7 @@ func (svr *Server) handleAutoSignup(w http.ResponseWriter, r *http.Request) {
 	user := new(model.User)
 	user.AccountType = model.AccountType_Auto
 	user.CreatedIP = httputil.IP(r)
-	if err := svr.userRepo.AddUser(user); err != nil {
+	if err := svr.userRepo.AddUser(user, ""); err != nil {
 		svr.response(w, http.StatusInternalServerError, err)
 	}
 	accessToken, err := svr.tokenRepo.NewToken(client, user, "")

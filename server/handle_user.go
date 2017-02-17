@@ -22,9 +22,9 @@ func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 	log.WithJSON(argv).Debug("User request, IP=%v", httputil.IP(r))
 	var user *model.User
 	if argv.Uid > 0 {
-		user, err = svr.userRepo.FindUser(argv.Uid)
+		user, err = svr.userRepo.GetUser(argv.Uid)
 	} else if argv.Account != "" {
-		user, err = svr.userRepo.FindUserByAccount(argv.Account)
+		user, err = svr.userRepo.GetUserByAccount(argv.Account)
 	} else {
 		svr.responseErrorCode(w, api.ErrorCode_MissingArgument, "missing uid and account")
 	}

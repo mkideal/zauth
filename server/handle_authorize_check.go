@@ -22,7 +22,7 @@ func (svr *Server) handleAuthorizeCheck(w http.ResponseWriter, r *http.Request) 
 		svr.responseErrorCode(w, api.ErrorCode_MissingArgument, "missing client_id")
 		return
 	}
-	client, err := svr.clientRepo.FindClient(argv.ClientId)
+	client, err := svr.clientRepo.GetClient(argv.ClientId)
 	if err != nil {
 		svr.response(w, http.StatusInternalServerError, err)
 		return
@@ -36,7 +36,7 @@ func (svr *Server) handleAuthorizeCheck(w http.ResponseWriter, r *http.Request) 
 		svr.responseErrorCode(w, api.ErrorCode_SessionNotFound, "session-not-found")
 		return
 	}
-	user, err := svr.userRepo.FindUser(session.Uid)
+	user, err := svr.userRepo.GetUser(session.Uid)
 	if err != nil {
 		svr.response(w, http.StatusInternalServerError, err)
 		return
