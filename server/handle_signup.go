@@ -11,14 +11,15 @@ import (
 )
 
 func (svr *Server) handleSignup(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.SignupReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("Signup parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Signup parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("Signup request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("Signup request, IP=%v", ip)
 	// 检查 accountType,account,password
 	var (
 		isNormalUsername    = model.IsNormalUsername(argv.Account)

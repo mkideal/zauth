@@ -16,7 +16,7 @@ func NewSessionRepository(sqlRepo *SqlRepository) SessionRepository {
 
 func (repo sessionRepository) NewSession(uid int64, expireAt string) (*model.Session, error) {
 	session := &model.Session{
-		Id:       random.String(64, nil),
+		Id:       random.String(32, nil),
 		Uid:      uid,
 		ExpireAt: expireAt,
 	}
@@ -30,15 +30,6 @@ func (repo sessionRepository) NewSession(uid int64, expireAt string) (*model.Ses
 func (repo sessionRepository) GetSession(sessionId string) (*model.Session, error) {
 	session := &model.Session{Id: sessionId}
 	found, err := repo.Get(session)
-	if !found || err != nil {
-		session = nil
-	}
-	return session, err
-}
-
-func (repo sessionRepository) GetSessionByUid(uid int64) (*model.Session, error) {
-	session := &model.Session{Uid: uid}
-	found, err := repo.Get(session, model.SessionMetaVar.F_uid)
 	if !found || err != nil {
 		session = nil
 	}

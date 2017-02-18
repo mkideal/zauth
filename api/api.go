@@ -27,6 +27,25 @@ type ErrorRes struct {
 	Description string `json:"description"`
 }
 
+type UserInfo struct {
+	Id          int64  `json:"id"`
+	Account     string `json:"account"`
+	Nickname    string `json:"nickname"`
+	Avatar      string `json:"avatar"`
+	Qrcode      string `json:"qrcode"`
+	Gender      int    `json:"gender"`
+	Birthday    string `json:"birthday"`
+	LastLoginAt string `json:"last_login_at"`
+	LastLoginIp string `json:"last_login_ip"`
+}
+
+type TokenInfo struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	Scope        string `json:"scope"`
+	ExpireAt     string `json:"expire_at"`
+}
+
 // 查看帮助
 type HelpReq struct {
 	Version string `json:"version"`
@@ -80,23 +99,16 @@ type AuthorizeCheckRes struct {
 	Username    string `json:"username"`
 }
 
-// 获取 token 信息
-type TokenInfoReq struct {
+// token 认证
+type TokenAuthReq struct {
 	AccessToken string `json:"access_token"`
 }
 
-func (TokenInfoReq) CommandName() string { return "TokenInfo" }
+func (TokenAuthReq) CommandName() string { return "TokenAuth" }
 
-type TokenInfoRes struct {
-	Uid   int64     `json:"uid"`
+type TokenAuthRes struct {
+	User  UserInfo  `json:"user"`
 	Token TokenInfo `json:"token"`
-}
-
-type TokenInfo struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	Scope        string `json:"scope"`
-	ExpireAt     string `json:"expire_at"`
 }
 
 // 注册
@@ -173,16 +185,4 @@ func (UserReq) CommandName() string { return "User" }
 
 type UserRes struct {
 	User UserInfo `json:"user"`
-}
-
-type UserInfo struct {
-	Id          int64  `json:"id"`
-	Account     string `json:"account"`
-	Nickname    string `json:"nickname"`
-	Avatar      string `json:"avatar"`
-	Qrcode      string `json:"qrcode"`
-	Gender      int    `json:"gender"`
-	Birthday    string `json:"birthday"`
-	LastLoginAt string `json:"last_login_at"`
-	LastLoginIp string `json:"last_login_ip"`
 }

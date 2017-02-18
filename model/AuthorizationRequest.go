@@ -22,9 +22,9 @@ type AuthorizationRequest struct {
 	AuthorizationCode string `xorm:"pk VARCHAR(64)"` // 认证码
 	CreatedAt         string `xorm:"VARCHAR(32)"`    // 创建时间
 	RedirectURI       string `xorm:"VARCHAR(256)"`   // 重定向URI
-	ResponseType      string `xorm:"VARCHAR(64)"`    // 返回类型
+	ResponseType      string `xorm:"VARCHAR(32)"`    // 返回类型
 	State             string `xorm:"VARCHAR(128)"`   // 自定义状态
-	ClientId          string `xorm:"VARCHAR(64)"`    // 客户端Id
+	ClientId          string `xorm:"VARCHAR(32)"`    // 客户端Id
 	Uid               int64  `xorm:"BIGINT(20)"`     // 关联的用户Id
 	GrantedScopes     string `xorm:"TEXT"`           // 授权范围
 	RequestedScopes   string `xorm:"TEXT"`           // 请求范围

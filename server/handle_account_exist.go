@@ -11,14 +11,15 @@ import (
 )
 
 func (svr *Server) handleAccountExist(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.AccountExistReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("AccountExist parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("AccountExist parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("AccountExist request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("AccountExist request, IP=%v", ip)
 	if !model.IsNormalUsername(argv.Username) {
 		log.Info("%s: illegal username: `%s`", argv.CommandName(), argv.Username)
 		svr.responseErrorCode(w, api.ErrorCode_IllegalUsername, "illegal-username-format")

@@ -20,12 +20,14 @@ import (
 
 {{$cmd := trimSuffix "Req" .Name}}
 func (svr *Server) handle{{$cmd}}(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.{{$cmd}}Req)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("{{$cmd}} parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("{{$cmd}} parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("{{$cmd}} request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("{{$cmd}} request, IP=%v", ip)
+	svr.response(w, http.StatusNotImplemented, "TODO")
 }

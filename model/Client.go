@@ -19,7 +19,7 @@ var (
 
 // 访问客户端
 type Client struct {
-	Id          string `xorm:"pk VARCHAR(64)"` // oauth 客户端唯一Id
+	Id          string `xorm:"pk VARCHAR(32)"` // oauth 客户端唯一Id
 	Secret      string `xorm:"VARCHAR(64)"`    // 密码
 	Name        string `xorm:"VARCHAR(64)"`    // 应用名称
 	Description string `xorm:"TEXT"`           // 应用描述

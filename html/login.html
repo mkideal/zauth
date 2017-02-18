@@ -1,1 +1,124 @@
-<h1>Login</h1>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <title>Signin</title>
+        <meta name="description" content="Signin or signup" />
+        <meta name="keywords" content="account, user, signin, signup, form " />
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+        <script src="js/modernizr.custom.63321.js"></script>
+        <!--[if lte IE 7]><style>.main{display:none;} .support-note .note-ie{display:block;}</style><![endif]-->
+		<style>
+			body {
+				background: #e1c192;
+			}
+		</style>
+    </head>
+    <body>
+        <div class="container">
+		
+			<header>
+			
+				<h1>Please <strong>Signin or Signup</strong></h1>
+				
+				<div class="support-note">
+					<span class="note-ie">Sorry, only modern browsers.</span>
+				</div>
+				
+			</header>
+			
+			<section class="main">
+				<form class="form-signin">
+					<h1><span id="signin" class="signin">Signin</span> or <span id="signinTab" class="signup">signup</span></h1>
+					<br/>
+					<p>
+						<label for="signin"><i class="icon-user"></i>Username</label>
+						<input id="account" type="text" name="account" placeholder="Username,email or telephone">
+					</p>
+					<p>
+						<label for="password"><i class="icon-lock"></i>Password</label>
+						<input id="password" type="password" name="password" placeholder="Password">
+					</p>
+					<!--<p id="password2">-->
+						<!--<label for="password"><i class="icon-lock"></i>Password again</label>-->
+						<!--<input type="password" name="password2" placeholder="Password again">-->
+					<!--</p>-->
+					<p class="clearfix"> 
+						<button id="signinButton">Sign in</button>
+					</p>
+					<p class="clearfix"> 
+						<button id="signupButton">Sign up</button>
+					</p>
+				</form>
+			</section>
+			
+        </div>
+		<!-- jQuery if needed -->
+        <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script type="text/javascript">
+			$(function(){
+				var onSignin = function(account, password) {
+					$.ajax({
+						type: "POST",
+						url: "/v1/signin",
+						data: {
+							account: account,
+							password: password,
+						},
+						dataType: "json",
+						success: function(data, status) {
+							console.log("success: ", data);
+							window.location.href = "/user.html";
+						},
+						error: function(xhr) {
+							if (xhr.status == 417) { // Expectation Failed
+								alert(xhr.responseJSON.description);
+							} else {
+								alert(xhr.responseText);
+								console.log("error: ", xhr.responseText);
+							}
+						},
+					});
+				}
+
+				var onSignup = function(account, password) {
+					$.ajax({
+						type: "POST",
+						url: "/v1/signup",
+						data: {
+							account_type: 0,
+							account: account,
+							password: password,
+						},
+						dataType: "json",
+						success: function(data, status) {
+							console.log("success: ", data);
+							onSignin(account, password);
+						},
+						error: function(xhr) {
+							if (xhr.status == 417) { // Expectation Failed
+								alert(xhr.responseJSON.description);
+							} else {
+								alert(xhr.responseText);
+								console.log("error: ", xhr.responseText);
+							}
+						},
+					});
+				}
+
+				$("#signinButton").click(function() {
+					var account = $("#account").val();
+					var password = $("#password").val()
+					onSignin(account, password);
+				});
+				$("#signupButton").click(function() {
+					var account = $("#account").val();
+					var password = $("#password").val()
+					onSignup(account, password);
+				});
+			});
+		</script>
+    </body>
+</html>

@@ -135,6 +135,9 @@ func (svr *Server) errorResponse(cmd string, w http.ResponseWriter, err error) {
 }
 
 func (svr *Server) response(w http.ResponseWriter, status int, v interface{}) error {
+	if s, ok := v.(string); ok {
+		return httputil.TextResponse(w, status, s)
+	}
 	return httputil.JSONResponse(w, status, v, svr.config.Mode == Debug)
 }
 

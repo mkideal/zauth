@@ -16,7 +16,7 @@ func (svr *Server) registerAllHandlers(mux *httputil.ServeMux) {
 	svr.registerHandler(mux, "/v1/signin", "POST", svr.handleSignin)
 	svr.registerHandler(mux, "/v1/signout", "POST", svr.handleSignout)
 	svr.registerHandler(mux, "/v1/signup", "POST", svr.handleSignup)
-	svr.registerHandler(mux, "/v1/token_info", "POST", svr.handleTokenInfo)
+	svr.registerHandler(mux, "/v1/token_auth", "POST", svr.handleTokenAuth)
 	svr.registerHandler(mux, "/v1/token", "POST", svr.handleToken)
 	svr.registerHandler(mux, "/v1/user", "GET", svr.handleUser)
 }

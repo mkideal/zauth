@@ -25,7 +25,7 @@ const (
 
 type Error struct {
 	Code        string `json:"error"`
-	Description string `json:"error_description,jsonomitempty"`
+	Description string `json:"error_description,omitempty"`
 	URI         string `json:"error_uri,omitempty"`
 	State       string `json:"state,omitempty"`
 }

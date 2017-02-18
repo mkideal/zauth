@@ -10,14 +10,15 @@ import (
 )
 
 func (svr *Server) handleSignout(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.SignoutReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("Signout parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Signout parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("Signout request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("Signout request, IP=%v", ip)
 	session := svr.getSession(r)
 	if session != nil {
 		if err := svr.sessionRepo.RemoveSession(session.Id); err != nil {

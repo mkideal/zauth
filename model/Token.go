@@ -25,8 +25,8 @@ type Token struct {
 	ModifiedAt    string `xorm:"VARCHAR(32)"`           // 修改时间
 	ExpireAt      string `xorm:"VARCHAR(32)"`           // 到期时间
 	RefreshToken  string `xorm:"VARCHAR(64) UNIQUE"`    // 刷新用令牌
-	ResourceOwner string `xorm:"VARCHAR(64)"`           // 资源所有者
-	ClientId      string `xorm:"VARCHAR(64)"`           // 客户Id
+	ResourceOwner string `xorm:"VARCHAR(32)"`           // 资源所有者
+	ClientId      string `xorm:"VARCHAR(32)"`           // 客户Id
 	Scope         string `xorm:"TEXT"`                  // 可访问权限范围
 
 }

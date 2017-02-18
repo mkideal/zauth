@@ -13,7 +13,7 @@ import (
 
 type UserRepository interface {
 	AddUser(user *model.User, plainPassword string) error
-	UpdateUser(user *model.User) error
+	UpdateUser(user *model.User, fields ...string) error
 	GetUser(uid int64) (*model.User, error)
 	GetUserByAccount(account string) (*model.User, error)
 	AccountExist(account string) (bool, error)
@@ -38,7 +38,6 @@ type TokenRepository interface {
 type SessionRepository interface {
 	NewSession(uid int64, expireAt string) (*model.Session, error)
 	GetSession(sessionId string) (*model.Session, error)
-	GetSessionByUid(uid int64) (*model.Session, error)
 	UpdateSession(session *model.Session) error
 	RemoveSession(sessionId string) error
 }

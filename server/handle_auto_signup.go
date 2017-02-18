@@ -11,14 +11,15 @@ import (
 )
 
 func (svr *Server) handleAutoSignup(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.AutoSignupReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("AutoSignup parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("AutoSignup parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("AutoSignup request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("AutoSignup request, IP=%v", ip)
 	client := svr.clientAuth(argv.CommandName(), w, r)
 	if client == nil {
 		// NOTE: response returned in clientAuth
@@ -26,7 +27,7 @@ func (svr *Server) handleAutoSignup(w http.ResponseWriter, r *http.Request) {
 	}
 	user := new(model.User)
 	user.AccountType = model.AccountType_Auto
-	user.CreatedIp = httputil.IP(r)
+	user.CreatedIp = ip
 	if err := svr.userRepo.AddUser(user, ""); err != nil {
 		log.Error("%s: add user error: %v", argv.CommandName(), err)
 		svr.response(w, http.StatusInternalServerError, err)

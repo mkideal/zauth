@@ -12,14 +12,15 @@ import (
 )
 
 func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.UserReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("User parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("User parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("User request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("User request, IP=%v", ip)
 	var user *model.User
 	if argv.Uid > 0 {
 		user, err = svr.userRepo.GetUser(argv.Uid)

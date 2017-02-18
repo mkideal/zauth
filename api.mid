@@ -25,6 +25,25 @@ protocol ErrorRes {
     string description;
 }
 
+struct UserInfo {
+	int64 id;
+	string account;
+	string nickname;
+	string avatar;
+	string qrcode;
+	int gender;
+	string birthday;
+	string lastLoginAt;
+	string lastLoginIp;
+}
+
+struct TokenInfo {
+    string accessToken;
+    string refreshToken;
+    string scope;
+    string expireAt;
+}
+
 // 查看帮助
 protocol HelpReq {
 	string version;
@@ -75,21 +94,14 @@ protocol AuthorizeCheckRes {
     string username;
 }
 
-// 获取 token 信息
-protocol TokenInfoReq `method:"POST"` {
+// token 认证
+protocol TokenAuthReq `method:"POST"` {
     string accessToken;
 }
 
-protocol TokenInfoRes {
-	int64 uid;
+protocol TokenAuthRes {
+	UserInfo user;
     TokenInfo token;
-}
-
-struct TokenInfo {
-    string accessToken;
-    string refreshToken;
-    string scope;
-    string expireAt;
 }
 
 // 注册
@@ -154,14 +166,3 @@ protocol UserRes {
 	UserInfo user;
 }
 
-struct UserInfo {
-	int64 id;
-	string account;
-	string nickname;
-	string avatar;
-	string qrcode;
-	int gender;
-	string birthday;
-	string lastLoginAt;
-	string lastLoginIp;
-}

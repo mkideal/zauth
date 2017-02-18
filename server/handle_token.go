@@ -12,14 +12,15 @@ import (
 )
 
 func (svr *Server) handleToken(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.TokenReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("Token parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Token parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("Token request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("Token request, IP=%v", ip)
 
 	clientId, clientSecret, ok := r.BasicAuth()
 	if !ok {
@@ -52,7 +53,7 @@ func (svr *Server) handleToken(w http.ResponseWriter, r *http.Request) {
 		svr.oauthErrorResponse(argv.CommandName(), w, oauth2.ErrorUnsupportedGrantType)
 	}
 	if err != nil {
-		log.Error("%s: grant error: %v", argv.CommandName(), err)
+		log.Warn("%s: grant error: %v", argv.CommandName(), err)
 		svr.errorResponse(argv.CommandName(), w, err)
 	}
 }

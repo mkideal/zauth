@@ -22,7 +22,7 @@ type User struct {
 	Id                int64       `xorm:"pk BIGINT(20)"`       // 随机唯一Id
 	AccountType       AccountType `xorm:"BIGINT(20)"`          // 账号类型
 	Account           string      `xorm:"VARCHAR(128) UNIQUE"` // 账号
-	Nickname          string      `xorm:"VARCHAR(32)"`         // 昵称
+	Nickname          string      `xorm:"VARCHAR(64)"`         // 昵称
 	Avatar            string      `xorm:"VARCHAR(256)"`        // 头像
 	Qrcode            string      `xorm:"TEXT"`                // 二维码
 	Gender            Gender      `xorm:"BIGINT(20)"`          // 性别
@@ -30,7 +30,7 @@ type User struct {
 	IdCardType        IdCardType  `xorm:"BIGINT(20)"`          // 身份证件类型
 	IdCard            string      `xorm:"VARCHAR(64)"`         // 证件唯一标识
 	EncryptedPassword string      `xorm:"VARCHAR(64)"`         // 加密后密码
-	PasswordSalt      string      `xorm:"VARCHAR(64)"`         // 加密密码的盐
+	PasswordSalt      string      `xorm:"VARCHAR(32)"`         // 加密密码的盐
 	CreatedAt         string      `xorm:"VARCHAR(32)"`         // 账号创建时间
 	CreatedIp         string      `xorm:"VARCHAR(32)"`         // 账号创建时IP
 	LastLoginAt       string      `xorm:"VARCHAR(32)"`         // 最后登陆时间

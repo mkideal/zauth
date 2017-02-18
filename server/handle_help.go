@@ -10,13 +10,14 @@ import (
 )
 
 func (svr *Server) handleHelp(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.HelpReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("Help parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Help parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("Help request, IP=%v", httputil.IP(r))
-	svr.response(w, http.StatusOK, "TODO")
+	log.WithJSON(argv).Debug("Help request, IP=%v", ip)
+	svr.response(w, http.StatusNotImplemented, "TODO")
 }

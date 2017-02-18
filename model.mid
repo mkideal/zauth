@@ -33,7 +33,7 @@ protocol User {
 	int64 id;                # `key:"true"`              // 随机唯一Id
 	AccountType accountType; #                           // 账号类型
 	string account;          # `bits:"128" opt:"UNIQUE"` // 账号
-	string nickname;         # `bits:"32"`               // 昵称
+	string nickname;         # `bits:"64"`               // 昵称
 	string avatar;           # `bits:"256"`              // 头像
 	string qrcode;           #                           // 二维码
 
@@ -47,7 +47,7 @@ protocol User {
 	// 安全信息
 
 	string encryptedPassword; # `bits:"64"` // 加密后密码
-	string passwordSalt;      # `bits:"64"` // 加密密码的盐
+	string passwordSalt;      # `bits:"32"` // 加密密码的盐
 
 	// 注册登陆信息
 
@@ -59,7 +59,7 @@ protocol User {
 
 // 访问客户端
 protocol Client {
-    string id;          # `key:"true" bits:"64"` // oauth 客户端唯一Id
+    string id;          # `key:"true" bits:"32"` // oauth 客户端唯一Id
     string secret;      # `bits:"64"`            // 密码
     string name;        # `bits:"64"`            // 应用名称
     string description; #                        // 应用描述
@@ -77,8 +77,8 @@ protocol Token {
     string modifiedAt;    # `bits:"32"`                         // 修改时间
     string expireAt;      # `bits:"32"`                         // 到期时间
     string refreshToken;  # `bits:"64" opt:"UNIQUE"`            // 刷新用令牌
-    string resourceOwner; # `bits:"64"`                         // 资源所有者
-    string clientId;      # `bits:"64"`                         // 客户Id
+    string resourceOwner; # `bits:"32"`                         // 资源所有者
+    string clientId;      # `bits:"32"`                         // 客户Id
     string scope;         #                                     // 可访问权限范围
 }
 
@@ -87,9 +87,9 @@ protocol AuthorizationRequest {
     string authorizationCode; # `key:"true" bits:"64"` // 认证码
     string createdAt;         # `bits:"32"`            // 创建时间
     string redirectURI;       # `bits:"256"`           // 重定向URI
-    string responseType;      # `bits:"64"`            // 返回类型
+    string responseType;      # `bits:"32"`            // 返回类型
     string state;             # `bits:"128"`           // 自定义状态
-    string clientId;          # `bits:"64"`            // 客户端Id
+    string clientId;          # `bits:"32"`            // 客户端Id
     int64 uid;                #                        // 关联的用户Id
     string grantedScopes;     #                        // 授权范围
     string requestedScopes;   #                        // 请求范围
@@ -113,7 +113,7 @@ protocol EmailVerifyCode {
 
 // Web 会话
 protocol Session {
-    string id;       # `key:"true" bits:"64"` // 唯一Id,用作cookie
+    string id;       # `key:"true" bits:"32"` // 唯一Id,用作cookie
     int64 uid;       #                        // 关联的用户Id
     string expireAt; # `bits:"32"`            // 到期时间
 }

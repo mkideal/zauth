@@ -93,7 +93,7 @@ func (argv *AuthorizeCheckReq) Parse(r *http.Request) error {
 	return err
 }
 
-func (argv *TokenInfoReq) Parse(r *http.Request) error {
+func (argv *TokenAuthReq) Parse(r *http.Request) error {
 	var err error
 	argv.AccessToken, err = httputil.ParseString(r, "access_token")
 	if err != nil {

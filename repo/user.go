@@ -23,7 +23,7 @@ func (repo userRepository) AddUser(user *model.User, plainPassword string) error
 		user.CreatedAt = model.FormatTime(time.Now())
 	}
 	if user.PasswordSalt == "" {
-		user.PasswordSalt = random.String(64, nil)
+		user.PasswordSalt = random.String(32, nil)
 	}
 	if user.EncryptedPassword == "" {
 		user.EncryptedPassword = model.EncryptPassword(plainPassword, user.PasswordSalt)
@@ -49,8 +49,8 @@ func (repo userRepository) AddUser(user *model.User, plainPassword string) error
 	return nil
 }
 
-func (repo userRepository) UpdateUser(user *model.User) error {
-	return repo.Update(user)
+func (repo userRepository) UpdateUser(user *model.User, fields ...string) error {
+	return repo.Update(user, fields...)
 }
 
 func (repo userRepository) GetUser(uid int64) (*model.User, error) {

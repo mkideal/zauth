@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
@@ -11,14 +12,15 @@ import (
 )
 
 func (svr *Server) handleSignin(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.SigninReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("Signin parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Signin parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("Signin request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("Signin request, IP=%v", ip)
 	account := model.JoinAccount(model.AccountType(argv.AccountType), argv.Account)
 	if account == "" {
 		log.Info("%s: missing account_type or account", argv.CommandName())
@@ -57,4 +59,8 @@ func (svr *Server) handleSignin(w http.ResponseWriter, r *http.Request) {
 		User:  makeUserInfo(user),
 		Token: makeTokenInfo(token),
 	})
+	user.LastLoginAt = model.FormatTime(time.Now())
+	user.LastLoginIp = ip
+	meta := model.UserMetaVar
+	svr.userRepo.UpdateUser(user, meta.F_last_login_at, meta.F_last_login_ip)
 }

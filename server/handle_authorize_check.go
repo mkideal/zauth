@@ -10,14 +10,15 @@ import (
 )
 
 func (svr *Server) handleAuthorizeCheck(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.AuthorizeCheckReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("AuthorizeCheck parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("AuthorizeCheck parse arguments error: %v, IP=%v", ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("AuthorizeCheck request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("AuthorizeCheck request, IP=%v", ip)
 	if argv.ClientId == "" {
 		log.Info("%s: missing argument client_id", argv.CommandName())
 		svr.responseErrorCode(w, api.ErrorCode_MissingArgument, "missing client_id")
@@ -47,7 +48,7 @@ func (svr *Server) handleAuthorizeCheck(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if user == nil {
-		log.Info("%s: user %d not found", argv.CommandName(), session.Uid)
+		log.Warn("%s: user %d not found", argv.CommandName(), session.Uid)
 		svr.responseErrorCode(w, api.ErrorCode_UserNotFound, "user-not-found")
 		return
 	}

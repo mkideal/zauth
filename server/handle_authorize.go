@@ -14,14 +14,15 @@ import (
 )
 
 func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
+	ip := httputil.IP(r)
 	argv := new(api.AuthorizeReq)
 	err := argv.Parse(r)
 	if err != nil {
-		log.Info("Authorize parse arguments error: %v, IP=%v", err, httputil.IP(r))
+		log.Info("Authorize parse arguments error: %v, IP=%v", err, ip)
 		svr.response(w, http.StatusBadRequest, err)
 		return
 	}
-	log.WithJSON(argv).Debug("Authorize request, IP=%v", httputil.IP(r))
+	log.WithJSON(argv).Debug("Authorize request, IP=%v", ip)
 
 	var (
 		session *model.Session
