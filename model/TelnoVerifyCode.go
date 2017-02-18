@@ -19,10 +19,10 @@ var (
 
 // 手机验证码
 type TelnoVerifyCode struct {
-	Id        int64  `xorm:"pk BIGINT(20)"` // 递增唯一Id
-	Telno     string `xorm:"VARCHAR(32)"`   // 手机号码
-	Code      string `xorm:"VARCHAR(64)"`   // 验证码
-	ExpiredAt string `xorm:"VARCHAR(32)"`   // 到期时间
+	Id        int64  `xorm:"pk BIGINT(20) AUTO_INCREMENT"` // 递增唯一Id
+	Telno     string `xorm:"VARCHAR(32)"`                  // 手机号码
+	Code      string `xorm:"VARCHAR(64) UNIQUE"`           // 验证码
+	ExpiredAt string `xorm:"VARCHAR(32)"`                  // 到期时间
 
 }
 
@@ -68,6 +68,7 @@ type TelnoVerifyCodeMeta struct {
 }
 
 func (TelnoVerifyCodeMeta) Name() string     { return "telno_verify_code" }
+func (TelnoVerifyCodeMeta) Key() string      { return "id" }
 func (TelnoVerifyCodeMeta) Fields() []string { return _telno_verify_code_fields }
 
 var TelnoVerifyCodeMetaVar = &TelnoVerifyCodeMeta{

@@ -15,7 +15,10 @@ const (
 	ErrorCode_IllegalUsername       ErrorCode = 301
 	ErrorCode_IllegalAccountType    ErrorCode = 302
 	ErrorCode_IllegalPassword       ErrorCode = 303
-	ErrorCode_MissingArgument       ErrorCode = 304
+	ErrorCode_IllegalEmail          ErrorCode = 304
+	ErrorCode_IllegalTelno          ErrorCode = 305
+	ErrorCode_MissingArgument       ErrorCode = 401
+	ErrorCode_AccountDuplicated     ErrorCode = 402
 )
 
 // 通用错误返回
@@ -176,9 +179,9 @@ type UserInfo struct {
 	Account     string `json:"account"`
 	Nickname    string `json:"nickname"`
 	Avatar      string `json:"avatar"`
-	QRCode      string `json:"qrcode"`
+	Qrcode      string `json:"qrcode"`
 	Gender      int    `json:"gender"`
 	Birthday    string `json:"birthday"`
 	LastLoginAt string `json:"last_login_at"`
-	LastLoginIP string `json:"last_login_ip"`
+	LastLoginIp string `json:"last_login_ip"`
 }

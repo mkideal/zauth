@@ -5,16 +5,16 @@ import (
 )
 
 type clientRepository struct {
-	SqlRepository
+	*SqlRepository
 }
 
-func NewClientRepository(sqlRepo SqlRepository) ClientRepository {
+func NewClientRepository(sqlRepo *SqlRepository) ClientRepository {
 	return clientRepository{SqlRepository: sqlRepo}
 }
 
 func (repo clientRepository) GetClient(clientId string) (*model.Client, error) {
 	client := &model.Client{Id: clientId}
-	found, err := repo.get(client)
+	found, err := repo.Get(client)
 	if !found || err != nil {
 		client = nil
 	}

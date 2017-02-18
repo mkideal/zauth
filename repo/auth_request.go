@@ -9,10 +9,10 @@ import (
 )
 
 type authorizationRequestRepository struct {
-	SqlRepository
+	*SqlRepository
 }
 
-func NewAuthorizationRequestRepository(sqlRepo SqlRepository) AuthorizationRequestRepository {
+func NewAuthorizationRequestRepository(sqlRepo *SqlRepository) AuthorizationRequestRepository {
 	return authorizationRequestRepository{SqlRepository: sqlRepo}
 }
 
@@ -26,7 +26,7 @@ func (repo authorizationRequestRepository) NewAuthRequest(client *model.Client, 
 		RedirectURI:       client.CallbackURL,
 		ResponseType:      responseType,
 	}
-	err := repo.insert(ar)
+	err := repo.Insert(ar)
 	if err != nil {
 		ar = nil
 	}
@@ -36,7 +36,7 @@ func (repo authorizationRequestRepository) NewAuthRequest(client *model.Client, 
 func (repo authorizationRequestRepository) GetAuthRequest(clientId, code string) (*model.AuthorizationRequest, error) {
 	ar := &model.AuthorizationRequest{ClientId: clientId, AuthorizationCode: code}
 	meta := model.AuthorizationRequestMetaVar
-	found, err := repo.getByFields(ar, meta.F_client_id, meta.F_authorization_code)
+	found, err := repo.Get(ar, meta.F_client_id, meta.F_authorization_code)
 	if !found || err != nil {
 		ar = nil
 	}
@@ -44,5 +44,5 @@ func (repo authorizationRequestRepository) GetAuthRequest(clientId, code string)
 }
 
 func (repo authorizationRequestRepository) RemoveAuthRequest(id int64) error {
-	return repo.remove(&model.AuthorizationRequest{Id: id})
+	return repo.Remove(&model.AuthorizationRequest{Id: id})
 }

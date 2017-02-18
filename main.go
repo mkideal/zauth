@@ -58,8 +58,13 @@ var root = &cli.Command{
 		}
 
 		// run server
-		svr := server.New(argv.Config)
+		svr, err := server.New(argv.Config)
+		if err != nil {
+			log.Error("Error: %v", err)
+			return err
+		}
 		if err := svr.Run(); err != nil {
+			log.Error("Error: %v", err)
 			return err
 		}
 		// quit server

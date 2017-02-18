@@ -19,9 +19,9 @@ var (
 
 // Web 会话
 type Session struct {
-	Id       string `xorm:"pk TEXT"`     // 唯一Id,用作cookie
-	Uid      int64  `xorm:"BIGINT(20)"`  // 关联的用户Id
-	ExpireAt string `xorm:"VARCHAR(32)"` // 到期时间
+	Id       string `xorm:"pk VARCHAR(64)"` // 唯一Id,用作cookie
+	Uid      int64  `xorm:"BIGINT(20)"`     // 关联的用户Id
+	ExpireAt string `xorm:"VARCHAR(32)"`    // 到期时间
 
 }
 
@@ -63,6 +63,7 @@ type SessionMeta struct {
 }
 
 func (SessionMeta) Name() string     { return "session" }
+func (SessionMeta) Key() string      { return "id" }
 func (SessionMeta) Fields() []string { return _session_fields }
 
 var SessionMetaVar = &SessionMeta{

@@ -3,9 +3,9 @@
 CREATE TABLE IF NOT EXISTS `user` (
 	`id` BIGINT(20)   COMMENT '随机唯一Id',
 	`account_type` BIGINT(20)   COMMENT '账号类型',
-	`account` VARCHAR(128)   COMMENT '账号',
+	`account` VARCHAR(128) UNIQUE  COMMENT '账号',
 	`nickname` VARCHAR(32)   COMMENT '昵称',
-	`avatar` TEXT   COMMENT '头像',
+	`avatar` VARCHAR(256)   COMMENT '头像',
 	`qrcode` TEXT   COMMENT '二维码',
 	`gender` BIGINT(20)   COMMENT '性别',
 	`birthday` VARCHAR(32)   COMMENT '生日',
@@ -35,13 +35,13 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `access_token` (
-	`id` BIGINT(20)   COMMENT '递增唯一Id',
+	`id` BIGINT(20) AUTO_INCREMENT  COMMENT '递增唯一Id',
 	`uid` BIGINT(20)   COMMENT '用户Id',
 	`created_at` VARCHAR(32)   COMMENT '创建时间',
 	`modified_at` VARCHAR(32)   COMMENT '修改时间',
 	`expire_at` VARCHAR(32)   COMMENT '到期时间',
-	`token` VARCHAR(64)   COMMENT '令牌',
-	`refresh_token` VARCHAR(64)   COMMENT '刷新用令牌',
+	`token` VARCHAR(64) UNIQUE  COMMENT '令牌',
+	`refresh_token` VARCHAR(64) UNIQUE  COMMENT '刷新用令牌',
 	`resource_owner` VARCHAR(64)   COMMENT '资源所有者',
 	`client_id` VARCHAR(64)   COMMENT '客户Id',
 	`scope` TEXT   COMMENT '可访问权限范围',
@@ -51,7 +51,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `authorization_request` (
-	`id` BIGINT(20)   COMMENT '递增唯一Id',
+	`id` BIGINT(20) AUTO_INCREMENT  COMMENT '递增唯一Id',
 	`created_at` VARCHAR(32)   COMMENT '创建时间',
 	`authorization_code` VARCHAR(64)   COMMENT '认证码',
 	`uid` BIGINT(20)   COMMENT '用户Id',
@@ -67,9 +67,9 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `telno_verify_code` (
-	`id` BIGINT(20)   COMMENT '递增唯一Id',
+	`id` BIGINT(20) AUTO_INCREMENT  COMMENT '递增唯一Id',
 	`telno` VARCHAR(32)   COMMENT '手机号码',
-	`code` VARCHAR(64)   COMMENT '验证码',
+	`code` VARCHAR(64) UNIQUE  COMMENT '验证码',
 	`expired_at` VARCHAR(32)   COMMENT '到期时间',
 	PRIMARY KEY (`id`)
 )
@@ -77,9 +77,9 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `email_verify_code` (
-	`id` BIGINT(20)   COMMENT '递增唯一Id',
+	`id` BIGINT(20) AUTO_INCREMENT  COMMENT '递增唯一Id',
 	`email` VARCHAR(64)   COMMENT 'email 地址',
-	`code` VARCHAR(64)   COMMENT '验证码',
+	`code` VARCHAR(64) UNIQUE  COMMENT '验证码',
 	`expired_at` VARCHAR(32)   COMMENT '到期时间',
 	PRIMARY KEY (`id`)
 )
@@ -87,7 +87,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `session` (
-	`id` TEXT   COMMENT '唯一Id,用作cookie',
+	`id` VARCHAR(64)   COMMENT '唯一Id,用作cookie',
 	`uid` BIGINT(20)   COMMENT '关联的用户Id',
 	`expire_at` VARCHAR(32)   COMMENT '到期时间',
 	PRIMARY KEY (`id`)

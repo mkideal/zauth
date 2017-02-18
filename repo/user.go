@@ -10,10 +10,10 @@ import (
 )
 
 type userRepository struct {
-	SqlRepository
+	*SqlRepository
 }
 
-func NewUserRepository(sqlRepo SqlRepository) UserRepository {
+func NewUserRepository(sqlRepo *SqlRepository) UserRepository {
 	return userRepository{SqlRepository: sqlRepo}
 }
 
@@ -40,7 +40,7 @@ func (repo userRepository) AddUser(user *model.User, plainPassword string) error
 		if emptyNickname {
 			user.Nickname = user.Account
 		}
-		if err := repo.insert(user); err == nil {
+		if err := repo.Insert(user); err == nil {
 			break
 		} else if i+1 == maxTryTimes {
 			return err
@@ -50,12 +50,12 @@ func (repo userRepository) AddUser(user *model.User, plainPassword string) error
 }
 
 func (repo userRepository) UpdateUser(user *model.User) error {
-	return repo.update(user)
+	return repo.Update(user)
 }
 
 func (repo userRepository) GetUser(uid int64) (*model.User, error) {
 	user := &model.User{Id: uid}
-	found, err := repo.get(user)
+	found, err := repo.Get(user)
 	if !found || err != nil {
 		user = nil
 	}
@@ -64,7 +64,7 @@ func (repo userRepository) GetUser(uid int64) (*model.User, error) {
 
 func (repo userRepository) GetUserByAccount(account string) (*model.User, error) {
 	user := &model.User{Account: account}
-	found, err := repo.getByFields(user, model.UserMetaVar.F_account)
+	found, err := repo.Get(user, model.UserMetaVar.F_account)
 	if !found || err != nil {
 		user = nil
 	}
@@ -72,5 +72,5 @@ func (repo userRepository) GetUserByAccount(account string) (*model.User, error)
 }
 
 func (repo userRepository) AccountExist(account string) (bool, error) {
-	return repo.has(&model.User{Account: account}, model.UserMetaVar.F_account)
+	return repo.Exist(&model.User{Account: account}, model.UserMetaVar.F_account)
 }

@@ -10,10 +10,10 @@ import (
 )
 
 type tokenRepository struct {
-	SqlRepository
+	*SqlRepository
 }
 
-func NewTokenRepository(sqlRepo SqlRepository) TokenRepository {
+func NewTokenRepository(sqlRepo *SqlRepository) TokenRepository {
 	return tokenRepository{SqlRepository: sqlRepo}
 }
 
@@ -36,7 +36,7 @@ func (repo tokenRepository) NewToken(client *model.Client, user *model.User, sco
 		ClientId:      client.Id,
 		Scope:         client.Scope,
 	}
-	err := repo.insert(token)
+	err := repo.Insert(token)
 	if err != nil {
 		token = nil
 	}
@@ -45,7 +45,7 @@ func (repo tokenRepository) NewToken(client *model.Client, user *model.User, sco
 
 func (repo tokenRepository) GetToken(token string) (*model.AccessToken, error) {
 	accessToken := &model.AccessToken{Token: token}
-	found, err := repo.getByFields(accessToken, model.AccessTokenMetaVar.F_token)
+	found, err := repo.Get(accessToken, model.AccessTokenMetaVar.F_token)
 	if !found || err != nil {
 		accessToken = nil
 	}
@@ -55,7 +55,7 @@ func (repo tokenRepository) GetToken(token string) (*model.AccessToken, error) {
 func (repo tokenRepository) RefreshToken(client *model.Client, refreshToken, scope string) (*model.AccessToken, error) {
 	accessToken := &model.AccessToken{ClientId: client.Id, RefreshToken: refreshToken}
 	meta := model.AccessTokenMetaVar
-	found, err := repo.getByFields(accessToken, meta.F_client_id, meta.F_refresh_token)
+	found, err := repo.Get(accessToken, meta.F_client_id, meta.F_refresh_token)
 	if err != nil {
 		return nil, err
 	}

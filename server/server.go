@@ -12,6 +12,8 @@ import (
 	"github.com/mkideal/pkg/netutil"
 	"github.com/mkideal/pkg/netutil/httputil"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"bitbucket.org/mkideal/accountd/api"
 	"bitbucket.org/mkideal/accountd/model"
 	"bitbucket.org/mkideal/accountd/oauth2"
@@ -24,10 +26,14 @@ const (
 )
 
 type Config struct {
+	Driver                string `cli:"driver" usage:"sql database driver: mysql" dft:"mysql"`
+	DataSourceName        string `cli:"dsn" usage:"data source name for specified driver" dft:"accountd:aXXpwd@/accountdb"`
 	Port                  uint16 `cli:"p,port" usage:"HTTP port" dft:"5200"`
 	Mode                  string `cli:"m,mode" usage:"running mode: debug/release" dft:"release"`
 	CookieKey             string `cli:"cookie" usage:"cookie key" dft:"accountd"`
 	SessionExpireDuration int64  `cli:"session-expire-duration" usage:"session expire duration(seconds)" dft:"3600"`
+	HTMLDir               string `cli:"html" usage:"HTML static directory" dft:"html"`
+	HTMLRoouter           string `cli:"html-router" usage:"HTML static files router" dft:"/"`
 
 	Pages
 }
@@ -50,18 +56,22 @@ type Server struct {
 	running int32
 }
 
-func New(config Config) *Server {
+func New(config Config) (*Server, error) {
+	sqlRepo, err := repo.NewSqlRepository(config.Driver, config.DataSourceName)
+	if err != nil {
+		return nil, err
+	}
+
 	svr := &Server{
 		config: config,
 	}
-	// TODO: initialize repositories
-	sqlRepo := repo.SqlRepository{}
+	// initialize repositories
 	svr.userRepo = repo.NewUserRepository(sqlRepo)
 	svr.clientRepo = repo.NewClientRepository(sqlRepo)
 	svr.authRepo = repo.NewAuthorizationRequestRepository(sqlRepo)
 	svr.tokenRepo = repo.NewTokenRepository(sqlRepo)
 	svr.sessionRepo = repo.NewSessionRepository(sqlRepo)
-	return svr
+	return svr, nil
 }
 
 func (svr *Server) registerHandler(mux *httputil.ServeMux, pattern, method string, h http.HandlerFunc) {
@@ -78,6 +88,7 @@ func (svr *Server) Run() error {
 	// register HTTP api
 	mux := httputil.NewServeMux()
 	svr.registerAllHandlers(mux)
+	mux.Handle(svr.config.HTMLRoouter, http.FileServer(http.Dir(svr.config.HTMLDir)))
 
 	// listen and serve HTTP service
 	httpServer := &http.Server{
@@ -219,10 +230,10 @@ func makeUserInfo(user *model.User) api.UserInfo {
 		Account:     user.Account,
 		Nickname:    user.Nickname,
 		Avatar:      user.Avatar,
-		QRCode:      user.QRCode,
+		Qrcode:      user.Qrcode,
 		Gender:      int(user.Gender),
 		Birthday:    user.Birthday,
 		LastLoginAt: user.LastLoginAt,
-		LastLoginIP: user.LastLoginIP,
+		LastLoginIp: user.LastLoginIp,
 	}
 }

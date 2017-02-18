@@ -26,7 +26,7 @@ func (svr *Server) handleAutoSignup(w http.ResponseWriter, r *http.Request) {
 	}
 	user := new(model.User)
 	user.AccountType = model.AccountType_Auto
-	user.CreatedIP = httputil.IP(r)
+	user.CreatedIp = httputil.IP(r)
 	if err := svr.userRepo.AddUser(user, ""); err != nil {
 		log.Error("%s: add user error: %v", argv.CommandName(), err)
 		svr.response(w, http.StatusInternalServerError, err)

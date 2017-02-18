@@ -19,22 +19,22 @@ var (
 
 // 用户信息
 type User struct {
-	Id                int64       `xorm:"pk BIGINT(20)"`     // 随机唯一Id
-	AccountType       AccountType `xorm:"BIGINT(20)"`        // 账号类型
-	Account           string      `xorm:"VARCHAR(128)"`      // 账号
-	Nickname          string      `xorm:"VARCHAR(32)"`       // 昵称
-	Avatar            string      `avatar:"256" xorm:"TEXT"` // 头像
-	QRCode            string      `xorm:"TEXT"`              // 二维码
-	Gender            Gender      `xorm:"BIGINT(20)"`        // 性别
-	Birthday          string      `xorm:"VARCHAR(32)"`       // 生日
-	IdCardType        IdCardType  `xorm:"BIGINT(20)"`        // 身份证件类型
-	IdCard            string      `xorm:"VARCHAR(64)"`       // 证件唯一标识
-	EncryptedPassword string      `xorm:"VARCHAR(64)"`       // 加密后密码
-	PasswordSalt      string      `xorm:"VARCHAR(64)"`       // 加密密码的盐
-	CreatedAt         string      `xorm:"VARCHAR(32)"`       // 账号创建时间
-	CreatedIP         string      `xorm:"VARCHAR(32)"`       // 账号创建时IP
-	LastLoginAt       string      `xorm:"VARCHAR(32)"`       // 最后登陆时间
-	LastLoginIP       string      `xorm:"VARCHAR(32)"`       // 最后登陆时IP
+	Id                int64       `xorm:"pk BIGINT(20)"`       // 随机唯一Id
+	AccountType       AccountType `xorm:"BIGINT(20)"`          // 账号类型
+	Account           string      `xorm:"VARCHAR(128) UNIQUE"` // 账号
+	Nickname          string      `xorm:"VARCHAR(32)"`         // 昵称
+	Avatar            string      `xorm:"VARCHAR(256)"`        // 头像
+	Qrcode            string      `xorm:"TEXT"`                // 二维码
+	Gender            Gender      `xorm:"BIGINT(20)"`          // 性别
+	Birthday          string      `xorm:"VARCHAR(32)"`         // 生日
+	IdCardType        IdCardType  `xorm:"BIGINT(20)"`          // 身份证件类型
+	IdCard            string      `xorm:"VARCHAR(64)"`         // 证件唯一标识
+	EncryptedPassword string      `xorm:"VARCHAR(64)"`         // 加密后密码
+	PasswordSalt      string      `xorm:"VARCHAR(64)"`         // 加密密码的盐
+	CreatedAt         string      `xorm:"VARCHAR(32)"`         // 账号创建时间
+	CreatedIp         string      `xorm:"VARCHAR(32)"`         // 账号创建时IP
+	LastLoginAt       string      `xorm:"VARCHAR(32)"`         // 最后登陆时间
+	LastLoginIp       string      `xorm:"VARCHAR(32)"`         // 最后登陆时IP
 
 }
 
@@ -59,7 +59,7 @@ func (x User) GetField(field string) (interface{}, bool) {
 	case UserMetaVar.F_avatar:
 		return x.Avatar, true
 	case UserMetaVar.F_qrcode:
-		return x.QRCode, true
+		return x.Qrcode, true
 	case UserMetaVar.F_gender:
 		return x.Gender, true
 	case UserMetaVar.F_birthday:
@@ -75,11 +75,11 @@ func (x User) GetField(field string) (interface{}, bool) {
 	case UserMetaVar.F_created_at:
 		return x.CreatedAt, true
 	case UserMetaVar.F_created_ip:
-		return x.CreatedIP, true
+		return x.CreatedIp, true
 	case UserMetaVar.F_last_login_at:
 		return x.LastLoginAt, true
 	case UserMetaVar.F_last_login_ip:
-		return x.LastLoginIP, true
+		return x.LastLoginIp, true
 	}
 	return nil, false
 }
@@ -99,7 +99,7 @@ func (x *User) SetField(field, value string) error {
 	case UserMetaVar.F_avatar:
 		x.Avatar = value
 	case UserMetaVar.F_qrcode:
-		x.QRCode = value
+		x.Qrcode = value
 	case UserMetaVar.F_gender:
 		var tmp int
 		if err := typeconv.String2Int(&tmp, value); err != nil {
@@ -123,11 +123,11 @@ func (x *User) SetField(field, value string) error {
 	case UserMetaVar.F_created_at:
 		x.CreatedAt = value
 	case UserMetaVar.F_created_ip:
-		x.CreatedIP = value
+		x.CreatedIp = value
 	case UserMetaVar.F_last_login_at:
 		x.LastLoginAt = value
 	case UserMetaVar.F_last_login_ip:
-		x.LastLoginIP = value
+		x.LastLoginIp = value
 	}
 	return nil
 }
@@ -152,6 +152,7 @@ type UserMeta struct {
 }
 
 func (UserMeta) Name() string     { return "user" }
+func (UserMeta) Key() string      { return "id" }
 func (UserMeta) Fields() []string { return _user_fields }
 
 var UserMetaVar = &UserMeta{

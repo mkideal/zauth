@@ -81,6 +81,7 @@ type ClientMeta struct {
 }
 
 func (ClientMeta) Name() string     { return "client" }
+func (ClientMeta) Key() string      { return "id" }
 func (ClientMeta) Fields() []string { return _client_fields }
 
 var ClientMetaVar = &ClientMeta{

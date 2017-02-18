@@ -19,16 +19,16 @@ var (
 
 // 访问令牌
 type AccessToken struct {
-	Id            int64  `xorm:"pk BIGINT(20)"` // 递增唯一Id
-	Uid           int64  `xorm:"BIGINT(20)"`    // 用户Id
-	CreatedAt     string `xorm:"VARCHAR(32)"`   // 创建时间
-	ModifiedAt    string `xorm:"VARCHAR(32)"`   // 修改时间
-	ExpireAt      string `xorm:"VARCHAR(32)"`   // 到期时间
-	Token         string `xorm:"VARCHAR(64)"`   // 令牌
-	RefreshToken  string `xorm:"VARCHAR(64)"`   // 刷新用令牌
-	ResourceOwner string `xorm:"VARCHAR(64)"`   // 资源所有者
-	ClientId      string `xorm:"VARCHAR(64)"`   // 客户Id
-	Scope         string `xorm:"TEXT"`          // 可访问权限范围
+	Id            int64  `xorm:"pk BIGINT(20) AUTO_INCREMENT"` // 递增唯一Id
+	Uid           int64  `xorm:"BIGINT(20)"`                   // 用户Id
+	CreatedAt     string `xorm:"VARCHAR(32)"`                  // 创建时间
+	ModifiedAt    string `xorm:"VARCHAR(32)"`                  // 修改时间
+	ExpireAt      string `xorm:"VARCHAR(32)"`                  // 到期时间
+	Token         string `xorm:"VARCHAR(64) UNIQUE"`           // 令牌
+	RefreshToken  string `xorm:"VARCHAR(64) UNIQUE"`           // 刷新用令牌
+	ResourceOwner string `xorm:"VARCHAR(64)"`                  // 资源所有者
+	ClientId      string `xorm:"VARCHAR(64)"`                  // 客户Id
+	Scope         string `xorm:"TEXT"`                         // 可访问权限范围
 
 }
 
@@ -104,6 +104,7 @@ type AccessTokenMeta struct {
 }
 
 func (AccessTokenMeta) Name() string     { return "access_token" }
+func (AccessTokenMeta) Key() string      { return "id" }
 func (AccessTokenMeta) Fields() []string { return _access_token_fields }
 
 var AccessTokenMetaVar = &AccessTokenMeta{

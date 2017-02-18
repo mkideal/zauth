@@ -19,10 +19,10 @@ var (
 
 // 邮箱验证码
 type EmailVerifyCode struct {
-	Id        int64  `xorm:"pk BIGINT(20)"` // 递增唯一Id
-	Email     string `xorm:"VARCHAR(64)"`   // email 地址
-	Code      string `xorm:"VARCHAR(64)"`   // 验证码
-	ExpiredAt string `xorm:"VARCHAR(32)"`   // 到期时间
+	Id        int64  `xorm:"pk BIGINT(20) AUTO_INCREMENT"` // 递增唯一Id
+	Email     string `xorm:"VARCHAR(64)"`                  // email 地址
+	Code      string `xorm:"VARCHAR(64) UNIQUE"`           // 验证码
+	ExpiredAt string `xorm:"VARCHAR(32)"`                  // 到期时间
 
 }
 
@@ -68,6 +68,7 @@ type EmailVerifyCodeMeta struct {
 }
 
 func (EmailVerifyCodeMeta) Name() string     { return "email_verify_code" }
+func (EmailVerifyCodeMeta) Key() string      { return "id" }
 func (EmailVerifyCodeMeta) Fields() []string { return _email_verify_code_fields }
 
 var EmailVerifyCodeMetaVar = &EmailVerifyCodeMeta{
