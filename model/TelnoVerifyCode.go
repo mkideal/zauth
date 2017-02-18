@@ -21,7 +21,7 @@ var (
 type TelnoVerifyCode struct {
 	Id        int64  `xorm:"pk BIGINT(20) AUTO_INCREMENT"` // 递增唯一Id
 	Telno     string `xorm:"VARCHAR(32)"`                  // 手机号码
-	Code      string `xorm:"VARCHAR(64) UNIQUE"`           // 验证码
+	Code      string `xorm:"VARCHAR(8)"`                   // 验证码
 	ExpiredAt string `xorm:"VARCHAR(32)"`                  // 到期时间
 
 }

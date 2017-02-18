@@ -34,8 +34,8 @@ protocol HelpReq {
 protocol HelpRes {
 }
 
-// oauth2.0 接口 access_token
-protocol AccessTokenReq `method:"POST"` {
+// oauth2.0 接口 token
+protocol TokenReq `method:"POST"` {
 	string grantType; // 授权类型
 	string scope;     // token使用范围
 
@@ -51,12 +51,9 @@ protocol AccessTokenReq `method:"POST"` {
     string refreshToken; // 刷新用token
 }
 
-protocol AccessTokenRes {
+protocol TokenRes {
 	string tokenType;
-	string scope;
-	string accessToken;
-	string refreshToken;
-	string expireAt;
+    TokenInfo token;
 }
 
 // oauth2.0 接口 authorize
@@ -85,9 +82,14 @@ protocol TokenInfoReq `method:"POST"` {
 
 protocol TokenInfoRes {
 	int64 uid;
-	string account;
-	string scope;
-	string expireAt;
+    TokenInfo token;
+}
+
+struct TokenInfo {
+    string accessToken;
+    string refreshToken;
+    string scope;
+    string expireAt;
 }
 
 // 注册
@@ -110,9 +112,7 @@ protocol AutoSignupReq `method:"POST"` {
 
 protocol AutoSignupRes {
     int64 uid;
-    string accessToken;
-    string refreshToken;
-    string expireAt;
+    TokenInfo token;
 }
 
 // 检查账号是否存在
@@ -132,7 +132,8 @@ protocol SigninReq `method:"POST"` {
 }
 
 protocol SigninRes {
-    UserInfo info;
+    UserInfo user;
+    TokenInfo token;
 }
 
 // 登出
@@ -150,7 +151,7 @@ protocol UserReq {
 }
 
 protocol UserRes {
-	UserInfo info;
+	UserInfo user;
 }
 
 struct UserInfo {

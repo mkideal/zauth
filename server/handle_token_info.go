@@ -19,24 +19,23 @@ func (svr *Server) handleTokenInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	log.WithJSON(argv).Debug("TokenInfo request, IP=%v", httputil.IP(r))
 
-	if token := svr.getTokenFromHeader(r); token != "" {
-		argv.AccessToken = token
+	if accessToken := svr.getTokenFromHeader(r); accessToken != "" {
+		argv.AccessToken = accessToken
 	}
 
-	accessToken, err := svr.tokenRepo.GetToken(argv.AccessToken)
+	token, err := svr.tokenRepo.GetToken(argv.AccessToken)
 	if err != nil {
 		log.Error("%s: get token %s error: %v", argv.CommandName(), argv.AccessToken, err)
 		svr.response(w, http.StatusInternalServerError, err)
 		return
 	}
-	if accessToken == nil {
+	if token == nil {
 		log.Info("%s: token %s not found", argv.CommandName(), argv.AccessToken)
 		svr.responseErrorCode(w, api.ErrorCode_TokenNotFound, "token-not-found")
 		return
 	}
 	svr.response(w, http.StatusOK, api.TokenInfoRes{
-		Uid:      accessToken.Uid,
-		Scope:    accessToken.Scope,
-		ExpireAt: accessToken.ExpireAt,
+		Uid:   token.Uid,
+		Token: makeTokenInfo(token),
 	})
 }

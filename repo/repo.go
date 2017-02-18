@@ -26,13 +26,13 @@ type ClientRepository interface {
 type AuthorizationRequestRepository interface {
 	NewAuthRequest(client *model.Client, uid int64, state, scope, responseType string) (*model.AuthorizationRequest, error)
 	GetAuthRequest(clientId, code string) (*model.AuthorizationRequest, error)
-	RemoveAuthRequest(id int64) error
+	RemoveAuthRequest(code string) error
 }
 
 type TokenRepository interface {
-	NewToken(client *model.Client, user *model.User, scope string) (*model.AccessToken, error)
-	GetToken(token string) (*model.AccessToken, error)
-	RefreshToken(client *model.Client, refreshToken string, scope string) (*model.AccessToken, error)
+	NewToken(user *model.User, clientId, scope string) (*model.Token, error)
+	GetToken(token string) (*model.Token, error)
+	RefreshToken(refreshToken string, scope string) (*model.Token, error)
 }
 
 type SessionRepository interface {

@@ -63,43 +63,43 @@ protocol Client {
     string secret;      # `bits:"64"`            // 密码
     string name;        # `bits:"64"`            // 应用名称
     string description; #                        // 应用描述
+    string logo;        # `bits:"256"`           // Logo 地址
     string scope;       #                        // 授权范围
+    string homepageURL; # `bits:"256"`           // 主页地址
     string callbackURL; # `bits:"256"`           // 回调地址
 }
 
 // 访问令牌
-protocol AccessToken {
-    int64 id;             # `key:"true" opt:"AUTO_INCREMENT"` // 递增唯一Id
-    int64 uid;            #                                   // 用户Id
-    string createdAt;     # `bits:"32"`                       // 创建时间
-    string modifiedAt;    # `bits:"32"`                       // 修改时间
-    string expireAt;      # `bits:"32"`                       // 到期时间
-    string token;         # `bits:"64" opt:"UNIQUE"`          // 令牌
-    string refreshToken;  # `bits:"64" opt:"UNIQUE"`          // 刷新用令牌
-    string resourceOwner; # `bits:"64"`                       // 资源所有者
-    string clientId;      # `bits:"64"`                       // 客户Id
-    string scope;         #                                   // 可访问权限范围
+protocol Token {
+    string accessToken;   # `key:"true" bits:"64" opt:"UNIQUE"` // 令牌
+    int64 uid;            #                                     // 用户Id
+    string createdAt;     # `bits:"32"`                         // 创建时间
+    string modifiedAt;    # `bits:"32"`                         // 修改时间
+    string expireAt;      # `bits:"32"`                         // 到期时间
+    string refreshToken;  # `bits:"64" opt:"UNIQUE"`            // 刷新用令牌
+    string resourceOwner; # `bits:"64"`                         // 资源所有者
+    string clientId;      # `bits:"64"`                         // 客户Id
+    string scope;         #                                     // 可访问权限范围
 }
 
 // 认证请求
 protocol AuthorizationRequest {
-    int64 id;                 # `key:"true" opt:"AUTO_INCREMENT"` // 递增唯一Id
-    string createdAt;         # `bits:"32"`                       // 创建时间
-    string authorizationCode; # `bits:"64"`                       // 认证码
-    int64 uid;                #                                   // 用户Id
-    string redirectURI;       # `bits:"256"`                      // 重定向URI
-    string responseType;      # `bits:"64"`                       // 返回类型
-    string state;             # `bits:"128"`                      // 自定义状态
-    string clientId;          # `bits:"64"`                       // 客户端Id
-    string grantedScopes;     #                                   // 授权范围
-    string requestedScopes;   #                                   // 请求范围
+    string authorizationCode; # `key:"true" bits:"64"` // 认证码
+    string createdAt;         # `bits:"32"`            // 创建时间
+    string redirectURI;       # `bits:"256"`           // 重定向URI
+    string responseType;      # `bits:"64"`            // 返回类型
+    string state;             # `bits:"128"`           // 自定义状态
+    string clientId;          # `bits:"64"`            // 客户端Id
+    int64 uid;                #                        // 关联的用户Id
+    string grantedScopes;     #                        // 授权范围
+    string requestedScopes;   #                        // 请求范围
 }
 
 // 手机验证码
 protocol TelnoVerifyCode {
     int64 id;         # `key:"true" opt:"AUTO_INCREMENT"` // 递增唯一Id
     string telno;     # `bits:"32"`                       // 手机号码
-    string code;      # `bits:"64" opt:"UNIQUE"`          // 验证码
+    string code;      # `bits:"8"`                        // 验证码
     string expiredAt; # `bits:"32"`                       // 到期时间
 }
 

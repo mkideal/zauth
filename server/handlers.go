@@ -8,7 +8,6 @@ import (
 )
 
 func (svr *Server) registerAllHandlers(mux *httputil.ServeMux) {
-	svr.registerHandler(mux, "/v1/access_token", "POST", svr.handleAccessToken)
 	svr.registerHandler(mux, "/v1/account_exist", "GET", svr.handleAccountExist)
 	svr.registerHandler(mux, "/v1/authorize_check", "GET", svr.handleAuthorizeCheck)
 	svr.registerHandler(mux, "/v1/authorize", "POST", svr.handleAuthorize)
@@ -18,5 +17,6 @@ func (svr *Server) registerAllHandlers(mux *httputil.ServeMux) {
 	svr.registerHandler(mux, "/v1/signout", "POST", svr.handleSignout)
 	svr.registerHandler(mux, "/v1/signup", "POST", svr.handleSignup)
 	svr.registerHandler(mux, "/v1/token_info", "POST", svr.handleTokenInfo)
+	svr.registerHandler(mux, "/v1/token", "POST", svr.handleToken)
 	svr.registerHandler(mux, "/v1/user", "GET", svr.handleUser)
 }

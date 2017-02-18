@@ -237,3 +237,12 @@ func makeUserInfo(user *model.User) api.UserInfo {
 		LastLoginIp: user.LastLoginIp,
 	}
 }
+
+func makeTokenInfo(token *model.Token) api.TokenInfo {
+	return api.TokenInfo{
+		AccessToken:  token.AccessToken,
+		RefreshToken: token.RefreshToken,
+		Scope:        token.Scope,
+		ExpireAt:     token.ExpireAt,
+	}
+}

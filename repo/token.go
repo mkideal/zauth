@@ -23,18 +23,18 @@ func (repo tokenRepository) generateToken() string {
 
 const tokenLifeTime = time.Hour * 48
 
-func (repo tokenRepository) NewToken(client *model.Client, user *model.User, scope string) (*model.AccessToken, error) {
+func (repo tokenRepository) NewToken(user *model.User, clientId, scope string) (*model.Token, error) {
 	now := time.Now()
-	token := &model.AccessToken{
+	token := &model.Token{
 		Uid:           user.Id,
 		CreatedAt:     model.FormatTime(now),
 		ModifiedAt:    model.FormatTime(now),
 		ExpireAt:      model.FormatTime(now.Add(tokenLifeTime)),
-		Token:         repo.generateToken(),
+		AccessToken:   repo.generateToken(),
 		RefreshToken:  repo.generateToken(),
 		ResourceOwner: fmt.Sprintf("%d", user.Id),
-		ClientId:      client.Id,
-		Scope:         client.Scope,
+		Scope:         scope,
+		ClientId:      clientId,
 	}
 	err := repo.Insert(token)
 	if err != nil {
@@ -43,31 +43,31 @@ func (repo tokenRepository) NewToken(client *model.Client, user *model.User, sco
 	return token, err
 }
 
-func (repo tokenRepository) GetToken(token string) (*model.AccessToken, error) {
-	accessToken := &model.AccessToken{Token: token}
-	found, err := repo.Get(accessToken, model.AccessTokenMetaVar.F_token)
+func (repo tokenRepository) GetToken(accessToken string) (*model.Token, error) {
+	token := &model.Token{AccessToken: accessToken}
+	found, err := repo.Get(token)
 	if !found || err != nil {
-		accessToken = nil
+		token = nil
 	}
-	return accessToken, err
+	return token, err
 }
 
-func (repo tokenRepository) RefreshToken(client *model.Client, refreshToken, scope string) (*model.AccessToken, error) {
-	accessToken := &model.AccessToken{ClientId: client.Id, RefreshToken: refreshToken}
-	meta := model.AccessTokenMetaVar
-	found, err := repo.Get(accessToken, meta.F_client_id, meta.F_refresh_token)
+func (repo tokenRepository) RefreshToken(refreshToken, scope string) (*model.Token, error) {
+	token := &model.Token{RefreshToken: refreshToken}
+	meta := model.TokenMetaVar
+	found, err := repo.Get(token, meta.F_refresh_token)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, nil
 	}
-	accessToken.Scope = scope
-	accessToken.Token = repo.generateToken()
-	accessToken.RefreshToken = repo.generateToken()
+	token.Scope = scope
+	token.AccessToken = repo.generateToken()
+	token.RefreshToken = repo.generateToken()
 	now := time.Now()
-	accessToken.CreatedAt = model.FormatTime(now)
-	accessToken.ModifiedAt = model.FormatTime(now)
-	accessToken.ExpireAt = model.FormatTime(now.Add(tokenLifeTime))
-	return accessToken, err
+	token.CreatedAt = model.FormatTime(now)
+	token.ModifiedAt = model.FormatTime(now)
+	token.ExpireAt = model.FormatTime(now.Add(tokenLifeTime))
+	return token, err
 }

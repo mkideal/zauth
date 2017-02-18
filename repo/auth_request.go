@@ -21,8 +21,8 @@ func (repo authorizationRequestRepository) NewAuthRequest(client *model.Client, 
 		CreatedAt:         model.FormatTime(time.Now()),
 		AuthorizationCode: random.String(64, random.CryptoSource, random.O_DIGIT, random.O_UPPER_CHAR, random.O_LOWER_CHAR),
 		ClientId:          client.Id,
-		State:             state,
 		Uid:               uid,
+		State:             state,
 		RedirectURI:       client.CallbackURL,
 		ResponseType:      responseType,
 	}
@@ -35,14 +35,13 @@ func (repo authorizationRequestRepository) NewAuthRequest(client *model.Client, 
 
 func (repo authorizationRequestRepository) GetAuthRequest(clientId, code string) (*model.AuthorizationRequest, error) {
 	ar := &model.AuthorizationRequest{ClientId: clientId, AuthorizationCode: code}
-	meta := model.AuthorizationRequestMetaVar
-	found, err := repo.Get(ar, meta.F_client_id, meta.F_authorization_code)
+	found, err := repo.Get(ar)
 	if !found || err != nil {
 		ar = nil
 	}
 	return ar, err
 }
 
-func (repo authorizationRequestRepository) RemoveAuthRequest(id int64) error {
-	return repo.Remove(&model.AuthorizationRequest{Id: id})
+func (repo authorizationRequestRepository) RemoveAuthRequest(code string) error {
+	return repo.Remove(&model.AuthorizationRequest{AuthorizationCode: code})
 }

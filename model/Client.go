@@ -23,7 +23,9 @@ type Client struct {
 	Secret      string `xorm:"VARCHAR(64)"`    // 密码
 	Name        string `xorm:"VARCHAR(64)"`    // 应用名称
 	Description string `xorm:"TEXT"`           // 应用描述
+	Logo        string `xorm:"VARCHAR(256)"`   // Logo 地址
 	Scope       string `xorm:"TEXT"`           // 授权范围
+	HomepageURL string `xorm:"VARCHAR(256)"`   // 主页地址
 	CallbackURL string `xorm:"VARCHAR(256)"`   // 回调地址
 
 }
@@ -47,8 +49,12 @@ func (x Client) GetField(field string) (interface{}, bool) {
 		return x.Name, true
 	case ClientMetaVar.F_description:
 		return x.Description, true
+	case ClientMetaVar.F_logo:
+		return x.Logo, true
 	case ClientMetaVar.F_scope:
 		return x.Scope, true
+	case ClientMetaVar.F_homepage_url:
+		return x.HomepageURL, true
 	case ClientMetaVar.F_callback_url:
 		return x.CallbackURL, true
 	}
@@ -63,8 +69,12 @@ func (x *Client) SetField(field, value string) error {
 		x.Name = value
 	case ClientMetaVar.F_description:
 		x.Description = value
+	case ClientMetaVar.F_logo:
+		x.Logo = value
 	case ClientMetaVar.F_scope:
 		x.Scope = value
+	case ClientMetaVar.F_homepage_url:
+		x.HomepageURL = value
 	case ClientMetaVar.F_callback_url:
 		x.CallbackURL = value
 	}
@@ -76,7 +86,9 @@ type ClientMeta struct {
 	F_secret       string
 	F_name         string
 	F_description  string
+	F_logo         string
 	F_scope        string
+	F_homepage_url string
 	F_callback_url string
 }
 
@@ -88,7 +100,9 @@ var ClientMetaVar = &ClientMeta{
 	F_secret:       "secret",
 	F_name:         "name",
 	F_description:  "description",
+	F_logo:         "logo",
 	F_scope:        "scope",
+	F_homepage_url: "homepage_url",
 	F_callback_url: "callback_url",
 }
 
@@ -96,7 +110,9 @@ var _client_fields = []string{
 	ClientMetaVar.F_secret,
 	ClientMetaVar.F_name,
 	ClientMetaVar.F_description,
+	ClientMetaVar.F_logo,
 	ClientMetaVar.F_scope,
+	ClientMetaVar.F_homepage_url,
 	ClientMetaVar.F_callback_url,
 }
 

@@ -47,5 +47,14 @@ func (svr *Server) handleSignin(w http.ResponseWriter, r *http.Request) {
 		svr.response(w, http.StatusInternalServerError, err)
 		return
 	}
-	svr.response(w, http.StatusOK, makeUserInfo(user))
+	token, err := svr.tokenRepo.NewToken(user, "", "")
+	if err != nil {
+		log.Error("%s: new token error: %v", argv.CommandName(), err)
+		svr.response(w, http.StatusInternalServerError, err)
+		return
+	}
+	svr.response(w, http.StatusOK, api.SigninRes{
+		User:  makeUserInfo(user),
+		Token: makeTokenInfo(token),
+	})
 }

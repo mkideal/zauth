@@ -32,17 +32,15 @@ func (svr *Server) handleAutoSignup(w http.ResponseWriter, r *http.Request) {
 		svr.response(w, http.StatusInternalServerError, err)
 		return
 	}
-	accessToken, err := svr.tokenRepo.NewToken(client, user, "")
+	token, err := svr.tokenRepo.NewToken(user, client.Id, client.Scope)
 	if err != nil {
 		log.Error("%s: new token error: %v", argv.CommandName(), err)
 		svr.response(w, http.StatusInternalServerError, err)
 		return
 	}
 	res := api.AutoSignupRes{
-		Uid:          user.Id,
-		AccessToken:  accessToken.Token,
-		RefreshToken: accessToken.RefreshToken,
-		ExpireAt:     accessToken.ExpireAt,
+		Uid:   user.Id,
+		Token: makeTokenInfo(token),
 	}
 	svr.response(w, http.StatusOK, res)
 }

@@ -64,8 +64,12 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, uri, http.StatusFound)
 		return
 	}
+	uid := argv.Uid
+	if session := svr.getSession(r); session != nil {
+		uid = session.Uid
+	}
 
-	ar, err := svr.authRepo.NewAuthRequest(client, argv.Uid, argv.State, argv.Scope, oauth2.ResponseCode)
+	ar, err := svr.authRepo.NewAuthRequest(client, uid, argv.State, argv.Scope, oauth2.ResponseCode)
 	if err != nil {
 		log.Error("%s: NewAuthRequest error: %v", argv.CommandName(), err)
 		authErr := oauth2.WrapError(err)

@@ -23,7 +23,7 @@ func (argv *HelpReq) Parse(r *http.Request) error {
 	return err
 }
 
-func (argv *AccessTokenReq) Parse(r *http.Request) error {
+func (argv *TokenReq) Parse(r *http.Request) error {
 	var err error
 	argv.GrantType, err = httputil.ParseString(r, "grant_type")
 	if err != nil {

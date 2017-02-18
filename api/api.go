@@ -38,8 +38,8 @@ func (HelpReq) CommandName() string { return "Help" }
 type HelpRes struct {
 }
 
-// oauth2.0 接口 access_token
-type AccessTokenReq struct {
+// oauth2.0 接口 token
+type TokenReq struct {
 	GrantType    string `json:"grant_type"`    // 授权类型
 	Scope        string `json:"scope"`         // token使用范围
 	Code         string `json:"code"`          // 授权码
@@ -50,14 +50,11 @@ type AccessTokenReq struct {
 
 }
 
-func (AccessTokenReq) CommandName() string { return "AccessToken" }
+func (TokenReq) CommandName() string { return "Token" }
 
-type AccessTokenRes struct {
-	TokenType    string `json:"token_type"`
-	Scope        string `json:"scope"`
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	ExpireAt     string `json:"expire_at"`
+type TokenRes struct {
+	TokenType string    `json:"token_type"`
+	Token     TokenInfo `json:"token"`
 }
 
 // oauth2.0 接口 authorize
@@ -91,10 +88,15 @@ type TokenInfoReq struct {
 func (TokenInfoReq) CommandName() string { return "TokenInfo" }
 
 type TokenInfoRes struct {
-	Uid      int64  `json:"uid"`
-	Account  string `json:"account"`
-	Scope    string `json:"scope"`
-	ExpireAt string `json:"expire_at"`
+	Uid   int64     `json:"uid"`
+	Token TokenInfo `json:"token"`
+}
+
+type TokenInfo struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	Scope        string `json:"scope"`
+	ExpireAt     string `json:"expire_at"`
 }
 
 // 注册
@@ -121,10 +123,8 @@ type AutoSignupReq struct {
 func (AutoSignupReq) CommandName() string { return "AutoSignup" }
 
 type AutoSignupRes struct {
-	Uid          int64  `json:"uid"`
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	ExpireAt     string `json:"expire_at"`
+	Uid   int64     `json:"uid"`
+	Token TokenInfo `json:"token"`
 }
 
 // 检查账号是否存在
@@ -149,7 +149,8 @@ type SigninReq struct {
 func (SigninReq) CommandName() string { return "Signin" }
 
 type SigninRes struct {
-	Info UserInfo `json:"info"`
+	User  UserInfo  `json:"user"`
+	Token TokenInfo `json:"token"`
 }
 
 // 登出
@@ -171,7 +172,7 @@ type UserReq struct {
 func (UserReq) CommandName() string { return "User" }
 
 type UserRes struct {
-	Info UserInfo `json:"info"`
+	User UserInfo `json:"user"`
 }
 
 type UserInfo struct {
