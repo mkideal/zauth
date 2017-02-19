@@ -15,44 +15,44 @@ func (svr *Server) handleAuthorizeCheck(w http.ResponseWriter, r *http.Request) 
 	err := argv.Parse(r)
 	if err != nil {
 		log.Info("AuthorizeCheck parse arguments error: %v, IP=%v", ip)
-		svr.response(w, http.StatusBadRequest, err)
+		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError(err.Error()))
 		return
 	}
 	log.WithJSON(argv).Debug("AuthorizeCheck request, IP=%v", ip)
 	if argv.ClientId == "" {
 		log.Info("%s: missing argument client_id", argv.CommandName())
-		svr.responseErrorCode(w, api.ErrorCode_MissingArgument, "missing client_id")
+		svr.errorResponse(w, api.ErrorCode_MissingArgument.NewError("missing client_id"))
 		return
 	}
 	client, err := svr.clientRepo.GetClient(argv.ClientId)
 	if err != nil {
 		log.Error("%s: get client %s error: %v", argv.CommandName(), argv.ClientId, err)
-		svr.response(w, http.StatusInternalServerError, err)
+		svr.errorResponse(w, err)
 		return
 	}
 	if client == nil {
 		log.Info("%s: client %s not found", argv.CommandName(), argv.ClientId)
-		svr.responseErrorCode(w, api.ErrorCode_ClientNotFound, "client "+argv.ClientId+" not found")
+		svr.errorResponse(w, api.ErrorCode_ClientNotFound)
 		return
 	}
 	session := svr.getSession(r)
 	if session == nil {
 		log.Info("%s: session not found", argv.CommandName())
-		svr.responseErrorCode(w, api.ErrorCode_SessionNotFound, "session-not-found")
+		svr.errorResponse(w, api.ErrorCode_SessionNotFound)
 		return
 	}
 	user, err := svr.userRepo.GetUser(session.Uid)
 	if err != nil {
 		log.Error("%s: get user %d error: %v", argv.CommandName(), session.Uid, err)
-		svr.response(w, http.StatusInternalServerError, err)
+		svr.errorResponse(w, api.ErrorCode_ClientNotFound)
 		return
 	}
 	if user == nil {
 		log.Warn("%s: user %d not found", argv.CommandName(), session.Uid)
-		svr.responseErrorCode(w, api.ErrorCode_UserNotFound, "user-not-found")
+		svr.errorResponse(w, api.ErrorCode_UserNotFound)
 		return
 	}
-	svr.response(w, http.StatusOK, api.AuthorizeCheckRes{
+	svr.response(w, api.AuthorizeCheckRes{
 		Application: client.Name,
 		Username:    user.Nickname,
 	})

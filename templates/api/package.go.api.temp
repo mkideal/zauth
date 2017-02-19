@@ -6,6 +6,10 @@ file: api.go
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 package {{context.Pkg.Name}}
 
+import (
+	"bitbucket.org/mkideal/accountd/oauth2"
+)
+
 {{define "T_const"}}
 {{range $decl := .}}
 {{$decl.Doc}}const (
@@ -22,6 +26,24 @@ type {{$type}} int
 	{{range $field := .Fields}}{{$type}}_{{$field.Name}} {{$type}} = {{$field.Value}}{{$field.Comment}}
 	{{end}}
 )
+
+func (x {{$type}}) Status() int {
+	return int(x)  / 1000
+}
+
+func (x {{$type}}) NewError(description string) oauth2.Error {
+	err := oauth2.NewError(x.Error(), description)
+	err.SetStatus(x.Status())
+	return err
+}
+
+func (x {{$type}}) Error() string {
+	switch x {
+	{{range $field := .Fields}}case {{$type}}_{{$field.Name}}: return "e_{{underScore $field.Name}}"
+	{{end}}
+	}
+	return "e_unknown_error"
+}
 {{end}}
 
 {{define "T_struct"}}

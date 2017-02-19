@@ -16,7 +16,7 @@ func (svr *Server) handleAutoSignup(w http.ResponseWriter, r *http.Request) {
 	err := argv.Parse(r)
 	if err != nil {
 		log.Info("AutoSignup parse arguments error: %v, IP=%v", err, ip)
-		svr.response(w, http.StatusBadRequest, err)
+		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError(err.Error()))
 		return
 	}
 	log.WithJSON(argv).Debug("AutoSignup request, IP=%v", ip)
@@ -30,18 +30,18 @@ func (svr *Server) handleAutoSignup(w http.ResponseWriter, r *http.Request) {
 	user.CreatedIp = ip
 	if err := svr.userRepo.AddUser(user, ""); err != nil {
 		log.Error("%s: add user error: %v", argv.CommandName(), err)
-		svr.response(w, http.StatusInternalServerError, err)
+		svr.errorResponse(w, err)
 		return
 	}
 	token, err := svr.tokenRepo.NewToken(user, client.Id, client.Scope)
 	if err != nil {
 		log.Error("%s: new token error: %v", argv.CommandName(), err)
-		svr.response(w, http.StatusInternalServerError, err)
+		svr.errorResponse(w, err)
 		return
 	}
 	res := api.AutoSignupRes{
 		Uid:   user.Id,
 		Token: makeTokenInfo(token),
 	}
-	svr.response(w, http.StatusOK, res)
+	svr.response(w, res)
 }

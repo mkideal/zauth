@@ -15,9 +15,9 @@ func (svr *Server) handleHelp(w http.ResponseWriter, r *http.Request) {
 	err := argv.Parse(r)
 	if err != nil {
 		log.Info("Help parse arguments error: %v, IP=%v", err, ip)
-		svr.response(w, http.StatusBadRequest, err)
+		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError(err.Error()))
 		return
 	}
 	log.WithJSON(argv).Debug("Help request, IP=%v", ip)
-	svr.response(w, http.StatusNotImplemented, "TODO")
+	svr.response(w, "TODO")
 }

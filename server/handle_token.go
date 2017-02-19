@@ -17,7 +17,7 @@ func (svr *Server) handleToken(w http.ResponseWriter, r *http.Request) {
 	err := argv.Parse(r)
 	if err != nil {
 		log.Info("Token parse arguments error: %v, IP=%v", err, ip)
-		svr.response(w, http.StatusBadRequest, err)
+		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError(err.Error()))
 		return
 	}
 	log.WithJSON(argv).Debug("Token request, IP=%v", ip)
@@ -33,12 +33,12 @@ func (svr *Server) handleToken(w http.ResponseWriter, r *http.Request) {
 	client, err := svr.clientRepo.GetClient(clientId)
 	if err != nil {
 		log.Error("%s: get client %s error: %v", argv.CommandName(), clientId, err)
-		svr.errorResponse(argv.CommandName(), w, err)
+		svr.errorResponse(w, err)
 		return
 	}
 	if client == nil {
 		log.Info("%s: client %s not found", argv.CommandName(), clientId)
-		svr.oauthErrorResponse(argv.CommandName(), w, oauth2.ErrorInvalidClient)
+		svr.errorResponse(w, oauth2.ErrorInvalidClient)
 		return
 	}
 
@@ -50,11 +50,11 @@ func (svr *Server) handleToken(w http.ResponseWriter, r *http.Request) {
 	case oauth2.GrantRefreshToken:
 		err = svr.grantByRefreshToken(w, argv, client, clientSecret)
 	default:
-		svr.oauthErrorResponse(argv.CommandName(), w, oauth2.ErrorUnsupportedGrantType)
+		svr.errorResponse(w, oauth2.ErrorUnsupportedGrantType)
 	}
 	if err != nil {
 		log.Warn("%s: grant error: %v", argv.CommandName(), err)
-		svr.errorResponse(argv.CommandName(), w, err)
+		svr.errorResponse(w, err)
 	}
 }
 
@@ -64,14 +64,14 @@ func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *api.Tok
 		return err
 	}
 	if ar == nil {
-		return oauth2.NewError(oauth2.ErrorInvalidGrant, "code-not-found")
+		return oauth2.NewError(string(oauth2.ErrorInvalidGrant), "code-not-found")
 	}
 	user, err := svr.userRepo.GetUser(ar.Uid)
 	if err != nil {
 		return err
 	}
 	if user == nil {
-		return oauth2.NewError(oauth2.ErrorInvalidGrant, "user-not-found")
+		return oauth2.NewError(string(oauth2.ErrorInvalidGrant), "user-not-found")
 	}
 	token, err := svr.tokenRepo.NewToken(user, client.Id, ar.GrantedScopes)
 	if err != nil {
@@ -80,7 +80,7 @@ func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *api.Tok
 	log.WithJSON(token).Debug("new token")
 	svr.authRepo.RemoveAuthRequest(ar.AuthorizationCode)
 
-	svr.response(w, http.StatusOK, api.TokenRes{
+	svr.response(w, api.TokenRes{
 		TokenType: oauth2.TokenType,
 		Token:     makeTokenInfo(token),
 	})
@@ -88,19 +88,19 @@ func (svr *Server) grantByAuthorizationCode(w http.ResponseWriter, argv *api.Tok
 }
 
 func (svr *Server) grantByPassword(w http.ResponseWriter, argv *api.TokenReq, client *model.Client, clientSecret string) error {
-	return oauth2.NewError(oauth2.ErrorUnsupportedGrantType, "grantByPassword-not-implemented")
+	return oauth2.NewError(string(oauth2.ErrorUnsupportedGrantType), "grantByPassword-not-implemented")
 }
 
 func (svr *Server) grantByRefreshToken(w http.ResponseWriter, argv *api.TokenReq, client *model.Client, clientSecret string) error {
 	if !model.ValidateClint(client, clientSecret) {
-		return oauth2.NewError(oauth2.ErrorInvalidGrant, "invalid-client-secret")
+		return oauth2.NewError(string(oauth2.ErrorInvalidGrant), "invalid-client-secret")
 	}
 	token, err := svr.tokenRepo.RefreshToken(argv.RefreshToken, argv.Scope)
 	if err != nil {
 		return err
 	}
 
-	svr.response(w, http.StatusOK, api.TokenRes{
+	svr.response(w, api.TokenRes{
 		TokenType: oauth2.TokenType,
 		Token:     makeTokenInfo(token),
 	})

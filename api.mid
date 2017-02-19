@@ -1,28 +1,30 @@
 package api;
 
 enum ErrorCode {
-	UserNotFound    = 101,
-	TokenNotFound   = 102,
-	ClientNotFound  = 103,
-	SessionNotFound = 104,
+	// StatusInternalServerError
+	InternalServerError = 500001,
 
-    IncorrectPassword     = 201,
-    IncorrectClientSecret = 202,
+	// StatusBadRequest
 
-    IllegalUsername    = 301,
-    IllegalAccountType = 302,
-    IllegalPassword    = 303,
-    IllegalEmail       = 304,
-    IllegalTelno       = 305,
+    MissingArgument    = 400101,
+	BadArgument        = 400102,      
+    IllegalUsername    = 400103,
+    IllegalAccountType = 400104,
+    IllegalPassword    = 400105,
+    IllegalEmail       = 400106,
+    IllegalTelno       = 400107,
 
-    MissingArgument   = 401,
-    AccountDuplicated = 402,
-}
+	// StatusExpectationFailed
 
-// 通用错误返回
-protocol ErrorRes {
-    int code; // ErrorCode
-    string description;
+	UserNotFound    = 417201,
+	TokenNotFound   = 417202,
+	ClientNotFound  = 417203,
+	SessionNotFound = 417204,
+
+    IncorrectPassword     = 417301,
+    IncorrectClientSecret = 417302,
+
+    AccountDuplicated = 417402,
 }
 
 struct UserInfo {

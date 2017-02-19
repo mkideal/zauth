@@ -3,28 +3,75 @@
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 package api
 
+import (
+	"bitbucket.org/mkideal/accountd/oauth2"
+)
+
 type ErrorCode int
 
 const (
-	ErrorCode_UserNotFound          ErrorCode = 101
-	ErrorCode_TokenNotFound         ErrorCode = 102
-	ErrorCode_ClientNotFound        ErrorCode = 103
-	ErrorCode_SessionNotFound       ErrorCode = 104
-	ErrorCode_IncorrectPassword     ErrorCode = 201
-	ErrorCode_IncorrectClientSecret ErrorCode = 202
-	ErrorCode_IllegalUsername       ErrorCode = 301
-	ErrorCode_IllegalAccountType    ErrorCode = 302
-	ErrorCode_IllegalPassword       ErrorCode = 303
-	ErrorCode_IllegalEmail          ErrorCode = 304
-	ErrorCode_IllegalTelno          ErrorCode = 305
-	ErrorCode_MissingArgument       ErrorCode = 401
-	ErrorCode_AccountDuplicated     ErrorCode = 402
+	ErrorCode_InternalServerError   ErrorCode = 500001
+	ErrorCode_MissingArgument       ErrorCode = 400101
+	ErrorCode_BadArgument           ErrorCode = 400102
+	ErrorCode_IllegalUsername       ErrorCode = 400103
+	ErrorCode_IllegalAccountType    ErrorCode = 400104
+	ErrorCode_IllegalPassword       ErrorCode = 400105
+	ErrorCode_IllegalEmail          ErrorCode = 400106
+	ErrorCode_IllegalTelno          ErrorCode = 400107
+	ErrorCode_UserNotFound          ErrorCode = 417201
+	ErrorCode_TokenNotFound         ErrorCode = 417202
+	ErrorCode_ClientNotFound        ErrorCode = 417203
+	ErrorCode_SessionNotFound       ErrorCode = 417204
+	ErrorCode_IncorrectPassword     ErrorCode = 417301
+	ErrorCode_IncorrectClientSecret ErrorCode = 417302
+	ErrorCode_AccountDuplicated     ErrorCode = 417402
 )
 
-// 通用错误返回
-type ErrorRes struct {
-	Code        int    `json:"code"` // ErrorCode
-	Description string `json:"description"`
+func (x ErrorCode) Status() int {
+	return int(x) / 1000
+}
+
+func (x ErrorCode) NewError(description string) oauth2.Error {
+	err := oauth2.NewError(x.Error(), description)
+	err.SetStatus(x.Status())
+	return err
+}
+
+func (x ErrorCode) Error() string {
+	switch x {
+	case ErrorCode_InternalServerError:
+		return "e_internal_server_error"
+	case ErrorCode_MissingArgument:
+		return "e_missing_argument"
+	case ErrorCode_BadArgument:
+		return "e_bad_argument"
+	case ErrorCode_IllegalUsername:
+		return "e_illegal_username"
+	case ErrorCode_IllegalAccountType:
+		return "e_illegal_account_type"
+	case ErrorCode_IllegalPassword:
+		return "e_illegal_password"
+	case ErrorCode_IllegalEmail:
+		return "e_illegal_email"
+	case ErrorCode_IllegalTelno:
+		return "e_illegal_telno"
+	case ErrorCode_UserNotFound:
+		return "e_user_not_found"
+	case ErrorCode_TokenNotFound:
+		return "e_token_not_found"
+	case ErrorCode_ClientNotFound:
+		return "e_client_not_found"
+	case ErrorCode_SessionNotFound:
+		return "e_session_not_found"
+	case ErrorCode_IncorrectPassword:
+		return "e_incorrect_password"
+	case ErrorCode_IncorrectClientSecret:
+		return "e_incorrect_client_secret"
+	case ErrorCode_AccountDuplicated:
+		return "e_account_duplicated"
+
+	}
+	return "e_unknown_error"
 }
 
 type UserInfo struct {

@@ -56,6 +56,8 @@ func NewSqlRepository(driver, dataSourceName string) (*SqlRepository, error) {
 	}, nil
 }
 
+func (repo *SqlRepository) Engine() *xorm.Engine { return repo.eng }
+
 var errWriteDatabaseFailed = errors.New("write to database failed")
 
 func writeOpError(n int64, err error) error {

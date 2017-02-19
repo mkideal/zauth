@@ -17,7 +17,7 @@ func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 	err := argv.Parse(r)
 	if err != nil {
 		log.Info("User parse arguments error: %v, IP=%v", err, ip)
-		svr.response(w, http.StatusBadRequest, err)
+		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError(err.Error()))
 		return
 	}
 	log.WithJSON(argv).Debug("User request, IP=%v", ip)
@@ -28,12 +28,12 @@ func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 		user, err = svr.userRepo.GetUserByAccount(argv.Account)
 	} else {
 		log.Info("%s: missing arguments uid and account", argv.CommandName())
-		svr.responseErrorCode(w, api.ErrorCode_MissingArgument, "missing arguments uid and account")
+		svr.errorResponse(w, api.ErrorCode_MissingArgument.NewError("missing arguments uid and account"))
 		return
 	}
 	if err != nil {
 		log.Error("%s: get user error: %v", argv.CommandName(), err)
-		svr.response(w, http.StatusInternalServerError, err)
+		svr.errorResponse(w, err)
 		return
 	}
 	if user == nil {
@@ -44,8 +44,8 @@ func (svr *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 			desc = fmt.Sprintf("account %s not found", argv.Account)
 		}
 		log.Info("%s: %s", argv.CommandName(), desc)
-		svr.responseErrorCode(w, api.ErrorCode_UserNotFound, desc)
+		svr.errorResponse(w, api.ErrorCode_UserNotFound.NewError(desc))
 		return
 	}
-	svr.response(w, http.StatusOK, makeUserInfo(user))
+	svr.response(w, makeUserInfo(user))
 }

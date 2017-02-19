@@ -113,46 +113,31 @@ func (svr *Server) Quit() {
 
 // HTTP response methods
 
-func (svr *Server) oauthErrorResponse(cmd string, w http.ResponseWriter, code string, descriptions ...string) error {
-	description := ""
-	if len(descriptions) > 0 {
-		description = strings.Join(descriptions, ". ")
-	}
-	err := oauth2.NewError(code, description)
-	log.Warn("%s oauth error: %v", cmd, err)
-	return svr.response(w, http.StatusBadRequest, err)
+func (svr *Server) response(w http.ResponseWriter, v interface{}) error {
+	return httputil.JSONResponse(w, http.StatusOK, v, svr.config.Mode == Debug)
 }
 
-func (svr *Server) errorResponse(cmd string, w http.ResponseWriter, err error) {
-	if err == nil {
-		return
+func (svr *Server) errorResponse(w http.ResponseWriter, err error) {
+	switch e := err.(type) {
+	case oauth2.Error:
+		httputil.JSONResponse(w, http.StatusBadRequest, e, svr.config.Mode == Debug)
+	case oauth2.OAuthErrorCode:
+		e2 := e.NewError()
+		httputil.JSONResponse(w, e2.Status(), e2, svr.config.Mode == Debug)
+	case api.ErrorCode:
+		httputil.JSONResponse(w, e.Status(), e.NewError(""), svr.config.Mode == Debug)
+	default:
+		e2 := api.ErrorCode_InternalServerError.NewError(e.Error())
+		httputil.JSONResponse(w, e2.Status(), e2, svr.config.Mode == Debug)
 	}
-	if oauthErr, ok := err.(oauth2.Error); ok {
-		svr.response(w, http.StatusBadRequest, oauthErr)
-	} else {
-		svr.oauthErrorResponse(cmd, w, oauth2.ErrorServerError, err.Error())
-	}
-}
-
-func (svr *Server) response(w http.ResponseWriter, status int, v interface{}) error {
-	if s, ok := v.(string); ok {
-		return httputil.TextResponse(w, status, s)
-	}
-	return httputil.JSONResponse(w, status, v, svr.config.Mode == Debug)
-}
-
-func (svr *Server) responseErrorCode(w http.ResponseWriter, code api.ErrorCode, description string) error {
-	res := api.ErrorRes{Code: int(code), Description: description}
-	return httputil.JSONResponse(w, http.StatusExpectationFailed, res, svr.config.Mode == Debug)
 }
 
 // get and set token/session
 
 func (svr *Server) getTokenFromHeader(r *http.Request) string {
 	authorization := r.Header.Get("Authorization")
-	bearer := oauth2.TokenHeaderPrefix
-	if strings.HasPrefix(authorization, bearer) {
-		return strings.TrimPrefix(authorization, bearer)
+	if strings.HasPrefix(authorization, oauth2.TokenHeaderPrefix) {
+		return strings.TrimPrefix(authorization, oauth2.TokenHeaderPrefix)
 	}
 	return ""
 }
@@ -201,6 +186,7 @@ func (svr *Server) setSession(w http.ResponseWriter, r *http.Request, uid int64)
 	return
 }
 
+// authorization client
 func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request) *model.Client {
 	clientId, clientSecret, ok := r.BasicAuth()
 	if !ok {
@@ -211,17 +197,17 @@ func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request
 	client, err := svr.clientRepo.GetClient(clientId)
 	if err != nil {
 		log.Error("%s: GetClient %s error: %v", cmd, clientId, err)
-		svr.response(w, http.StatusInternalServerError, err)
+		svr.errorResponse(w, err)
 		return nil
 	}
 	if client == nil {
 		log.Info("%s: Client %s not found", cmd, clientId)
-		svr.responseErrorCode(w, api.ErrorCode_ClientNotFound, "client-not-found")
+		svr.errorResponse(w, api.ErrorCode_ClientNotFound)
 		return nil
 	}
 	if !model.ValidateClint(client, clientSecret) {
 		log.Info("%s: Client %s secret invalid", cmd, clientId)
-		svr.responseErrorCode(w, api.ErrorCode_IncorrectClientSecret, "incorrect-client-secret")
+		svr.errorResponse(w, api.ErrorCode_IncorrectClientSecret)
 		return nil
 	}
 	return client

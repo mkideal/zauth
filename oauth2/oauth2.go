@@ -3,6 +3,7 @@ package oauth2
 import (
 	"fmt"
 	"html/template"
+	"net/http"
 )
 
 const (
@@ -24,10 +25,22 @@ const (
 )
 
 type Error struct {
+	statusCode  int    `json:"-"`
 	Code        string `json:"error"`
 	Description string `json:"error_description,omitempty"`
 	URI         string `json:"error_uri,omitempty"`
 	State       string `json:"state,omitempty"`
+}
+
+func (e Error) Status() int {
+	if e.statusCode == 0 {
+		return http.StatusBadRequest
+	}
+	return e.statusCode
+}
+
+func (e *Error) SetStatus(statusCode int) {
+	e.statusCode = statusCode
 }
 
 func (e Error) Encode() string {
@@ -58,17 +71,22 @@ func (e Error) Error() string {
 }
 
 // Error code
+type OAuthErrorCode string
+
+func (e OAuthErrorCode) Error() string   { return string(e) }
+func (e OAuthErrorCode) NewError() Error { return NewError(string(e), "") }
+
 const (
-	ErrorInvalidRequest          = "invalid_request"
-	ErrorInvalidClient           = "invalid_client"
-	ErrorInvalidScope            = "invalid_scope"
-	ErrorInvalidGrant            = "invalid_grant"
-	ErrorUnauthorizedClient      = "unauthorized_client"
-	ErrorAccessDenied            = "access_denied"
-	ErrorUnsupportedResponseType = "unsupported_response_type"
-	ErrorServerError             = "server_error"
-	ErrorTemporarilyUnavailable  = "temporarily_unavailable"
-	ErrorUnsupportedGrantType    = "unsupported_grant_type"
+	ErrorInvalidRequest          OAuthErrorCode = "invalid_request"
+	ErrorInvalidClient           OAuthErrorCode = "invalid_client"
+	ErrorInvalidScope            OAuthErrorCode = "invalid_scope"
+	ErrorInvalidGrant            OAuthErrorCode = "invalid_grant"
+	ErrorUnauthorizedClient      OAuthErrorCode = "unauthorized_client"
+	ErrorAccessDenied            OAuthErrorCode = "access_denied"
+	ErrorUnsupportedResponseType OAuthErrorCode = "unsupported_response_type"
+	ErrorServerError             OAuthErrorCode = "server_error"
+	ErrorTemporarilyUnavailable  OAuthErrorCode = "temporarily_unavailable"
+	ErrorUnsupportedGrantType    OAuthErrorCode = "unsupported_grant_type"
 )
 
 func NewError(code, description string) Error {
@@ -82,5 +100,7 @@ func WrapError(err error) Error {
 	if authErr, ok := err.(Error); ok {
 		return authErr
 	}
-	return NewError(ErrorServerError, err.Error())
+	e := NewError(string(ErrorServerError), err.Error())
+	e.statusCode = http.StatusInternalServerError
+	return e
 }
