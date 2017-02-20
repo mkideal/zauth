@@ -19,7 +19,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 	err := argv.Parse(r)
 	if err != nil {
 		log.Info("Authorize parse arguments error: %v, IP=%v", err, ip)
-		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError(err.Error()))
+		svr.errorResponse(w, r, api.ErrorCode_BadArgument.NewError(err.Error()))
 		return
 	}
 	log.WithJSON(argv).Debug("Authorize request, IP=%v", ip)
@@ -46,19 +46,19 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 	client, err := svr.clientRepo.GetClient(argv.ClientId)
 	if err != nil {
 		log.Error("%s: get client %s error: %v", argv.CommandName(), argv.ClientId, err)
-		svr.errorResponse(w, err)
+		svr.errorResponse(w, r, err)
 		return
 	}
 	if client == nil {
 		log.Info("%s: client %s not found", argv.CommandName(), argv.ClientId)
-		svr.errorResponse(w, oauth2.ErrorInvalidClient)
+		svr.errorResponse(w, r, oauth2.ErrorInvalidClient)
 		return
 	}
 
 	values := map[string]interface{}{"state": argv.State}
 
 	if argv.ResponseType != oauth2.ResponseCode {
-		authErr := oauth2.NewError(string(oauth2.ErrorUnsupportedResponseType), "must-be-code")
+		authErr := api.NewError(string(oauth2.ErrorUnsupportedResponseType), "must-be-code")
 		log.Info("%s: response_type must be `code`, but got `%s`", argv.CommandName(), argv.ResponseType)
 		params := authErr.EncodeWith(values)
 		uri := fmt.Sprintf("%s?%s", client.CallbackURL, params)
@@ -73,7 +73,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 	ar, err := svr.authRepo.NewAuthRequest(client, uid, argv.State, argv.Scope, oauth2.ResponseCode)
 	if err != nil {
 		log.Error("%s: NewAuthRequest error: %v", argv.CommandName(), err)
-		authErr := oauth2.WrapError(err)
+		authErr := api.WrapError(err)
 		params := authErr.EncodeWith(values)
 		uri := fmt.Sprintf("%s?%s", client.CallbackURL, params)
 		http.Redirect(w, r, uri, http.StatusFound)

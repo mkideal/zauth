@@ -17,45 +17,45 @@ func (svr *Server) handleSignin(w http.ResponseWriter, r *http.Request) {
 	err := argv.Parse(r)
 	if err != nil {
 		log.Info("Signin parse arguments error: %v, IP=%v", err, ip)
-		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError(err.Error()))
+		svr.errorResponse(w, r, api.ErrorCode_BadArgument.NewError(err.Error()))
 		return
 	}
 	log.WithJSON(argv).Debug("Signin request, IP=%v", ip)
 	account := model.JoinAccount(model.AccountType(argv.AccountType), argv.Account)
 	if account == "" {
 		log.Info("%s: missing account_type or account", argv.CommandName())
-		svr.errorResponse(w, api.ErrorCode_BadArgument.NewError("invalid accountType or account"))
+		svr.errorResponse(w, r, api.ErrorCode_BadArgument.NewError("invalid accountType or account"))
 		return
 	}
 	user, err := svr.userRepo.GetUserByAccount(account)
 	if err != nil {
 		log.Error("%s: get user by account %s error: %v", argv.CommandName(), account, err)
-		svr.errorResponse(w, err)
+		svr.errorResponse(w, r, err)
 		return
 	}
 	if user == nil {
 		log.Info("%s: account %s not found", argv.CommandName(), account)
-		svr.errorResponse(w, api.ErrorCode_UserNotFound)
+		svr.errorResponse(w, r, api.ErrorCode_UserNotFound)
 		return
 	}
 	if !model.ValidatePassword(user, argv.Password) {
 		log.Info("%s: incorrect password for user (%d,%s)", argv.CommandName(), user.Id, user.Account)
-		svr.errorResponse(w, api.ErrorCode_IncorrectPassword)
+		svr.errorResponse(w, r, api.ErrorCode_IncorrectPassword)
 		return
 	}
 	_, err = svr.setSession(w, r, user.Id)
 	if err != nil {
 		log.Error("%s: set session error: %v", argv.CommandName(), err)
-		svr.errorResponse(w, err)
+		svr.errorResponse(w, r, err)
 		return
 	}
 	token, err := svr.tokenRepo.NewToken(user, "", "")
 	if err != nil {
 		log.Error("%s: new token error: %v", argv.CommandName(), err)
-		svr.errorResponse(w, err)
+		svr.errorResponse(w, r, err)
 		return
 	}
-	svr.response(w, api.SigninRes{
+	svr.response(w, r, api.SigninRes{
 		User:  makeUserInfo(user),
 		Token: makeTokenInfo(token),
 	})

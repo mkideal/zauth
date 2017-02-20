@@ -4,13 +4,34 @@
 package api
 
 import (
-	"bitbucket.org/mkideal/accountd/oauth2"
+	"net/http"
+	"net/url"
 )
+
+type Request interface {
+	CommandName() string
+	CommandMethod() string
+	Parse(*http.Request) error
+	Values() url.Values
+}
+
+var commands = make(map[string]Request)
+var commandList = make([]Request, 0)
+
+func registerCommand(cmd Request) bool {
+	commands[cmd.CommandName()] = cmd
+	commandList = append(commandList, cmd)
+	return true
+}
+
+func Commands() []Request            { return commandList }
+func GetCommand(name string) Request { return commands[name] }
 
 type ErrorCode int
 
 const (
 	ErrorCode_InternalServerError   ErrorCode = 500001
+	ErrorCode_ClientUnauthorized    ErrorCode = 401002
 	ErrorCode_MissingArgument       ErrorCode = 400101
 	ErrorCode_BadArgument           ErrorCode = 400102
 	ErrorCode_IllegalUsername       ErrorCode = 400103
@@ -22,6 +43,7 @@ const (
 	ErrorCode_TokenNotFound         ErrorCode = 417202
 	ErrorCode_ClientNotFound        ErrorCode = 417203
 	ErrorCode_SessionNotFound       ErrorCode = 417204
+	ErrorCode_CommandNotFound       ErrorCode = 417205
 	ErrorCode_IncorrectPassword     ErrorCode = 417301
 	ErrorCode_IncorrectClientSecret ErrorCode = 417302
 	ErrorCode_AccountDuplicated     ErrorCode = 417402
@@ -31,8 +53,8 @@ func (x ErrorCode) Status() int {
 	return int(x) / 1000
 }
 
-func (x ErrorCode) NewError(description string) oauth2.Error {
-	err := oauth2.NewError(x.Error(), description)
+func (x ErrorCode) NewError(description string) Error {
+	err := NewError(x.Error(), description)
 	err.SetStatus(x.Status())
 	return err
 }
@@ -41,6 +63,8 @@ func (x ErrorCode) Error() string {
 	switch x {
 	case ErrorCode_InternalServerError:
 		return "e_internal_server_error"
+	case ErrorCode_ClientUnauthorized:
+		return "e_client_unauthorized"
 	case ErrorCode_MissingArgument:
 		return "e_missing_argument"
 	case ErrorCode_BadArgument:
@@ -63,6 +87,8 @@ func (x ErrorCode) Error() string {
 		return "e_client_not_found"
 	case ErrorCode_SessionNotFound:
 		return "e_session_not_found"
+	case ErrorCode_CommandNotFound:
+		return "e_command_not_found"
 	case ErrorCode_IncorrectPassword:
 		return "e_incorrect_password"
 	case ErrorCode_IncorrectClientSecret:
@@ -75,22 +101,33 @@ func (x ErrorCode) Error() string {
 }
 
 type UserInfo struct {
-	Id          int64  `json:"id"`
-	Account     string `json:"account"`
-	Nickname    string `json:"nickname"`
-	Avatar      string `json:"avatar"`
-	Qrcode      string `json:"qrcode"`
-	Gender      int    `json:"gender"`
-	Birthday    string `json:"birthday"`
+	Id int64 `json:"id"`
+
+	Account string `json:"account"`
+
+	Nickname string `json:"nickname"`
+
+	Avatar string `json:"avatar"`
+
+	Qrcode string `json:"qrcode"`
+
+	Gender int `json:"gender"`
+
+	Birthday string `json:"birthday"`
+
 	LastLoginAt string `json:"last_login_at"`
+
 	LastLoginIp string `json:"last_login_ip"`
 }
 
 type TokenInfo struct {
-	AccessToken  string `json:"access_token"`
+	AccessToken string `json:"access_token"`
+
 	RefreshToken string `json:"refresh_token"`
-	Scope        string `json:"scope"`
-	ExpireAt     string `json:"expire_at"`
+
+	Scope string `json:"scope"`
+
+	ExpireAt string `json:"expire_at"`
 }
 
 // 查看帮助
@@ -99,9 +136,17 @@ type HelpReq struct {
 	Cmd     string `json:"cmd"`
 }
 
-func (HelpReq) CommandName() string { return "Help" }
+func (HelpReq) CommandName() string   { return "Help" }
+func (HelpReq) CommandMethod() string { return "GET" }
+
+var _ = registerCommand(&HelpReq{})
 
 type HelpRes struct {
+	Commands []string `json:"commands"`
+	Routers  []string `json:"routers"`
+	Command  string   `json:"command"`
+	Method   string   `json:"method"`
+	Router   string   `json:"router"`
 }
 
 // oauth2.0 接口 token
@@ -116,7 +161,10 @@ type TokenReq struct {
 
 }
 
-func (TokenReq) CommandName() string { return "Token" }
+func (TokenReq) CommandName() string   { return "Token" }
+func (TokenReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&TokenReq{})
 
 type TokenRes struct {
 	TokenType string    `json:"token_type"`
@@ -132,14 +180,20 @@ type AuthorizeReq struct {
 	State        string `json:"state"`
 }
 
-func (AuthorizeReq) CommandName() string { return "Authorize" }
+func (AuthorizeReq) CommandName() string   { return "Authorize" }
+func (AuthorizeReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&AuthorizeReq{})
 
 // client 检查
 type AuthorizeCheckReq struct {
 	ClientId string `json:"client_id"`
 }
 
-func (AuthorizeCheckReq) CommandName() string { return "AuthorizeCheck" }
+func (AuthorizeCheckReq) CommandName() string   { return "AuthorizeCheck" }
+func (AuthorizeCheckReq) CommandMethod() string { return "GET" }
+
+var _ = registerCommand(&AuthorizeCheckReq{})
 
 type AuthorizeCheckRes struct {
 	Application string `json:"application"`
@@ -151,7 +205,10 @@ type TokenAuthReq struct {
 	AccessToken string `json:"access_token"`
 }
 
-func (TokenAuthReq) CommandName() string { return "TokenAuth" }
+func (TokenAuthReq) CommandName() string   { return "TokenAuth" }
+func (TokenAuthReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&TokenAuthReq{})
 
 type TokenAuthRes struct {
 	User  UserInfo  `json:"user"`
@@ -167,7 +224,10 @@ type SignupReq struct {
 
 }
 
-func (SignupReq) CommandName() string { return "Signup" }
+func (SignupReq) CommandName() string   { return "Signup" }
+func (SignupReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&SignupReq{})
 
 type SignupRes struct {
 	Uid      int64  `json:"uid"`
@@ -179,7 +239,10 @@ type SignupRes struct {
 type AutoSignupReq struct {
 }
 
-func (AutoSignupReq) CommandName() string { return "AutoSignup" }
+func (AutoSignupReq) CommandName() string   { return "AutoSignup" }
+func (AutoSignupReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&AutoSignupReq{})
 
 type AutoSignupRes struct {
 	Uid   int64     `json:"uid"`
@@ -191,7 +254,10 @@ type AccountExistReq struct {
 	Username string `json:"username"`
 }
 
-func (AccountExistReq) CommandName() string { return "AccountExist" }
+func (AccountExistReq) CommandName() string   { return "AccountExist" }
+func (AccountExistReq) CommandMethod() string { return "GET" }
+
+var _ = registerCommand(&AccountExistReq{})
 
 type AccountExistRes struct {
 	Existed bool `json:"existed"`
@@ -205,7 +271,10 @@ type SigninReq struct {
 
 }
 
-func (SigninReq) CommandName() string { return "Signin" }
+func (SigninReq) CommandName() string   { return "Signin" }
+func (SigninReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&SigninReq{})
 
 type SigninRes struct {
 	User  UserInfo  `json:"user"`
@@ -217,7 +286,10 @@ type SignoutReq struct {
 	Uid int64 `json:"uid"`
 }
 
-func (SignoutReq) CommandName() string { return "Signout" }
+func (SignoutReq) CommandName() string   { return "Signout" }
+func (SignoutReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&SignoutReq{})
 
 type SignoutRes struct {
 }
@@ -228,7 +300,10 @@ type UserReq struct {
 	Account string `json:"account"`
 }
 
-func (UserReq) CommandName() string { return "User" }
+func (UserReq) CommandName() string   { return "User" }
+func (UserReq) CommandMethod() string { return "GET" }
+
+var _ = registerCommand(&UserReq{})
 
 type UserRes struct {
 	User UserInfo `json:"user"`

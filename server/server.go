@@ -108,27 +108,27 @@ func (svr *Server) Quit() {
 	if !atomic.CompareAndSwapInt32(&svr.running, 1, 0) {
 		return
 	}
-	// TODO
 }
 
 // HTTP response methods
 
-func (svr *Server) response(w http.ResponseWriter, v interface{}) error {
-	return httputil.JSONResponse(w, http.StatusOK, v, svr.config.Mode == Debug)
+func (svr *Server) response(w http.ResponseWriter, r *http.Request, v interface{}) error {
+	return httputil.Response(w, http.StatusOK, r.Header.Get(httputil.HeaderAccept), v, svr.config.Mode == Debug)
 }
 
-func (svr *Server) errorResponse(w http.ResponseWriter, err error) {
+func (svr *Server) errorResponse(w http.ResponseWriter, r *http.Request, err error) {
+	debug := svr.config.Mode == Debug
 	switch e := err.(type) {
-	case oauth2.Error:
-		httputil.JSONResponse(w, http.StatusBadRequest, e, svr.config.Mode == Debug)
 	case oauth2.OAuthErrorCode:
-		e2 := e.NewError()
-		httputil.JSONResponse(w, e2.Status(), e2, svr.config.Mode == Debug)
+		e2 := api.NewError(e.Error(), "")
+		httputil.Response(w, e2.Status(), r.Header.Get(httputil.HeaderAccept), e2, debug)
+	case api.Error:
+		httputil.Response(w, e.Status(), r.Header.Get(httputil.HeaderAccept), e, debug)
 	case api.ErrorCode:
-		httputil.JSONResponse(w, e.Status(), e.NewError(""), svr.config.Mode == Debug)
+		httputil.Response(w, e.Status(), r.Header.Get(httputil.HeaderAccept), e.NewError(""), debug)
 	default:
 		e2 := api.ErrorCode_InternalServerError.NewError(e.Error())
-		httputil.JSONResponse(w, e2.Status(), e2, svr.config.Mode == Debug)
+		httputil.Response(w, e2.Status(), r.Header.Get(httputil.HeaderAccept), e2, debug)
 	}
 }
 
@@ -190,24 +190,24 @@ func (svr *Server) setSession(w http.ResponseWriter, r *http.Request, uid int64)
 func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request) *model.Client {
 	clientId, clientSecret, ok := r.BasicAuth()
 	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		log.Info("%s: Client BasicAuth failure", cmd)
+		log.Info("%s: Client BasicAuth failed", cmd)
+		svr.errorResponse(w, r, api.ErrorCode_ClientUnauthorized.NewError("client BasicAuth failed"))
 		return nil
 	}
 	client, err := svr.clientRepo.GetClient(clientId)
 	if err != nil {
 		log.Error("%s: GetClient %s error: %v", cmd, clientId, err)
-		svr.errorResponse(w, err)
+		svr.errorResponse(w, r, err)
 		return nil
 	}
 	if client == nil {
 		log.Info("%s: Client %s not found", cmd, clientId)
-		svr.errorResponse(w, api.ErrorCode_ClientNotFound)
+		svr.errorResponse(w, r, api.ErrorCode_ClientNotFound)
 		return nil
 	}
 	if !model.ValidateClint(client, clientSecret) {
 		log.Info("%s: Client %s secret invalid", cmd, clientId)
-		svr.errorResponse(w, api.ErrorCode_IncorrectClientSecret)
+		svr.errorResponse(w, r, api.ErrorCode_IncorrectClientSecret)
 		return nil
 	}
 	return client
@@ -234,4 +234,8 @@ func makeTokenInfo(token *model.Token) api.TokenInfo {
 		Scope:        token.Scope,
 		ExpireAt:     token.ExpireAt,
 	}
+}
+
+func makeRouter(command string) string {
+	return "/v1/" + command
 }

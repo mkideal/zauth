@@ -5,8 +5,10 @@ package api
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/mkideal/pkg/netutil/httputil"
+	"github.com/mkideal/pkg/typeconv"
 )
 
 func (argv *HelpReq) Parse(r *http.Request) error {
@@ -21,6 +23,13 @@ func (argv *HelpReq) Parse(r *http.Request) error {
 	}
 
 	return err
+}
+
+func (argv *HelpReq) Values() url.Values {
+	return url.Values{
+		"version": {typeconv.ToString(argv.Version)},
+		"cmd":     {typeconv.ToString(argv.Cmd)},
+	}
 }
 
 func (argv *TokenReq) Parse(r *http.Request) error {
@@ -57,6 +66,18 @@ func (argv *TokenReq) Parse(r *http.Request) error {
 	return err
 }
 
+func (argv *TokenReq) Values() url.Values {
+	return url.Values{
+		"grant_type":    {typeconv.ToString(argv.GrantType)},
+		"scope":         {typeconv.ToString(argv.Scope)},
+		"code":          {typeconv.ToString(argv.Code)},
+		"redirect_uri":  {typeconv.ToString(argv.RedirectURI)},
+		"username":      {typeconv.ToString(argv.Username)},
+		"password":      {typeconv.ToString(argv.Password)},
+		"refresh_token": {typeconv.ToString(argv.RefreshToken)},
+	}
+}
+
 func (argv *AuthorizeReq) Parse(r *http.Request) error {
 	var err error
 	argv.ClientId, err = httputil.ParseString(r, "client_id")
@@ -83,6 +104,16 @@ func (argv *AuthorizeReq) Parse(r *http.Request) error {
 	return err
 }
 
+func (argv *AuthorizeReq) Values() url.Values {
+	return url.Values{
+		"client_id":     {typeconv.ToString(argv.ClientId)},
+		"response_type": {typeconv.ToString(argv.ResponseType)},
+		"uid":           {typeconv.ToString(argv.Uid)},
+		"scope":         {typeconv.ToString(argv.Scope)},
+		"state":         {typeconv.ToString(argv.State)},
+	}
+}
+
 func (argv *AuthorizeCheckReq) Parse(r *http.Request) error {
 	var err error
 	argv.ClientId, err = httputil.ParseString(r, "client_id")
@@ -93,6 +124,12 @@ func (argv *AuthorizeCheckReq) Parse(r *http.Request) error {
 	return err
 }
 
+func (argv *AuthorizeCheckReq) Values() url.Values {
+	return url.Values{
+		"client_id": {typeconv.ToString(argv.ClientId)},
+	}
+}
+
 func (argv *TokenAuthReq) Parse(r *http.Request) error {
 	var err error
 	argv.AccessToken, err = httputil.ParseString(r, "access_token")
@@ -101,6 +138,12 @@ func (argv *TokenAuthReq) Parse(r *http.Request) error {
 	}
 
 	return err
+}
+
+func (argv *TokenAuthReq) Values() url.Values {
+	return url.Values{
+		"access_token": {typeconv.ToString(argv.AccessToken)},
+	}
 }
 
 func (argv *SignupReq) Parse(r *http.Request) error {
@@ -125,10 +168,23 @@ func (argv *SignupReq) Parse(r *http.Request) error {
 	return err
 }
 
+func (argv *SignupReq) Values() url.Values {
+	return url.Values{
+		"account_type": {typeconv.ToString(argv.AccountType)},
+		"account":      {typeconv.ToString(argv.Account)},
+		"password":     {typeconv.ToString(argv.Password)},
+		"nickname":     {typeconv.ToString(argv.Nickname)},
+	}
+}
+
 func (argv *AutoSignupReq) Parse(r *http.Request) error {
 	var err error
 
 	return err
+}
+
+func (argv *AutoSignupReq) Values() url.Values {
+	return url.Values{}
 }
 
 func (argv *AccountExistReq) Parse(r *http.Request) error {
@@ -139,6 +195,12 @@ func (argv *AccountExistReq) Parse(r *http.Request) error {
 	}
 
 	return err
+}
+
+func (argv *AccountExistReq) Values() url.Values {
+	return url.Values{
+		"username": {typeconv.ToString(argv.Username)},
+	}
 }
 
 func (argv *SigninReq) Parse(r *http.Request) error {
@@ -159,6 +221,14 @@ func (argv *SigninReq) Parse(r *http.Request) error {
 	return err
 }
 
+func (argv *SigninReq) Values() url.Values {
+	return url.Values{
+		"account_type": {typeconv.ToString(argv.AccountType)},
+		"account":      {typeconv.ToString(argv.Account)},
+		"password":     {typeconv.ToString(argv.Password)},
+	}
+}
+
 func (argv *SignoutReq) Parse(r *http.Request) error {
 	var err error
 	argv.Uid, err = httputil.ParseInt64(r, "uid")
@@ -167,6 +237,12 @@ func (argv *SignoutReq) Parse(r *http.Request) error {
 	}
 
 	return err
+}
+
+func (argv *SignoutReq) Values() url.Values {
+	return url.Values{
+		"uid": {typeconv.ToString(argv.Uid)},
+	}
 }
 
 func (argv *UserReq) Parse(r *http.Request) error {
@@ -181,4 +257,11 @@ func (argv *UserReq) Parse(r *http.Request) error {
 	}
 
 	return err
+}
+
+func (argv *UserReq) Values() url.Values {
+	return url.Values{
+		"uid":     {typeconv.ToString(argv.Uid)},
+		"account": {typeconv.ToString(argv.Account)},
+	}
 }

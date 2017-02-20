@@ -19,7 +19,7 @@ func (svr *Server) registerAllHandlers(mux *httputil.ServeMux) {
 	{{- end}}
 	{{- if hasSuffix "Req" $name}}
 	{{- $cmd := trimSuffix "Req" $name}}
-	svr.registerHandler(mux, "/v1/{{underScore $cmd}}", "{{$method.Get}}", svr.handle{{$cmd}})
+	svr.registerHandler(mux, makeRouter("{{underScore $cmd}}"), "{{$method.Get}}", svr.handle{{$cmd}})
 	{{- end}}
 	{{- end}}
 }

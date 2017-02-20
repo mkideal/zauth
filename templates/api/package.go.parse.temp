@@ -8,8 +8,10 @@ package {{context.Pkg.Name}}
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/mkideal/pkg/netutil/httputil"
+	"github.com/mkideal/pkg/typeconv"
 )
 
 {{define "T_protocol"}}
@@ -35,6 +37,21 @@ func (argv *{{$cmd}}Req) Parse(r *http.Request) error {
 		}
 	{{end}}
 	return err
+}
+
+func (argv *{{$cmd}}Req) Values() url.Values {
+	return url.Values{
+	{{range $field := $bean.Fields}}
+		{{- $key := newString}}
+		{{- $tmp := newString}}
+		{{- $tag := $field.GetTag "form"}}
+		{{- if eq $tag ""}}
+			{{- $key.Set (underScore $field.Name)}}
+		{{- else}}
+			{{- $key.Set $tag}}
+		{{- end}}"{{$key.Get}}": {{join "" "{typeconv.ToString(argv." (title $field.Name) ")}"}},
+	{{end}}
+	}
 }
 {{end}}
 {{end}}

@@ -3,6 +3,7 @@ package api;
 enum ErrorCode {
 	// StatusInternalServerError
 	InternalServerError = 500001,
+    ClientUnauthorized  = 401002,
 
 	// StatusBadRequest
 
@@ -20,6 +21,7 @@ enum ErrorCode {
 	TokenNotFound   = 417202,
 	ClientNotFound  = 417203,
 	SessionNotFound = 417204,
+	CommandNotFound = 417205,
 
     IncorrectPassword     = 417301,
     IncorrectClientSecret = 417302,
@@ -53,6 +55,12 @@ protocol HelpReq {
 }
 
 protocol HelpRes {
+	vector<string> commands; # `json:"commands,omitempty"`
+	vector<string> routers;  # `json:"routers,omitempty"`
+	string command;          # `json:"command,omitempty"`
+	string method;           # `json:"method,omitempty"`
+	string router;           # `json:"router,omitempty"`
+	/*any arguments;           # `json:"arguments,omitempty`*/
 }
 
 // oauth2.0 接口 token

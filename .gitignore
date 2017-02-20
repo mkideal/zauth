@@ -1,5 +1,6 @@
 *.swp
 *.swo
 *.DS_store
-accountd
+cmd/authd/authd
+cmd/authc/authc
 var/

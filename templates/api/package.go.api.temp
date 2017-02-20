@@ -7,7 +7,8 @@ file: api.go
 package {{context.Pkg.Name}}
 
 import (
-	"bitbucket.org/mkideal/accountd/oauth2"
+	"net/http"
+	"net/url"
 )
 
 {{define "T_const"}}
@@ -31,8 +32,8 @@ func (x {{$type}}) Status() int {
 	return int(x)  / 1000
 }
 
-func (x {{$type}}) NewError(description string) oauth2.Error {
-	err := oauth2.NewError(x.Error(), description)
+func (x {{$type}}) NewError(description string) Error {
+	err := NewError(x.Error(), description)
 	err.SetStatus(x.Status())
 	return err
 }
@@ -49,7 +50,13 @@ func (x {{$type}}) Error() string {
 {{define "T_struct"}}
 {{$type := .Name}}
 {{.Doc}}type {{$type}} struct {
-	{{range $field := .Fields}}{{$field.Name | title}} {{context.BuildType $field.Type}} `json:"{{underScore $field.Name}}"`{{$field.Comment}}
+	{{range $field := .Fields}}
+	{{- $jsonTag := newString}}
+	{{- $jsonTag.Set (.GetTag "json")}}
+	{{- if eq "" $jsonTag.Get}}
+	   {{- $jsonTag.Set (underScore $field.Name)}}
+	{{- end}}
+	{{$field.Name | title}} {{context.BuildType $field.Type}} `json:"{{$jsonTag.Get}}"`{{$field.Comment}}
 	{{end}}
 }
 {{end}}
@@ -63,8 +70,35 @@ func (x {{$type}}) Error() string {
 }
 {{if hasSuffix "Req" $type}}
 {{$cmd := trimSuffix "Req" $type}}
+{{- $method := newString}}
+{{- $method.Set ($bean.GetTag "method")}}
+{{- if eq ($method.Get) ""}}
+	{{- $method.Set "GET"}}
+{{- end}}
 func ({{$type}}) CommandName() string { return "{{$cmd}}" }
+func ({{$type}}) CommandMethod() string { return "{{$method.Get}}" }
+
+var _ = registerCommand(&{{$type}}{})
 {{end}}
 {{end}}
+
+type Request interface {
+	CommandName() string
+	CommandMethod() string
+	Parse(*http.Request) error
+	Values() url.Values
+}
+
+var commands = make(map[string]Request)
+var commandList = make([]Request, 0)
+
+func registerCommand(cmd Request) bool {
+	commands[cmd.CommandName()] = cmd
+	commandList = append(commandList, cmd)
+	return true
+}
+
+func Commands() []Request { return commandList }
+func GetCommand(name string) Request { return commands[name] }
 
 {{.GenerateDeclsBySubTemplates}}
