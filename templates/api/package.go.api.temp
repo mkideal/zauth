@@ -56,7 +56,7 @@ func (x {{$type}}) Error() string {
 	{{- if eq "" $jsonTag.Get}}
 	   {{- $jsonTag.Set (underScore $field.Name)}}
 	{{- end}}
-	{{$field.Name | title}} {{context.BuildType $field.Type}} `json:"{{$jsonTag.Get}}"`{{$field.Comment}}
+	{{- $field.Name | title}} {{context.BuildType $field.Type}} `json:"{{$jsonTag.Get}}"`{{$field.Comment}}
 	{{end}}
 }
 {{end}}
@@ -65,7 +65,22 @@ func (x {{$type}}) Error() string {
 {{$bean := .}}
 {{$type := $bean.Name}}
 {{.Doc}}type {{$type}} struct {
-	{{range $field := $bean.Fields}}{{$field.Name | title}} {{context.BuildType $field.Type}} `json:"{{underScore $field.Name}}"`{{$field.Comment}}
+	{{range $field := $bean.Fields}}
+	{{- $jsonTag := newString}}
+	{{- $jsonTag.Set (.GetTag "json")}}
+	{{- if eq "" $jsonTag.Get}}
+	   {{- $jsonTag.Set (underScore $field.Name)}}
+	{{- end}}
+	{{- $cliTag := newString}}
+	{{- $cliTag.Set (.GetTag "cli")}}
+	{{- if eq "" $cliTag.Get}}
+	   {{- $cliTag.Set "-"}}
+	{{- end}}
+	{{- $cli := newString}}
+	{{- if hasSuffix "Req" $type}}
+		{{- $cli.Set (join "" " cli:\"" ($cliTag.Get) "\"")}}
+	{{- end}}
+	{{- $field.Name | title}} {{context.BuildType $field.Type}} `json:"{{$jsonTag.Get}}"{{$cli.Get}}`{{$field.Comment}}
 	{{end}}
 }
 {{if hasSuffix "Req" $type}}

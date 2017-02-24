@@ -50,8 +50,8 @@ struct TokenInfo {
 
 // 查看帮助
 protocol HelpReq {
-	string version;
-	string cmd;
+	string version; # `cli:"v"`
+	string cmd;     # `cli:"c"`
 }
 
 protocol HelpRes {
@@ -65,19 +65,22 @@ protocol HelpRes {
 
 // oauth2.0 接口 token
 protocol TokenReq `method:"POST"` {
-	string grantType; // 授权类型
-	string scope;     // token使用范围
+	string grantType; # `cli:"g"` // 授权类型
+	string scope;     # `cli:"s"` // token使用范围
 
     // grantType 为 GrantAuthenticationCode 时的参数
-    string code;        // 授权码
-    string redirectURI; // 重定向URI
+
+    string code;        # `cli:"c"`   // 授权码
+    string redirectURI; # `cli:"uri"` // 重定向URI
 
     // grantType 为 GrantPassword 时的参数
-    string username; // 账号
-    string password; // 密码
+
+    string username; # `cli:"u"` // 账号
+    string password; # `cli:"p"` // 密码
 
     // grantType 为 GrantRefreshToken 时的参数
-    string refreshToken; // 刷新用token
+
+    string refreshToken; # `cli:"r"` // 刷新用token
 }
 
 protocol TokenRes {
@@ -87,16 +90,16 @@ protocol TokenRes {
 
 // oauth2.0 接口 authorize
 protocol AuthorizeReq `method:"POST"` {
-    string clientId;
-    string responseType;
-    int64 uid;
-    string scope;
-    string state;
+    string clientId;     # `cli:"cid"`
+    string responseType; # `cli:"t"`
+    int64 uid;           # `cli:"uid"`
+    string scope;        # `cli:"s,scope"`
+    string state;        # `cli:"state"`
 }
 
 // client 检查
 protocol AuthorizeCheckReq {
-    string clientId;
+    string clientId; # `cli:"cid"`
 }
 
 protocol AuthorizeCheckRes {
@@ -106,7 +109,7 @@ protocol AuthorizeCheckRes {
 
 // token 认证
 protocol TokenAuthReq `method:"POST"` {
-    string accessToken;
+    string accessToken; `cli:"t,token"`
 }
 
 protocol TokenAuthRes {
@@ -116,10 +119,10 @@ protocol TokenAuthRes {
 
 // 注册
 protocol SignupReq `method:"POST"` {
-	int accountType; // 账号类型:参见 model.AccountType 枚举
-	string account;  // 账号:当 accountType 为第三方账号时为openId
-	string password; // 密码:当 accountType 为第三方账号时不需要
-    string nickname; // 昵称,可选
+	int accountType; #`cli:"t"` // 账号类型:参见 model.AccountType 枚举
+	string account;  #`cli:"a"` // 账号:当 accountType 为第三方账号时为openId
+	string password; #`cli:"p"` // 密码:当 accountType 为第三方账号时不需要
+    string nickname; #`cli:"n"` // 昵称,可选
 }
 
 protocol SignupRes {
@@ -139,7 +142,7 @@ protocol AutoSignupRes {
 
 // 检查账号是否存在
 protocol AccountExistReq {
-    string username;
+    string username; # `cli:"u"`
 }
 
 protocol AccountExistRes {
@@ -148,9 +151,9 @@ protocol AccountExistRes {
 
 // 登陆
 protocol SigninReq `method:"POST"` {
-	int accountType; // 账号类型:参见 model.AccountType 枚举
-	string account;  // 账号:当 accountType 为第三方账号时为openId
-	string password; // 密码:当 accountType 为第三方账号时不需要
+	int accountType; # `cli:"t"` // 账号类型:参见 model.AccountType 枚举
+	string account;  # `cli:"a"` // 账号:当 accountType 为第三方账号时为openId
+	string password; # `cli:"p"` // 密码:当 accountType 为第三方账号时不需要
 }
 
 protocol SigninRes {
@@ -160,7 +163,7 @@ protocol SigninRes {
 
 // 登出
 protocol SignoutReq `method:"POST"` {
-    int64 uid;
+    int64 uid; # `cli:"uid"`
 }
 
 protocol SignoutRes {
@@ -168,8 +171,8 @@ protocol SignoutRes {
 
 // 用户信息
 protocol UserReq {
-	int64 uid;
-	string account;
+	int64 uid;      # `cli:"uid"`
+	string account; # `cli:"a"`
 }
 
 protocol UserRes {

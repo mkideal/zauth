@@ -101,39 +101,28 @@ func (x ErrorCode) Error() string {
 }
 
 type UserInfo struct {
-	Id int64 `json:"id"`
-
-	Account string `json:"account"`
-
-	Nickname string `json:"nickname"`
-
-	Avatar string `json:"avatar"`
-
-	Qrcode string `json:"qrcode"`
-
-	Gender int `json:"gender"`
-
-	Birthday string `json:"birthday"`
-
+	Id          int64  `json:"id"`
+	Account     string `json:"account"`
+	Nickname    string `json:"nickname"`
+	Avatar      string `json:"avatar"`
+	Qrcode      string `json:"qrcode"`
+	Gender      int    `json:"gender"`
+	Birthday    string `json:"birthday"`
 	LastLoginAt string `json:"last_login_at"`
-
 	LastLoginIp string `json:"last_login_ip"`
 }
 
 type TokenInfo struct {
-	AccessToken string `json:"access_token"`
-
+	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
-
-	Scope string `json:"scope"`
-
-	ExpireAt string `json:"expire_at"`
+	Scope        string `json:"scope"`
+	ExpireAt     string `json:"expire_at"`
 }
 
 // 查看帮助
 type HelpReq struct {
-	Version string `json:"version"`
-	Cmd     string `json:"cmd"`
+	Version string `json:"version" cli:"v"`
+	Cmd     string `json:"cmd" cli:"c"`
 }
 
 func (HelpReq) CommandName() string   { return "Help" }
@@ -142,22 +131,22 @@ func (HelpReq) CommandMethod() string { return "GET" }
 var _ = registerCommand(&HelpReq{})
 
 type HelpRes struct {
-	Commands []string `json:"commands"`
-	Routers  []string `json:"routers"`
-	Command  string   `json:"command"`
-	Method   string   `json:"method"`
-	Router   string   `json:"router"`
+	Commands []string `json:"commands,omitempty"`
+	Routers  []string `json:"routers,omitempty"`
+	Command  string   `json:"command,omitempty"`
+	Method   string   `json:"method,omitempty"`
+	Router   string   `json:"router,omitempty"`
 }
 
 // oauth2.0 接口 token
 type TokenReq struct {
-	GrantType    string `json:"grant_type"`    // 授权类型
-	Scope        string `json:"scope"`         // token使用范围
-	Code         string `json:"code"`          // 授权码
-	RedirectURI  string `json:"redirect_uri"`  // 重定向URI
-	Username     string `json:"username"`      // 账号
-	Password     string `json:"password"`      // 密码
-	RefreshToken string `json:"refresh_token"` // 刷新用token
+	GrantType    string `json:"grant_type" cli:"g"`     // 授权类型
+	Scope        string `json:"scope" cli:"s"`          // token使用范围
+	Code         string `json:"code" cli:"c"`           // 授权码
+	RedirectURI  string `json:"redirect_uri" cli:"uri"` // 重定向URI
+	Username     string `json:"username" cli:"u"`       // 账号
+	Password     string `json:"password" cli:"p"`       // 密码
+	RefreshToken string `json:"refresh_token" cli:"r"`  // 刷新用token
 
 }
 
@@ -173,11 +162,11 @@ type TokenRes struct {
 
 // oauth2.0 接口 authorize
 type AuthorizeReq struct {
-	ClientId     string `json:"client_id"`
-	ResponseType string `json:"response_type"`
-	Uid          int64  `json:"uid"`
-	Scope        string `json:"scope"`
-	State        string `json:"state"`
+	ClientId     string `json:"client_id" cli:"cid"`
+	ResponseType string `json:"response_type" cli:"t"`
+	Uid          int64  `json:"uid" cli:"uid"`
+	Scope        string `json:"scope" cli:"s,scope"`
+	State        string `json:"state" cli:"state"`
 }
 
 func (AuthorizeReq) CommandName() string   { return "Authorize" }
@@ -187,7 +176,7 @@ var _ = registerCommand(&AuthorizeReq{})
 
 // client 检查
 type AuthorizeCheckReq struct {
-	ClientId string `json:"client_id"`
+	ClientId string `json:"client_id" cli:"cid"`
 }
 
 func (AuthorizeCheckReq) CommandName() string   { return "AuthorizeCheck" }
@@ -202,7 +191,7 @@ type AuthorizeCheckRes struct {
 
 // token 认证
 type TokenAuthReq struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"access_token" cli:"t,token"`
 }
 
 func (TokenAuthReq) CommandName() string   { return "TokenAuth" }
@@ -217,10 +206,10 @@ type TokenAuthRes struct {
 
 // 注册
 type SignupReq struct {
-	AccountType int    `json:"account_type"` // 账号类型:参见 model.AccountType 枚举
-	Account     string `json:"account"`      // 账号:当 accountType 为第三方账号时为openId
-	Password    string `json:"password"`     // 密码:当 accountType 为第三方账号时不需要
-	Nickname    string `json:"nickname"`     // 昵称,可选
+	AccountType int    `json:"account_type" cli:"t"` // 账号类型:参见 model.AccountType 枚举
+	Account     string `json:"account" cli:"a"`      // 账号:当 accountType 为第三方账号时为openId
+	Password    string `json:"password" cli:"p"`     // 密码:当 accountType 为第三方账号时不需要
+	Nickname    string `json:"nickname" cli:"n"`     // 昵称,可选
 
 }
 
@@ -251,7 +240,7 @@ type AutoSignupRes struct {
 
 // 检查账号是否存在
 type AccountExistReq struct {
-	Username string `json:"username"`
+	Username string `json:"username" cli:"u"`
 }
 
 func (AccountExistReq) CommandName() string   { return "AccountExist" }
@@ -265,9 +254,9 @@ type AccountExistRes struct {
 
 // 登陆
 type SigninReq struct {
-	AccountType int    `json:"account_type"` // 账号类型:参见 model.AccountType 枚举
-	Account     string `json:"account"`      // 账号:当 accountType 为第三方账号时为openId
-	Password    string `json:"password"`     // 密码:当 accountType 为第三方账号时不需要
+	AccountType int    `json:"account_type" cli:"t"` // 账号类型:参见 model.AccountType 枚举
+	Account     string `json:"account" cli:"a"`      // 账号:当 accountType 为第三方账号时为openId
+	Password    string `json:"password" cli:"p"`     // 密码:当 accountType 为第三方账号时不需要
 
 }
 
@@ -283,7 +272,7 @@ type SigninRes struct {
 
 // 登出
 type SignoutReq struct {
-	Uid int64 `json:"uid"`
+	Uid int64 `json:"uid" cli:"uid"`
 }
 
 func (SignoutReq) CommandName() string   { return "Signout" }
@@ -296,8 +285,8 @@ type SignoutRes struct {
 
 // 用户信息
 type UserReq struct {
-	Uid     int64  `json:"uid"`
-	Account string `json:"account"`
+	Uid     int64  `json:"uid" cli:"uid"`
+	Account string `json:"account" cli:"a"`
 }
 
 func (UserReq) CommandName() string   { return "User" }

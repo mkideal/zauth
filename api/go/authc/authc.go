@@ -1,4 +1,4 @@
-package golang
+package authc
 
 import (
 	"encoding/json"
@@ -20,7 +20,7 @@ type Config struct {
 	CookieName   string `cli:"cookie" usage:"cookie name" dft:"accountd"`
 	Router
 
-	HTTPClient HTTPClient `cli:"-"`
+	HTTPClient HTTPClient `cli:"-" json:"-"`
 }
 
 type Router struct {
@@ -145,14 +145,13 @@ func (client *Client) handleResponse(resp *http.Response, err error, res interfa
 	}
 	defer resp.Body.Close()
 	for _, cookie := range resp.Cookies() {
-		if cookie.Name == client.Cookie.Name {
+		if cookie.Name == client.config.CookieName {
 			client.Cookie = cookie
 			break
 		}
 	}
 	client.StatusCode = resp.StatusCode
 	decoder := json.NewDecoder(resp.Body)
-	println("resp.StatusCode", resp.StatusCode)
 	if resp.StatusCode != http.StatusOK {
 		err := api.Error{}
 		if e := decoder.Decode(&err); e != nil {
