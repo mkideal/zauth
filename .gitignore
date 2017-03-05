@@ -3,4 +3,7 @@
 *.DS_store
 cmd/authd/authd
 cmd/authc/authc
+authc
+authd
+targets/
 var/

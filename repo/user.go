@@ -17,7 +17,43 @@ func NewUserRepository(sqlRepo *SqlRepository) UserRepository {
 	return userRepository{SqlRepository: sqlRepo}
 }
 
-func (repo userRepository) AddUser(user *model.User, plainPassword string) error {
+func WithNickname(nickname string) UserAddOption {
+	return func(user *model.User) {
+		user.Nickname = nickname
+	}
+}
+
+func WithAccount(account string) UserAddOption {
+	return func(user *model.User) {
+		user.Account = account
+	}
+}
+
+func WithGender(gender model.Gender) UserAddOption {
+	return func(user *model.User) {
+		user.Gender = gender
+	}
+}
+
+func WithCountry(country string) UserAddOption {
+	return func(user *model.User) {
+		user.Country = country
+	}
+}
+
+func WithProvince(province string) UserAddOption {
+	return func(user *model.User) {
+		user.Province = province
+	}
+}
+
+func WithCity(city string) UserAddOption {
+	return func(user *model.User) {
+		user.City = city
+	}
+}
+
+func (repo userRepository) AddUser(user *model.User, plainPassword string, opts ...UserAddOption) error {
 	// initialize user
 	if user.CreatedAt == "" {
 		user.CreatedAt = model.FormatTime(time.Now())
@@ -27,6 +63,9 @@ func (repo userRepository) AddUser(user *model.User, plainPassword string) error
 	}
 	if user.EncryptedPassword == "" {
 		user.EncryptedPassword = model.EncryptPassword(plainPassword, user.PasswordSalt)
+	}
+	for _, opt := range opts {
+		opt(user)
 	}
 
 	emptyAccount := user.Account == ""

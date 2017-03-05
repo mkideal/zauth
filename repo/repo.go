@@ -11,8 +11,10 @@ import (
 	"bitbucket.org/mkideal/accountd/model"
 )
 
+type UserAddOption func(user *model.User)
+
 type UserRepository interface {
-	AddUser(user *model.User, plainPassword string) error
+	AddUser(user *model.User, plainPassword string, opts ...UserAddOption) error
 	UpdateUser(user *model.User, fields ...string) error
 	GetUser(uid int64) (*model.User, error)
 	GetUserByAccount(account string) (*model.User, error)
@@ -33,6 +35,14 @@ type TokenRepository interface {
 	NewToken(user *model.User, clientId, scope string) (*model.Token, error)
 	GetToken(token string) (*model.Token, error)
 	RefreshToken(refreshToken string, scope string) (*model.Token, error)
+}
+
+type TelnoVerifyCodeRepository interface {
+	NewTelnoCode(telno string, maxIntervalSeconds, expirationSeconds int64) (*model.TelnoVerifyCode, error)
+	FindTelnoCode(telno string) (*model.TelnoVerifyCode, error)
+	UpdateTelnoCode(vcode *model.TelnoVerifyCode, fields ...string) error
+	SendTelnoCode(vcode *model.TelnoVerifyCode, uri, un, pw, msgFormat string) error
+	RemoveTelnoCode(telno string) error
 }
 
 type SessionRepository interface {

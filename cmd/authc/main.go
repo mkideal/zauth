@@ -33,6 +33,8 @@ type Context struct {
 	AccountExistRes   api.AccountExistRes
 	SigninRes         api.SigninRes
 	SignoutRes        api.SignoutRes
+	SMSCodeRes        api.SMSCodeRes
+	TwoFactorAuthRes  api.TwoFactorAuthRes
 	UserRes           api.UserRes
 }
 
@@ -98,9 +100,8 @@ func (ctx *Context) onSignup(res *api.SignupRes, err error) {
 	}
 	ctx.outputJSON(res, "Signup response")
 	ctx.SignupRes = *res
-	ctx.User.Account = res.Account
-	ctx.User.Nickname = res.Nickname
-	ctx.User.Id = res.Uid
+	ctx.User = res.User
+	ctx.Token = res.Token
 }
 
 func (ctx *Context) onSignin(res *api.SigninRes, err error) {
@@ -142,6 +143,24 @@ func (ctx *Context) onTokenAuth(res *api.TokenAuthRes, err error) {
 	ctx.User = res.User
 }
 
+func (ctx *Context) onSMSCode(res *api.SMSCodeRes, err error) {
+	if ctx.onError(err) {
+		return
+	}
+	ctx.outputJSON(res, "SMSCode response")
+	ctx.SMSCodeRes = *res
+}
+
+func (ctx *Context) onTwoFactorAuth(res *api.TwoFactorAuthRes, err error) {
+	if ctx.onError(err) {
+		return
+	}
+	ctx.outputJSON(res, "TwoFactorAuth response")
+	ctx.TwoFactorAuthRes = *res
+	ctx.User = res.User
+	ctx.Token = res.Token
+}
+
 func (ctx *Context) onUser(res *api.UserRes, err error) {
 	if ctx.onError(err) {
 		return
@@ -153,16 +172,7 @@ func (ctx *Context) onUser(res *api.UserRes, err error) {
 
 var context = &Context{}
 
-func printFields(v reflect.Value, owner string) {
-	return
-	t := v.Type()
-	fmt.Printf("numField: %d\n", t.NumField())
-	for i := 0; i < v.NumField(); i++ {
-		fmt.Printf("%dth field of %s: %s\n", i, owner, t.Field(i).Name)
-	}
-}
-
-// $(xxx)
+// $xxx
 func value(s string) (res interface{}) {
 	defer func() {
 		if e := recover(); e != nil {
@@ -173,12 +183,9 @@ func value(s string) (res interface{}) {
 	fields := strings.Split(s, ".")
 	v := reflect.ValueOf(context)
 	parent := "Context"
-	for i, field := range fields {
+	for _, field := range fields {
 		for v.Kind() == reflect.Ptr {
 			v = v.Elem()
-		}
-		if i > 0 {
-			printFields(v, parent)
 		}
 		next := v.FieldByName(field)
 		if !next.IsValid() {
@@ -288,6 +295,18 @@ func execLine(client *authc.Client, line string) (err error, quit bool) {
 		err = context.parseRequest(args, req)
 		if err == nil {
 			context.onTokenAuth(client.TokenAuth(req, req.AccessToken))
+		}
+	case "sms", "smscode":
+		req := new(api.SMSCodeReq)
+		err = context.parseRequest(args, req)
+		if err == nil {
+			context.onSMSCode(client.SMSCode(req))
+		}
+	case "2fa", "2fa_auth":
+		req := new(api.TwoFactorAuthReq)
+		err = context.parseRequest(args, req)
+		if err == nil {
+			context.onTwoFactorAuth(client.TwoFactorAuth(req))
 		}
 	case "user":
 		req := new(api.UserReq)

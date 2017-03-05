@@ -164,16 +164,36 @@ func (argv *SignupReq) Parse(r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	argv.ThirdClientId, err = httputil.ParseString(r, "third_client_id")
+	if err != nil {
+		return err
+	}
+	argv.ThirdClientSecret, err = httputil.ParseString(r, "third_client_secret")
+	if err != nil {
+		return err
+	}
+	argv.ThirdOpenId, err = httputil.ParseString(r, "third_open_id")
+	if err != nil {
+		return err
+	}
+	argv.ThirdAccessToken, err = httputil.ParseString(r, "third_access_token")
+	if err != nil {
+		return err
+	}
 
 	return err
 }
 
 func (argv *SignupReq) Values() url.Values {
 	return url.Values{
-		"account_type": {typeconv.ToString(argv.AccountType)},
-		"account":      {typeconv.ToString(argv.Account)},
-		"password":     {typeconv.ToString(argv.Password)},
-		"nickname":     {typeconv.ToString(argv.Nickname)},
+		"account_type":        {typeconv.ToString(argv.AccountType)},
+		"account":             {typeconv.ToString(argv.Account)},
+		"password":            {typeconv.ToString(argv.Password)},
+		"nickname":            {typeconv.ToString(argv.Nickname)},
+		"third_client_id":     {typeconv.ToString(argv.ThirdClientId)},
+		"third_client_secret": {typeconv.ToString(argv.ThirdClientSecret)},
+		"third_open_id":       {typeconv.ToString(argv.ThirdOpenId)},
+		"third_access_token":  {typeconv.ToString(argv.ThirdAccessToken)},
 	}
 }
 
@@ -242,6 +262,48 @@ func (argv *SignoutReq) Parse(r *http.Request) error {
 func (argv *SignoutReq) Values() url.Values {
 	return url.Values{
 		"uid": {typeconv.ToString(argv.Uid)},
+	}
+}
+
+func (argv *SMSCodeReq) Parse(r *http.Request) error {
+	var err error
+	argv.Telno, err = httputil.ParseString(r, "telno")
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (argv *SMSCodeReq) Values() url.Values {
+	return url.Values{
+		"telno": {typeconv.ToString(argv.Telno)},
+	}
+}
+
+func (argv *TwoFactorAuthReq) Parse(r *http.Request) error {
+	var err error
+	argv.AuthType, err = httputil.ParseString(r, "auth_type")
+	if err != nil {
+		return err
+	}
+	argv.AuthId, err = httputil.ParseString(r, "auth_id")
+	if err != nil {
+		return err
+	}
+	argv.AuthCode, err = httputil.ParseString(r, "auth_code")
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (argv *TwoFactorAuthReq) Values() url.Values {
+	return url.Values{
+		"auth_type": {typeconv.ToString(argv.AuthType)},
+		"auth_id":   {typeconv.ToString(argv.AuthId)},
+		"auth_code": {typeconv.ToString(argv.AuthCode)},
 	}
 }
 

@@ -30,23 +30,29 @@ func GetCommand(name string) Request { return commands[name] }
 type ErrorCode int
 
 const (
-	ErrorCode_InternalServerError   ErrorCode = 500001
-	ErrorCode_ClientUnauthorized    ErrorCode = 401002
-	ErrorCode_MissingArgument       ErrorCode = 400101
-	ErrorCode_BadArgument           ErrorCode = 400102
-	ErrorCode_IllegalUsername       ErrorCode = 400103
-	ErrorCode_IllegalAccountType    ErrorCode = 400104
-	ErrorCode_IllegalPassword       ErrorCode = 400105
-	ErrorCode_IllegalEmail          ErrorCode = 400106
-	ErrorCode_IllegalTelno          ErrorCode = 400107
-	ErrorCode_UserNotFound          ErrorCode = 417201
-	ErrorCode_TokenNotFound         ErrorCode = 417202
-	ErrorCode_ClientNotFound        ErrorCode = 417203
-	ErrorCode_SessionNotFound       ErrorCode = 417204
-	ErrorCode_CommandNotFound       ErrorCode = 417205
-	ErrorCode_IncorrectPassword     ErrorCode = 417301
-	ErrorCode_IncorrectClientSecret ErrorCode = 417302
-	ErrorCode_AccountDuplicated     ErrorCode = 417402
+	ErrorCode_InternalServerError     ErrorCode = 500001
+	ErrorCode_ClientUnauthorized      ErrorCode = 401002
+	ErrorCode_MissingArgument         ErrorCode = 400101
+	ErrorCode_BadArgument             ErrorCode = 400102
+	ErrorCode_IllegalUsername         ErrorCode = 400103
+	ErrorCode_IllegalAccountType      ErrorCode = 400104
+	ErrorCode_IllegalPassword         ErrorCode = 400105
+	ErrorCode_IllegalEmail            ErrorCode = 400106
+	ErrorCode_IllegalTelno            ErrorCode = 400107
+	ErrorCode_UserNotFound            ErrorCode = 417201
+	ErrorCode_TokenNotFound           ErrorCode = 417202
+	ErrorCode_ClientNotFound          ErrorCode = 417203
+	ErrorCode_SessionNotFound         ErrorCode = 417204
+	ErrorCode_CommandNotFound         ErrorCode = 417205
+	ErrorCode_VerifyCodeNotFound      ErrorCode = 417206
+	ErrorCode_IncorrectPassword       ErrorCode = 417301
+	ErrorCode_IncorrectClientSecret   ErrorCode = 417302
+	ErrorCode_AccountDuplicated       ErrorCode = 417401
+	ErrorCode_TelnoVerifyCodeTooOften ErrorCode = 417402
+	ErrorCode_TelnoVerifyCodeExpired  ErrorCode = 417403
+	ErrorCode_Unsupported2FaType      ErrorCode = 417404
+	ErrorCode_FailedToSendSMSCode     ErrorCode = 417405
+	ErrorCode_ThirdPartyError         ErrorCode = 417406
 )
 
 func (x ErrorCode) Status() int {
@@ -89,12 +95,24 @@ func (x ErrorCode) Error() string {
 		return "e_session_not_found"
 	case ErrorCode_CommandNotFound:
 		return "e_command_not_found"
+	case ErrorCode_VerifyCodeNotFound:
+		return "e_verify_code_not_found"
 	case ErrorCode_IncorrectPassword:
 		return "e_incorrect_password"
 	case ErrorCode_IncorrectClientSecret:
 		return "e_incorrect_client_secret"
 	case ErrorCode_AccountDuplicated:
 		return "e_account_duplicated"
+	case ErrorCode_TelnoVerifyCodeTooOften:
+		return "e_telno_verify_code_too_often"
+	case ErrorCode_TelnoVerifyCodeExpired:
+		return "e_telno_verify_code_expired"
+	case ErrorCode_Unsupported2FaType:
+		return "e_Unsupported2FaType"
+	case ErrorCode_FailedToSendSMSCode:
+		return "e_failed_to_send_smscode"
+	case ErrorCode_ThirdPartyError:
+		return "e_third_party_error"
 
 	}
 	return "e_unknown_error"
@@ -105,7 +123,6 @@ type UserInfo struct {
 	Account     string `json:"account"`
 	Nickname    string `json:"nickname"`
 	Avatar      string `json:"avatar"`
-	Qrcode      string `json:"qrcode"`
 	Gender      int    `json:"gender"`
 	Birthday    string `json:"birthday"`
 	LastLoginAt string `json:"last_login_at"`
@@ -206,10 +223,14 @@ type TokenAuthRes struct {
 
 // 注册
 type SignupReq struct {
-	AccountType int    `json:"account_type" cli:"t"` // 账号类型:参见 model.AccountType 枚举
-	Account     string `json:"account" cli:"a"`      // 账号:当 accountType 为第三方账号时为openId
-	Password    string `json:"password" cli:"p"`     // 密码:当 accountType 为第三方账号时不需要
-	Nickname    string `json:"nickname" cli:"n"`     // 昵称,可选
+	AccountType       int    `json:"account_type" cli:"t"`        // 账号类型:参见 model.AccountType 枚举
+	Account           string `json:"account" cli:"a"`             // 账号:当 accountType 为第三方账号时为 autorization code
+	Password          string `json:"password" cli:"p"`            // 密码:当 accountType 为第三方账号时不需要
+	Nickname          string `json:"nickname" cli:"n"`            // 昵称,可选
+	ThirdClientId     string `json:"third_client_id" cli:"-"`     // 第三方应用Id
+	ThirdClientSecret string `json:"third_client_secret" cli:"-"` // 第三方应用密钥
+	ThirdOpenId       string `json:"third_open_id" cli:"-"`       // 第三方用户的openId
+	ThirdAccessToken  string `json:"third_access_token" cli:"-"`  // 第三方用户的accessToken
 
 }
 
@@ -219,9 +240,8 @@ func (SignupReq) CommandMethod() string { return "POST" }
 var _ = registerCommand(&SignupReq{})
 
 type SignupRes struct {
-	Uid      int64  `json:"uid"`
-	Account  string `json:"account"`
-	Nickname string `json:"nickname"`
+	User  UserInfo  `json:"user"`
+	Token TokenInfo `json:"token"`
 }
 
 // 快捷注册
@@ -281,6 +301,38 @@ func (SignoutReq) CommandMethod() string { return "POST" }
 var _ = registerCommand(&SignoutReq{})
 
 type SignoutRes struct {
+}
+
+// 获取手机验证码
+type SMSCodeReq struct {
+	Telno string `json:"telno" cli:"t"`
+}
+
+func (SMSCodeReq) CommandName() string   { return "SMSCode" }
+func (SMSCodeReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&SMSCodeReq{})
+
+type SMSCodeRes struct {
+	Code     string `json:"code"`
+	ExpireAt string `json:"expire_at"`
+}
+
+// 两阶段认证
+type TwoFactorAuthReq struct {
+	AuthType string `json:"auth_type" cli:"t"` // telno or email
+	AuthId   string `json:"auth_id" cli:"i"`
+	AuthCode string `json:"auth_code" cli:"c"`
+}
+
+func (TwoFactorAuthReq) CommandName() string   { return "TwoFactorAuth" }
+func (TwoFactorAuthReq) CommandMethod() string { return "POST" }
+
+var _ = registerCommand(&TwoFactorAuthReq{})
+
+type TwoFactorAuthRes struct {
+	User  UserInfo  `json:"user"`
+	Token TokenInfo `json:"token"`
 }
 
 // 用户信息

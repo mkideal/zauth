@@ -18,6 +18,11 @@ import (
 	"bitbucket.org/mkideal/accountd/model"
 	"bitbucket.org/mkideal/accountd/oauth2"
 	"bitbucket.org/mkideal/accountd/repo"
+	"bitbucket.org/mkideal/accountd/third_party"
+
+	// third_party
+	_ "bitbucket.org/mkideal/accountd/third_party/qq"
+	_ "bitbucket.org/mkideal/accountd/third_party/wechat"
 )
 
 const (
@@ -26,16 +31,28 @@ const (
 )
 
 type Config struct {
-	Driver                string `cli:"driver" usage:"sql database driver: mysql" dft:"mysql"`
-	DataSourceName        string `cli:"dsn" usage:"data source name for specified driver" dft:"accountd:aXXpwd@/accountdb"`
-	Port                  uint16 `cli:"p,port" usage:"HTTP port" dft:"5200"`
-	Mode                  string `cli:"m,mode" usage:"running mode: debug/release" dft:"release"`
-	CookieKey             string `cli:"cookie" usage:"cookie key" dft:"accountd"`
-	SessionExpireDuration int64  `cli:"session-expire-duration" usage:"session expire duration(seconds)" dft:"3600"`
-	HTMLDir               string `cli:"html" usage:"HTML static directory" dft:"html"`
-	HTMLRoouter           string `cli:"html-router" usage:"HTML static files router" dft:"/"`
+	Driver                     string   `cli:"driver" usage:"sql database driver: mysql" dft:"mysql"`
+	DataSourceName             string   `cli:"dsn" usage:"data source name for specified driver" dft:"$ACCOUNT_DSN"`
+	ThirdParty                 []string `cli:"third-party" usage:"third party modules"`
+	Addr                       string   `cli:"addr" usage:"HTTP address" dft:"127.0.0.1:5200"`
+	Mode                       string   `cli:"m,mode" usage:"running mode: debug/release" dft:"release"`
+	CookieKey                  string   `cli:"cookie" usage:"cookie key" dft:"accountd"`
+	SessionExpireDuration      int64    `cli:"session-expire-duration" usage:"session expire duration(seconds)" dft:"3600"`
+	HTMLDir                    string   `cli:"html" usage:"HTML static directory" dft:"html"`
+	HTMLRoouter                string   `cli:"html-router" usage:"HTML static files router" dft:"/"`
+	TelnoVerifyCodeMaxInterval int64    `cli:"sms-max-interval" usage:"SMS code max interval seconds" dft:"60"`
+	TelnoVerifyCodeExpiration  int64    `cli:"sms-expiration" usage:"SMS code expiration seconds" dft:"300"`
+
+	SMS
 
 	Pages
+}
+
+type SMS struct {
+	SMSURL       string `cli:"sms-url" usage:"SMS url address" dft:"http://sms.253.com/msg/send"`
+	SMSUsername  string `cli:"sms-un" usage:"SMS username" dft:"N9930301"`
+	SMSPassword  string `cli:"sms-pw" usage:"SMS password" dft:"YuaDHCvb4K7479"`
+	SMSMsgFormat string `cli:"sms-format" usage:"SMS message format" dft:"【253云通讯】你的短信验证为: %s"`
 }
 
 type Pages struct {
@@ -44,14 +61,16 @@ type Pages struct {
 }
 
 type Server struct {
-	config Config
+	config        Config
+	third_parties map[string]third_party.Client
 
 	// repositories
-	userRepo    repo.UserRepository
-	clientRepo  repo.ClientRepository
-	authRepo    repo.AuthorizationRequestRepository
-	tokenRepo   repo.TokenRepository
-	sessionRepo repo.SessionRepository
+	userRepo            repo.UserRepository
+	clientRepo          repo.ClientRepository
+	authRepo            repo.AuthorizationRequestRepository
+	tokenRepo           repo.TokenRepository
+	telnoVerifyCodeRepo repo.TelnoVerifyCodeRepository
+	sessionRepo         repo.SessionRepository
 
 	running int32
 }
@@ -61,15 +80,27 @@ func New(config Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := sqlRepo.Engine().Ping(); err != nil {
+		return nil, err
+	}
 
 	svr := &Server{
-		config: config,
+		config:        config,
+		third_parties: make(map[string]third_party.Client),
+	}
+	for _, name := range config.ThirdParty {
+		c, err := third_party.New(name)
+		if err != nil {
+			return nil, err
+		}
+		svr.third_parties[name] = c
 	}
 	// initialize repositories
 	svr.userRepo = repo.NewUserRepository(sqlRepo)
 	svr.clientRepo = repo.NewClientRepository(sqlRepo)
 	svr.authRepo = repo.NewAuthorizationRequestRepository(sqlRepo)
 	svr.tokenRepo = repo.NewTokenRepository(sqlRepo)
+	svr.telnoVerifyCodeRepo = repo.NewTelnoVerifyCodeRepository(sqlRepo)
 	svr.sessionRepo = repo.NewSessionRepository(sqlRepo)
 	return svr, nil
 }
@@ -92,7 +123,7 @@ func (svr *Server) Run() error {
 
 	// listen and serve HTTP service
 	httpServer := &http.Server{
-		Addr:    fmt.Sprintf(":%d", svr.config.Port),
+		Addr:    svr.config.Addr,
 		Handler: mux,
 	}
 	ln, err := net.Listen("tcp", httpServer.Addr)
@@ -186,6 +217,20 @@ func (svr *Server) setSession(w http.ResponseWriter, r *http.Request, uid int64)
 	return
 }
 
+func (svr *Server) createToken(cmd string, user *model.User, w http.ResponseWriter, r *http.Request) (*model.Token, error) {
+	_, err := svr.setSession(w, r, user.Id)
+	if err != nil {
+		log.Error("%s: set session error: %v", cmd, err)
+		return nil, err
+	}
+	token, err := svr.tokenRepo.NewToken(user, "", "")
+	if err != nil {
+		log.Error("%s: new token error: %v", cmd, err)
+		return nil, err
+	}
+	return token, nil
+}
+
 // authorization client
 func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request) *model.Client {
 	clientId, clientSecret, ok := r.BasicAuth()
@@ -205,7 +250,7 @@ func (svr *Server) clientAuth(cmd string, w http.ResponseWriter, r *http.Request
 		svr.errorResponse(w, r, api.ErrorCode_ClientNotFound)
 		return nil
 	}
-	if !model.ValidateClint(client, clientSecret) {
+	if !model.ValidateClient(client, clientSecret) {
 		log.Info("%s: Client %s secret invalid", cmd, clientId)
 		svr.errorResponse(w, r, api.ErrorCode_IncorrectClientSecret)
 		return nil
@@ -219,7 +264,6 @@ func makeUserInfo(user *model.User) api.UserInfo {
 		Account:     user.Account,
 		Nickname:    user.Nickname,
 		Avatar:      user.Avatar,
-		Qrcode:      user.Qrcode,
 		Gender:      int(user.Gender),
 		Birthday:    user.Birthday,
 		LastLoginAt: user.LastLoginAt,

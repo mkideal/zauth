@@ -35,7 +35,9 @@ protocol User {
 	string account;          # `bits:"128" opt:"UNIQUE"` // 账号
 	string nickname;         # `bits:"64"`               // 昵称
 	string avatar;           # `bits:"256"`              // 头像
-	string qrcode;           #                           // 二维码
+	string country;          # `bits:"32"`               // 国家
+	string province;         # `bits:"64"`               // 省
+	string city;             # `bits:"256"`              // 城市
 
 	// 身份信息
 
@@ -97,23 +99,24 @@ protocol AuthorizationRequest {
 
 // 手机验证码
 protocol TelnoVerifyCode {
-    int64 id;         # `key:"true" opt:"AUTO_INCREMENT"` // 递增唯一Id
-    string telno;     # `bits:"32"`                       // 手机号码
-    string code;      # `bits:"8"`                        // 验证码
-    string expiredAt; # `bits:"32"`                       // 到期时间
+    string telno;     # `key:"true" bits:"32"` // 手机号码
+    string code;      # `bits:"8"`             // 验证码
+    string createdAt; # `bits:"32"`            // 创建时间
+    string expireAt;  # `bits:"32"`            // 到期时间
 }
 
 // 邮箱验证码
 protocol EmailVerifyCode {
-    int64 id;         # `key:"true" opt:"AUTO_INCREMENT"` // 递增唯一Id
-    string email;     # `bits:"64"`                       // email 地址
-    string code;      # `bits:"64" opt:"UNIQUE"`          // 验证码
-    string expiredAt; # `bits:"32"`                       // 到期时间
+    string email;     # `key:"true" bits:"64"`   // email 地址
+    string code;      # `bits:"64" opt:"UNIQUE"` // 验证码
+    string createdAt; # `bits:"32"`              // 创建时间
+    string expireAt;  # `bits:"32"`              // 到期时间
 }
 
 // Web 会话
 protocol Session {
-    string id;       # `key:"true" bits:"32"` // 唯一Id,用作cookie
-    int64 uid;       #                        // 关联的用户Id
-    string expireAt; # `bits:"32"`            // 到期时间
+    string id;        # `key:"true" bits:"32"` // 唯一Id,用作cookie
+    int64 uid;        #                        // 关联的用户Id
+    string createdAt; # `bits:"32"`            // 创建时间
+    string expireAt;  # `bits:"32"`            // 到期时间
 }

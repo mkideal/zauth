@@ -92,7 +92,7 @@ func (svr *Server) grantByPassword(w http.ResponseWriter, r *http.Request, argv 
 }
 
 func (svr *Server) grantByRefreshToken(w http.ResponseWriter, r *http.Request, argv *api.TokenReq, client *model.Client, clientSecret string) error {
-	if !model.ValidateClint(client, clientSecret) {
+	if !model.ValidateClient(client, clientSecret) {
 		return api.NewError(string(oauth2.ErrorInvalidGrant), "invalid-client-secret")
 	}
 	token, err := svr.tokenRepo.RefreshToken(argv.RefreshToken, argv.Scope)

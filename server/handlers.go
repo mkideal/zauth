@@ -13,10 +13,12 @@ func (svr *Server) registerAllHandlers(mux *httputil.ServeMux) {
 	svr.registerHandler(mux, makeRouter("authorize"), "POST", svr.handleAuthorize)
 	svr.registerHandler(mux, makeRouter("auto_signup"), "POST", svr.handleAutoSignup)
 	svr.registerHandler(mux, makeRouter("help"), "GET", svr.handleHelp)
+	svr.registerHandler(mux, makeRouter("smscode"), "POST", svr.handleSMSCode)
 	svr.registerHandler(mux, makeRouter("signin"), "POST", svr.handleSignin)
 	svr.registerHandler(mux, makeRouter("signout"), "POST", svr.handleSignout)
 	svr.registerHandler(mux, makeRouter("signup"), "POST", svr.handleSignup)
 	svr.registerHandler(mux, makeRouter("token_auth"), "POST", svr.handleTokenAuth)
 	svr.registerHandler(mux, makeRouter("token"), "POST", svr.handleToken)
+	svr.registerHandler(mux, makeRouter("two_factor_auth"), "POST", svr.handleTwoFactorAuth)
 	svr.registerHandler(mux, makeRouter("user"), "GET", svr.handleUser)
 }

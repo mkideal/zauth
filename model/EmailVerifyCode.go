@@ -19,10 +19,10 @@ var (
 
 // 邮箱验证码
 type EmailVerifyCode struct {
-	Id        int64  `xorm:"pk BIGINT(20) AUTO_INCREMENT"` // 递增唯一Id
-	Email     string `xorm:"VARCHAR(64)"`                  // email 地址
-	Code      string `xorm:"VARCHAR(64) UNIQUE"`           // 验证码
-	ExpiredAt string `xorm:"VARCHAR(32)"`                  // 到期时间
+	Email     string `xorm:"pk VARCHAR(64)"`     // email 地址
+	Code      string `xorm:"VARCHAR(64) UNIQUE"` // 验证码
+	CreatedAt string `xorm:"VARCHAR(32)"`        // 创建时间
+	ExpireAt  string `xorm:"VARCHAR(32)"`        // 到期时间
 
 }
 
@@ -31,56 +31,57 @@ func NewEmailVerifyCode() *EmailVerifyCode {
 }
 
 func (EmailVerifyCode) Meta() storage.TableMeta { return EmailVerifyCodeMetaVar }
-func (x EmailVerifyCode) Key() interface{}      { return x.Id }
+func (x EmailVerifyCode) Key() interface{}      { return x.Email }
 func (x *EmailVerifyCode) SetKey(value string) error {
-	return typeconv.String2Int64(&x.Id, value)
+	x.Email = value
+	return nil
 }
 
 func (x EmailVerifyCode) GetField(field string) (interface{}, bool) {
 	switch field {
-	case EmailVerifyCodeMetaVar.F_email:
-		return x.Email, true
 	case EmailVerifyCodeMetaVar.F_code:
 		return x.Code, true
-	case EmailVerifyCodeMetaVar.F_expired_at:
-		return x.ExpiredAt, true
+	case EmailVerifyCodeMetaVar.F_created_at:
+		return x.CreatedAt, true
+	case EmailVerifyCodeMetaVar.F_expire_at:
+		return x.ExpireAt, true
 	}
 	return nil, false
 }
 
 func (x *EmailVerifyCode) SetField(field, value string) error {
 	switch field {
-	case EmailVerifyCodeMetaVar.F_email:
-		x.Email = value
 	case EmailVerifyCodeMetaVar.F_code:
 		x.Code = value
-	case EmailVerifyCodeMetaVar.F_expired_at:
-		x.ExpiredAt = value
+	case EmailVerifyCodeMetaVar.F_created_at:
+		x.CreatedAt = value
+	case EmailVerifyCodeMetaVar.F_expire_at:
+		x.ExpireAt = value
 	}
 	return nil
 }
 
 // Meta
 type EmailVerifyCodeMeta struct {
-	F_email      string
 	F_code       string
-	F_expired_at string
+	F_created_at string
+	F_expire_at  string
 }
 
 func (EmailVerifyCodeMeta) Name() string     { return "email_verify_code" }
-func (EmailVerifyCodeMeta) Key() string      { return "id" }
+func (EmailVerifyCodeMeta) Key() string      { return "email" }
 func (EmailVerifyCodeMeta) Fields() []string { return _email_verify_code_fields }
 
 var EmailVerifyCodeMetaVar = &EmailVerifyCodeMeta{
-	F_email:      "email",
 	F_code:       "code",
-	F_expired_at: "expired_at",
+	F_created_at: "created_at",
+	F_expire_at:  "expire_at",
 }
 
 var _email_verify_code_fields = []string{
-	EmailVerifyCodeMetaVar.F_email,
 	EmailVerifyCodeMetaVar.F_code,
-	EmailVerifyCodeMetaVar.F_expired_at,
+	EmailVerifyCodeMetaVar.F_created_at,
+	EmailVerifyCodeMetaVar.F_expire_at,
 }
 
 // Slice

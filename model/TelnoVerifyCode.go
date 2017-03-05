@@ -19,10 +19,10 @@ var (
 
 // 手机验证码
 type TelnoVerifyCode struct {
-	Id        int64  `xorm:"pk BIGINT(20) AUTO_INCREMENT"` // 递增唯一Id
-	Telno     string `xorm:"VARCHAR(32)"`                  // 手机号码
-	Code      string `xorm:"VARCHAR(8)"`                   // 验证码
-	ExpiredAt string `xorm:"VARCHAR(32)"`                  // 到期时间
+	Telno     string `xorm:"pk VARCHAR(32)"` // 手机号码
+	Code      string `xorm:"VARCHAR(8)"`     // 验证码
+	CreatedAt string `xorm:"VARCHAR(32)"`    // 创建时间
+	ExpireAt  string `xorm:"VARCHAR(32)"`    // 到期时间
 
 }
 
@@ -31,56 +31,57 @@ func NewTelnoVerifyCode() *TelnoVerifyCode {
 }
 
 func (TelnoVerifyCode) Meta() storage.TableMeta { return TelnoVerifyCodeMetaVar }
-func (x TelnoVerifyCode) Key() interface{}      { return x.Id }
+func (x TelnoVerifyCode) Key() interface{}      { return x.Telno }
 func (x *TelnoVerifyCode) SetKey(value string) error {
-	return typeconv.String2Int64(&x.Id, value)
+	x.Telno = value
+	return nil
 }
 
 func (x TelnoVerifyCode) GetField(field string) (interface{}, bool) {
 	switch field {
-	case TelnoVerifyCodeMetaVar.F_telno:
-		return x.Telno, true
 	case TelnoVerifyCodeMetaVar.F_code:
 		return x.Code, true
-	case TelnoVerifyCodeMetaVar.F_expired_at:
-		return x.ExpiredAt, true
+	case TelnoVerifyCodeMetaVar.F_created_at:
+		return x.CreatedAt, true
+	case TelnoVerifyCodeMetaVar.F_expire_at:
+		return x.ExpireAt, true
 	}
 	return nil, false
 }
 
 func (x *TelnoVerifyCode) SetField(field, value string) error {
 	switch field {
-	case TelnoVerifyCodeMetaVar.F_telno:
-		x.Telno = value
 	case TelnoVerifyCodeMetaVar.F_code:
 		x.Code = value
-	case TelnoVerifyCodeMetaVar.F_expired_at:
-		x.ExpiredAt = value
+	case TelnoVerifyCodeMetaVar.F_created_at:
+		x.CreatedAt = value
+	case TelnoVerifyCodeMetaVar.F_expire_at:
+		x.ExpireAt = value
 	}
 	return nil
 }
 
 // Meta
 type TelnoVerifyCodeMeta struct {
-	F_telno      string
 	F_code       string
-	F_expired_at string
+	F_created_at string
+	F_expire_at  string
 }
 
 func (TelnoVerifyCodeMeta) Name() string     { return "telno_verify_code" }
-func (TelnoVerifyCodeMeta) Key() string      { return "id" }
+func (TelnoVerifyCodeMeta) Key() string      { return "telno" }
 func (TelnoVerifyCodeMeta) Fields() []string { return _telno_verify_code_fields }
 
 var TelnoVerifyCodeMetaVar = &TelnoVerifyCodeMeta{
-	F_telno:      "telno",
 	F_code:       "code",
-	F_expired_at: "expired_at",
+	F_created_at: "created_at",
+	F_expire_at:  "expire_at",
 }
 
 var _telno_verify_code_fields = []string{
-	TelnoVerifyCodeMetaVar.F_telno,
 	TelnoVerifyCodeMetaVar.F_code,
-	TelnoVerifyCodeMetaVar.F_expired_at,
+	TelnoVerifyCodeMetaVar.F_created_at,
+	TelnoVerifyCodeMetaVar.F_expire_at,
 }
 
 // Slice

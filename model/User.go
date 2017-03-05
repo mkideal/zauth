@@ -24,7 +24,9 @@ type User struct {
 	Account           string      `xorm:"VARCHAR(128) UNIQUE"` // 账号
 	Nickname          string      `xorm:"VARCHAR(64)"`         // 昵称
 	Avatar            string      `xorm:"VARCHAR(256)"`        // 头像
-	Qrcode            string      `xorm:"TEXT"`                // 二维码
+	Country           string      `xorm:"VARCHAR(32)"`         // 国家
+	Province          string      `xorm:"VARCHAR(64)"`         // 省
+	City              string      `xorm:"VARCHAR(256)"`        // 城市
 	Gender            Gender      `xorm:"BIGINT(20)"`          // 性别
 	Birthday          string      `xorm:"VARCHAR(32)"`         // 生日
 	IdCardType        IdCardType  `xorm:"BIGINT(20)"`          // 身份证件类型
@@ -58,8 +60,12 @@ func (x User) GetField(field string) (interface{}, bool) {
 		return x.Nickname, true
 	case UserMetaVar.F_avatar:
 		return x.Avatar, true
-	case UserMetaVar.F_qrcode:
-		return x.Qrcode, true
+	case UserMetaVar.F_country:
+		return x.Country, true
+	case UserMetaVar.F_province:
+		return x.Province, true
+	case UserMetaVar.F_city:
+		return x.City, true
 	case UserMetaVar.F_gender:
 		return x.Gender, true
 	case UserMetaVar.F_birthday:
@@ -98,8 +104,12 @@ func (x *User) SetField(field, value string) error {
 		x.Nickname = value
 	case UserMetaVar.F_avatar:
 		x.Avatar = value
-	case UserMetaVar.F_qrcode:
-		x.Qrcode = value
+	case UserMetaVar.F_country:
+		x.Country = value
+	case UserMetaVar.F_province:
+		x.Province = value
+	case UserMetaVar.F_city:
+		x.City = value
 	case UserMetaVar.F_gender:
 		var tmp int
 		if err := typeconv.String2Int(&tmp, value); err != nil {
@@ -138,7 +148,9 @@ type UserMeta struct {
 	F_account            string
 	F_nickname           string
 	F_avatar             string
-	F_qrcode             string
+	F_country            string
+	F_province           string
+	F_city               string
 	F_gender             string
 	F_birthday           string
 	F_id_card_type       string
@@ -160,7 +172,9 @@ var UserMetaVar = &UserMeta{
 	F_account:            "account",
 	F_nickname:           "nickname",
 	F_avatar:             "avatar",
-	F_qrcode:             "qrcode",
+	F_country:            "country",
+	F_province:           "province",
+	F_city:               "city",
 	F_gender:             "gender",
 	F_birthday:           "birthday",
 	F_id_card_type:       "id_card_type",
@@ -178,7 +192,9 @@ var _user_fields = []string{
 	UserMetaVar.F_account,
 	UserMetaVar.F_nickname,
 	UserMetaVar.F_avatar,
-	UserMetaVar.F_qrcode,
+	UserMetaVar.F_country,
+	UserMetaVar.F_province,
+	UserMetaVar.F_city,
 	UserMetaVar.F_gender,
 	UserMetaVar.F_birthday,
 	UserMetaVar.F_id_card_type,

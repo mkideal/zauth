@@ -43,15 +43,8 @@ func (svr *Server) handleSignin(w http.ResponseWriter, r *http.Request) {
 		svr.errorResponse(w, r, api.ErrorCode_IncorrectPassword)
 		return
 	}
-	_, err = svr.setSession(w, r, user.Id)
+	token, err := svr.createToken(argv.CommandMethod(), user, w, r)
 	if err != nil {
-		log.Error("%s: set session error: %v", argv.CommandName(), err)
-		svr.errorResponse(w, r, err)
-		return
-	}
-	token, err := svr.tokenRepo.NewToken(user, "", "")
-	if err != nil {
-		log.Error("%s: new token error: %v", argv.CommandName(), err)
 		svr.errorResponse(w, r, err)
 		return
 	}

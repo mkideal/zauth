@@ -17,16 +17,22 @@ enum ErrorCode {
 
 	// StatusExpectationFailed
 
-	UserNotFound    = 417201,
-	TokenNotFound   = 417202,
-	ClientNotFound  = 417203,
-	SessionNotFound = 417204,
-	CommandNotFound = 417205,
+	UserNotFound       = 417201,
+	TokenNotFound      = 417202,
+	ClientNotFound     = 417203,
+	SessionNotFound    = 417204,
+	CommandNotFound    = 417205,
+	VerifyCodeNotFound = 417206,
 
     IncorrectPassword     = 417301,
     IncorrectClientSecret = 417302,
 
-    AccountDuplicated = 417402,
+    AccountDuplicated       = 417401,
+    TelnoVerifyCodeTooOften = 417402,
+    TelnoVerifyCodeExpired  = 417403,
+    Unsupported2FaType      = 417404,
+    FailedToSendSMSCode     = 417405,
+    ThirdPartyError         = 417406,
 }
 
 struct UserInfo {
@@ -34,7 +40,6 @@ struct UserInfo {
 	string account;
 	string nickname;
 	string avatar;
-	string qrcode;
 	int gender;
 	string birthday;
 	string lastLoginAt;
@@ -119,16 +124,19 @@ protocol TokenAuthRes {
 
 // 注册
 protocol SignupReq `method:"POST"` {
-	int accountType; #`cli:"t"` // 账号类型:参见 model.AccountType 枚举
-	string account;  #`cli:"a"` // 账号:当 accountType 为第三方账号时为openId
-	string password; #`cli:"p"` // 密码:当 accountType 为第三方账号时不需要
-    string nickname; #`cli:"n"` // 昵称,可选
+	int accountType;          # `cli:"t"` // 账号类型:参见 model.AccountType 枚举
+	string account;           # `cli:"a"` // 账号:当 accountType 为第三方账号时为 autorization code
+	string password;          # `cli:"p"` // 密码:当 accountType 为第三方账号时不需要
+	string nickname;          # `cli:"n"` // 昵称,可选
+	string thirdClientId;     #           // 第三方应用Id
+	string thirdClientSecret; #           // 第三方应用密钥
+	string thirdOpenId;       #           // 第三方用户的openId
+	string thirdAccessToken;  #           // 第三方用户的accessToken
 }
 
 protocol SignupRes {
-    int64 uid;
-    string account;
-    string nickname;
+	UserInfo user;
+    TokenInfo token;
 }
 
 // 快捷注册
@@ -167,6 +175,28 @@ protocol SignoutReq `method:"POST"` {
 }
 
 protocol SignoutRes {
+}
+
+// 获取手机验证码
+protocol SMSCodeReq `method:"POST"` {
+    string telno; `cli:"t"`
+}
+
+protocol SMSCodeRes {
+    string code;
+    string expireAt;
+}
+
+// 两阶段认证
+protocol TwoFactorAuthReq `method:"POST"` {
+    string authType; # `cli:"t"` // telno or email
+    string authId;   # `cli:"i"`
+    string authCode; # `cli:"c"`
+}
+
+protocol TwoFactorAuthRes {
+    UserInfo user;
+    TokenInfo token;
 }
 
 // 用户信息

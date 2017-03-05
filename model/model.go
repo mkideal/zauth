@@ -14,7 +14,7 @@ func Init() error {
 	return nil
 }
 
-func ValidateClint(client *Client, clientSecret string) bool {
+func ValidateClient(client *Client, clientSecret string) bool {
 	return clientSecret == client.Secret
 }
 
@@ -85,18 +85,26 @@ func FormatTime(t time.Time) string {
 	return t.Format(RFC3339Milli)
 }
 
-func DurationFrom(s string, from time.Time) int64 {
+func DurationFrom(s string, from time.Time) time.Duration {
 	to, err := ParseTime(s)
 	if err != nil {
 		return 0
 	}
-	d := int64(to.Sub(from))
+	d := to.Sub(from)
 	if d < 0 {
 		d = 0
 	}
 	return d
 }
 
-func DurationFromNow(s string) int64 {
+func DurationFromNow(s string) time.Duration {
 	return DurationFrom(s, time.Now())
+}
+
+func IsExpired(s string) bool {
+	t, err := ParseTime(s)
+	if err != nil {
+		return true
+	}
+	return t.Before(time.Now())
 }

@@ -24,16 +24,18 @@ type Config struct {
 }
 
 type Router struct {
-	AccountExist string `cli:"r-account-exist" usage:"router of command AccountExist"`
-	Authorize    string `cli:"r-authorize" usage:"router of command Authorize"`
-	AutoSignup   string `cli:"r-auto-signup" usage:"router of command AutoSignup"`
-	Signup       string `cli:"r-signup" usage:"router of command Signup"`
-	Signin       string `cli:"r-signin" usage:"router of command Signin"`
-	Signout      string `cli:"r-signout" usage:"router of command Signout"`
-	Token        string `cli:"r-token" usage:"router of command Token"`
-	TokenAuth    string `cli:"r-token-auth" usage:"router of command TokenAuth"`
-	User         string `cli:"r-user" usage:"router of command User"`
-	Help         string `cli:"r-help" usage:"router of command Help"`
+	AccountExist  string `cli:"r-account-exist" usage:"router of command AccountExist"`
+	Authorize     string `cli:"r-authorize" usage:"router of command Authorize"`
+	AutoSignup    string `cli:"r-auto-signup" usage:"router of command AutoSignup"`
+	Signup        string `cli:"r-signup" usage:"router of command Signup"`
+	Signin        string `cli:"r-signin" usage:"router of command Signin"`
+	Signout       string `cli:"r-signout" usage:"router of command Signout"`
+	Token         string `cli:"r-token" usage:"router of command Token"`
+	TokenAuth     string `cli:"r-token-auth" usage:"router of command TokenAuth"`
+	SMSCode       string `cli:"r-smscode" usage:"router of command SMSCode"`
+	TwoFactorAuth string `cli:"r-2fa-auth" usage:"router of command TwoFactorAuth"`
+	User          string `cli:"r-user" usage:"router of command User"`
+	Help          string `cli:"r-help" usage:"router of command Help"`
 }
 
 func (r *Router) Init() {
@@ -45,6 +47,8 @@ func (r *Router) Init() {
 	initString(&r.Signout, "/v1/signout")
 	initString(&r.Token, "/v1/token")
 	initString(&r.TokenAuth, "/v1/token_auth")
+	initString(&r.SMSCode, "/v1/smscode")
+	initString(&r.TwoFactorAuth, "/v1/two_factor_auth")
 	initString(&r.User, "/v1/user")
 	initString(&r.Help, "/v1/help")
 }
@@ -105,6 +109,9 @@ func (client *Client) beforeDoHTTP(r *http.Request, headers map[string]string) {
 	if client.Cookie != nil {
 		r.AddCookie(client.Cookie)
 	}
+	if _, found := headers[tagClientBasicAuth]; found {
+		r.SetBasicAuth(client.config.ClientId, client.config.ClientSecret)
+	}
 	if headers != nil {
 		for k, v := range headers {
 			if !strings.HasPrefix(k, tagPrefix) {
@@ -119,9 +126,6 @@ func (client *Client) get(url string, req api.Request, res interface{}, headers 
 	r, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
-	}
-	if _, found := headers[tagClientBasicAuth]; found {
-		r.SetBasicAuth(client.config.ClientId, client.config.ClientSecret)
 	}
 	client.beforeDoHTTP(r, headers)
 	resp, err := client.config.HTTPClient.Do(r)
@@ -207,6 +211,18 @@ func (client *Client) TokenAuth(req *api.TokenAuthReq, accessToken string) (res 
 	err = client.post(client.url(client.config.Router.TokenAuth), req, res, map[string]string{
 		"Authorization": oauth2.TokenHeaderPrefix + accessToken,
 	})
+	return
+}
+
+func (client *Client) SMSCode(req *api.SMSCodeReq) (res *api.SMSCodeRes, err error) {
+	res = new(api.SMSCodeRes)
+	err = client.post(client.url(client.config.Router.SMSCode), req, res, nil)
+	return
+}
+
+func (client *Client) TwoFactorAuth(req *api.TwoFactorAuthReq) (res *api.TwoFactorAuthRes, err error) {
+	res = new(api.TwoFactorAuthRes)
+	err = client.post(client.url(client.config.Router.TwoFactorAuth), req, res, nil)
 	return
 }
 

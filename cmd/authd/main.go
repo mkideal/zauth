@@ -8,6 +8,7 @@ import (
 	"github.com/mkideal/log"
 	"github.com/mkideal/log/logger"
 	"github.com/mkideal/pkg/osutil/signal"
+	"github.com/mkideal/pkg/service/discovery"
 
 	"bitbucket.org/mkideal/accountd/etc"
 	"bitbucket.org/mkideal/accountd/model"
@@ -16,11 +17,13 @@ import (
 
 type argT struct {
 	cli.Helper
-	Version      bool         `cli:"!v,version" usage:"display version"`
-	PidFile      clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/accountd.pid"`
-	LogLevel     logger.Level `cli:"log-level" usage:"log level: trace/debug/info/warn/error/fatal" dft:"info"`
-	LogProviders string       `cli:"log-providers" usage:"log providers seperated by /" dft:"colored_console/file"`
-	LogOpts      string       `cli:"log-opts" usage:"log options formatted with json or form" dft:"dir=./var/logs"`
+	Version       bool         `cli:"!v,version" usage:"display version"`
+	PidFile       clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/accountd.pid"`
+	LogLevel      logger.Level `cli:"log-level" usage:"log level: trace/debug/info/warn/error/fatal" dft:"info"`
+	LogProviders  string       `cli:"log-providers" usage:"log providers seperated by /" dft:"colored_console/file"`
+	LogOpts       string       `cli:"log-opts" usage:"log options formatted with json or form" dft:"dir=./var/logs"`
+	EtcdEndpoints string       `cli:"etcd" usage:"etcd endpoints for service register"`
+	ServiceName   string       `cli:"service-name" usage:"registered service name" dft:"accountd"`
 	server.Config
 }
 
@@ -67,8 +70,28 @@ var root = &cli.Command{
 			log.Error("Error: %v", err)
 			return err
 		}
+
+		// register service
+		var discoveryClient *discovery.Discovery
+		if argv.EtcdEndpoints != "" {
+			discoveryClient = &discovery.Discovery{EtcdEndpoints: argv.EtcdEndpoints}
+			if err := discoveryClient.Init(); err != nil {
+				log.Error("Error: init discovery: %v", err)
+				return err
+			}
+			discovery.Interval(*discoveryClient, func(ttl *discovery.TTL) {
+				address := discovery.Address{Addr: argv.Addr}
+				discoveryClient.Register(argv.ServiceName, address, ttl.Opt())
+			}, discovery.DefaultTTL)
+		}
 		// quit server
-		defer svr.Quit()
+		defer func() {
+			if discoveryClient != nil {
+				// unregister service
+				discoveryClient.Unregister(argv.ServiceName, argv.Addr)
+			}
+			svr.Quit()
+		}()
 
 		// notify daemon's parent process
 		cli.DaemonResponse(successPrefix)
