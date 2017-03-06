@@ -31,17 +31,17 @@ const (
 )
 
 type Config struct {
-	Driver                     string   `cli:"driver" usage:"sql database driver: mysql" dft:"mysql"`
-	DataSourceName             string   `cli:"dsn" usage:"data source name for specified driver" dft:"$ACCOUNT_DSN"`
-	ThirdParty                 []string `cli:"third-party" usage:"third party modules"`
-	Addr                       string   `cli:"addr" usage:"HTTP address" dft:"127.0.0.1:5200"`
-	Mode                       string   `cli:"m,mode" usage:"running mode: debug/release" dft:"release"`
-	CookieKey                  string   `cli:"cookie" usage:"cookie key" dft:"accountd"`
-	SessionExpireDuration      int64    `cli:"session-expire-duration" usage:"session expire duration(seconds)" dft:"3600"`
-	HTMLDir                    string   `cli:"html" usage:"HTML static directory" dft:"html"`
-	HTMLRoouter                string   `cli:"html-router" usage:"HTML static files router" dft:"/"`
-	TelnoVerifyCodeMaxInterval int64    `cli:"sms-max-interval" usage:"SMS code max interval seconds" dft:"60"`
-	TelnoVerifyCodeExpiration  int64    `cli:"sms-expiration" usage:"SMS code expiration seconds" dft:"300"`
+	Driver                     string `cli:"driver" usage:"sql database driver: mysql" dft:"mysql"`
+	DataSourceName             string `cli:"dsn" usage:"data source name for specified driver" dft:"$ACCOUNT_DSN"`
+	ThirdParty                 string `cli:"third-party" usage:"third party modules which seperated by ,"`
+	Addr                       string `cli:"addr" usage:"HTTP address" dft:"127.0.0.1:5200"`
+	Mode                       string `cli:"m,mode" usage:"running mode: debug/release" dft:"release"`
+	CookieKey                  string `cli:"cookie" usage:"cookie key" dft:"authd"`
+	SessionExpireDuration      int64  `cli:"session-expire-duration" usage:"session expire duration(seconds)" dft:"3600"`
+	HTMLDir                    string `cli:"html" usage:"HTML static directory" dft:"html"`
+	HTMLRoouter                string `cli:"html-router" usage:"HTML static files router" dft:"/"`
+	TelnoVerifyCodeMaxInterval int64  `cli:"sms-max-interval" usage:"SMS code max interval seconds" dft:"60"`
+	TelnoVerifyCodeExpiration  int64  `cli:"sms-expiration" usage:"SMS code expiration seconds" dft:"300"`
 
 	SMS
 
@@ -88,7 +88,8 @@ func New(config Config) (*Server, error) {
 		config:        config,
 		third_parties: make(map[string]third_party.Client),
 	}
-	for _, name := range config.ThirdParty {
+	for _, name := range strings.Split(config.ThirdParty, ",") {
+		name = strings.TrimSpace(name)
 		c, err := third_party.New(name)
 		if err != nil {
 			return nil, err

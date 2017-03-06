@@ -95,6 +95,10 @@ func NewClient(config Config) *Client {
 	return c
 }
 
+func (client *Client) ResetAddr(addr string) {
+	client.config.Address = addr
+}
+
 func (client *Client) url(router string) string {
 	if !strings.HasPrefix(router, "/") {
 		return router
@@ -206,10 +210,10 @@ func (client *Client) Token(req *api.TokenReq) (res *api.TokenRes, err error) {
 	return
 }
 
-func (client *Client) TokenAuth(req *api.TokenAuthReq, accessToken string) (res *api.TokenAuthRes, err error) {
+func (client *Client) TokenAuth(req *api.TokenAuthReq) (res *api.TokenAuthRes, err error) {
 	res = new(api.TokenAuthRes)
 	err = client.post(client.url(client.config.Router.TokenAuth), req, res, map[string]string{
-		"Authorization": oauth2.TokenHeaderPrefix + accessToken,
+		"Authorization": oauth2.TokenHeaderPrefix + req.AccessToken,
 	})
 	return
 }

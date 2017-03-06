@@ -23,9 +23,9 @@ func (svr *Server) handleTwoFactorAuth(w http.ResponseWriter, r *http.Request) {
 
 	var user *model.User
 	switch argv.AuthType {
-	case "telno":
+	case api.TwoFaType_Telno:
 		user = svr.telno2faAuth(w, r, argv.AuthId, argv.AuthCode)
-	case "email":
+	case api.TwoFaType_Email:
 		user = svr.email2faAuth(w, r, argv.AuthId, argv.AuthCode)
 	default:
 		svr.errorResponse(w, r, api.ErrorCode_Unsupported2FaType.NewError(argv.AuthType))

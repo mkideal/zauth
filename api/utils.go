@@ -8,6 +8,11 @@ import (
 	"bitbucket.org/mkideal/accountd/oauth2"
 )
 
+const (
+	TwoFaType_Telno = "telno"
+	TwoFaType_Email = "email"
+)
+
 type Error struct {
 	statusCode  int    `json:"-"`
 	Code        string `json:"error"`

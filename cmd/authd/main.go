@@ -18,20 +18,20 @@ import (
 type argT struct {
 	cli.Helper
 	Version       bool         `cli:"!v,version" usage:"display version"`
-	PidFile       clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/accountd.pid"`
+	PidFile       clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/authd.pid"`
 	LogLevel      logger.Level `cli:"log-level" usage:"log level: trace/debug/info/warn/error/fatal" dft:"info"`
 	LogProviders  string       `cli:"log-providers" usage:"log providers seperated by /" dft:"colored_console/file"`
 	LogOpts       string       `cli:"log-opts" usage:"log options formatted with json or form" dft:"dir=./var/logs"`
 	EtcdEndpoints string       `cli:"etcd" usage:"etcd endpoints for service register"`
-	ServiceName   string       `cli:"service-name" usage:"registered service name" dft:"accountd"`
+	ServiceName   string       `cli:"service-name" usage:"registered service name" dft:"authd"`
 	server.Config
 }
 
-const successPrefix = "accountd start ok"
+const successPrefix = "authd start ok"
 
 var root = &cli.Command{
-	Name: "accountd",
-	Desc: "account service",
+	Name: "authd",
+	Desc: "authd service",
 	Argv: func() interface{} { return new(argT) },
 
 	Fn: func(ctx *cli.Context) error {
@@ -120,9 +120,12 @@ var daemon = &cli.Command{
 
 func main() {
 	defer log.Uninit(nil)
-	cli.Root(root,
+	err := cli.Root(root,
 		cli.Tree(daemon),
 	).Run(os.Args[1:])
+	if err != nil {
+		log.Error("Error: %v", err)
+	}
 }
 
 func printVersion(ctx *cli.Context) {
