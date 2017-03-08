@@ -81,6 +81,22 @@ func ParseTime(s string) (time.Time, error) {
 	return time.Parse(RFC3339Milli, s)
 }
 
+func ToUnix(s string) int64 {
+	t, err := ParseTime(s)
+	if err != nil {
+		return 0
+	}
+	return t.Unix()
+}
+
+func ToUnixMilli(s string) int64 {
+	t, err := ParseTime(s)
+	if err != nil {
+		return 0
+	}
+	return t.UnixNano() / 1000000
+}
+
 func FormatTime(t time.Time) string {
 	return t.Format(RFC3339Milli)
 }
