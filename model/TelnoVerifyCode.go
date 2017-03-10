@@ -7,12 +7,14 @@ import (
 
 	"github.com/midlang/mid/x/go/storage"
 	"github.com/mkideal/pkg/typeconv"
+	"gopkg.in/redis.v5"
 )
 
 var (
 	_ = fmt.Printf
 	_ = storage.Unused
 	_ = typeconv.Unused
+	_ = redis.Nil
 )
 
 // Table
@@ -151,8 +153,8 @@ func (TelnoVerifyCodeView) Fields() storage.FieldList {
 	return storage.FieldSlice(TelnoVerifyCodeMetaVar.Fields())
 }
 func (TelnoVerifyCodeView) Refs() map[string]storage.View { return telnoVerifyCodeViewRefs }
-func (view *TelnoVerifyCodeView) tables() map[string]storage.WriteonlyTable {
-	m := make(map[string]storage.WriteonlyTable)
+func (view *TelnoVerifyCodeView) tables() map[string]storage.Table {
+	m := make(map[string]storage.Table)
 	m["telno_verify_code"] = &view.TelnoVerifyCode
 	return m
 }

@@ -7,12 +7,14 @@ import (
 
 	"github.com/midlang/mid/x/go/storage"
 	"github.com/mkideal/pkg/typeconv"
+	"gopkg.in/redis.v5"
 )
 
 var (
 	_ = fmt.Printf
 	_ = storage.Unused
 	_ = typeconv.Unused
+	_ = redis.Nil
 )
 
 // Table
@@ -149,8 +151,8 @@ var (
 func (SessionView) Table() string                 { return SessionMetaVar.Name() }
 func (SessionView) Fields() storage.FieldList     { return storage.FieldSlice(SessionMetaVar.Fields()) }
 func (SessionView) Refs() map[string]storage.View { return sessionViewRefs }
-func (view *SessionView) tables() map[string]storage.WriteonlyTable {
-	m := make(map[string]storage.WriteonlyTable)
+func (view *SessionView) tables() map[string]storage.Table {
+	m := make(map[string]storage.Table)
 	m["session"] = &view.Session
 	return m
 }

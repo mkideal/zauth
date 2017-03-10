@@ -294,7 +294,7 @@ func execLine(client *authc.Client, line string) (err error, quit bool) {
 		req := new(api.TokenAuthReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onTokenAuth(client.TokenAuth(req, req.AccessToken))
+			context.onTokenAuth(client.TokenAuth(req))
 		}
 	case "sms", "smscode":
 		req := new(api.SMSCodeReq)

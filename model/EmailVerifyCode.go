@@ -7,12 +7,14 @@ import (
 
 	"github.com/midlang/mid/x/go/storage"
 	"github.com/mkideal/pkg/typeconv"
+	"gopkg.in/redis.v5"
 )
 
 var (
 	_ = fmt.Printf
 	_ = storage.Unused
 	_ = typeconv.Unused
+	_ = redis.Nil
 )
 
 // Table
@@ -151,8 +153,8 @@ func (EmailVerifyCodeView) Fields() storage.FieldList {
 	return storage.FieldSlice(EmailVerifyCodeMetaVar.Fields())
 }
 func (EmailVerifyCodeView) Refs() map[string]storage.View { return emailVerifyCodeViewRefs }
-func (view *EmailVerifyCodeView) tables() map[string]storage.WriteonlyTable {
-	m := make(map[string]storage.WriteonlyTable)
+func (view *EmailVerifyCodeView) tables() map[string]storage.Table {
+	m := make(map[string]storage.Table)
 	m["email_verify_code"] = &view.EmailVerifyCode
 	return m
 }
