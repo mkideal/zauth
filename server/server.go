@@ -43,7 +43,7 @@ type Config struct {
 	TelnoVerifyCodeMaxInterval int64  `cli:"sms-max-interval" usage:"SMS code max interval seconds" dft:"60"`
 	TelnoVerifyCodeExpiration  int64  `cli:"sms-expiration" usage:"SMS code expiration seconds" dft:"300"`
 
-	SMS
+	SMS `cli:"-"`
 
 	Pages
 }

@@ -7,6 +7,7 @@ import (
 	clix "github.com/mkideal/cli/ext"
 	"github.com/mkideal/log"
 	"github.com/mkideal/log/logger"
+	"github.com/mkideal/pkg/config"
 	"github.com/mkideal/pkg/osutil/signal"
 	"github.com/mkideal/pkg/service/discovery"
 
@@ -17,6 +18,7 @@ import (
 
 type argT struct {
 	cli.Helper
+	config.FlagConfig
 	Version       bool         `cli:"!v,version" usage:"display version"`
 	PidFile       clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/authd.pid"`
 	LogLevel      logger.Level `cli:"log-level" usage:"log level: trace/debug/info/warn/error/fatal" dft:"info"`
@@ -39,6 +41,10 @@ var root = &cli.Command{
 		if argv.Version {
 			printVersion(ctx)
 			return nil
+		}
+		if err := argv.FlagConfig.Init(argv); err != nil {
+			log.Error("Error: %v", err)
+			return err
 		}
 
 		// initialize log
