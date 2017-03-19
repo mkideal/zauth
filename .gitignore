@@ -1,6 +1,7 @@
 *.swp
 *.swo
 *.DS_store
+*.exe
 cmd/authd/authd
 cmd/authc/authc
 authc
