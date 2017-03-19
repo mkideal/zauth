@@ -94,11 +94,11 @@ func NewTelnoVerifyCodeSlice(cap int) *TelnoVerifyCodeSlice {
 	return &s
 }
 
-func (s TelnoVerifyCodeSlice) Len() int                                  { return len(s) }
-func (s TelnoVerifyCodeSlice) ReadonlyTable(i int) storage.ReadonlyTable { return s[i] }
-func (s *TelnoVerifyCodeSlice) Slice() []TelnoVerifyCode                 { return []TelnoVerifyCode(*s) }
+func (s TelnoVerifyCodeSlice) TableMeta() storage.TableMeta { return TelnoVerifyCodeMetaVar }
+func (s TelnoVerifyCodeSlice) Len() int                     { return len(s) }
+func (s *TelnoVerifyCodeSlice) Slice() []TelnoVerifyCode    { return []TelnoVerifyCode(*s) }
 
-func (s *TelnoVerifyCodeSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *TelnoVerifyCodeSlice) New(table string, index int, key string) (storage.Table, error) {
 	for len(*s) <= index {
 		*s = append(*s, TelnoVerifyCode{})
 	}
@@ -119,11 +119,11 @@ func NewTelnoVerifyCodeViewSlice(cap int) *TelnoVerifyCodeViewSlice {
 	return &s
 }
 
-func (s *TelnoVerifyCodeViewSlice) Slice() []TelnoVerifyCodeView {
-	return []TelnoVerifyCodeView(*s)
-}
+func (s TelnoVerifyCodeViewSlice) TableMeta() storage.TableMeta  { return TelnoVerifyCodeMetaVar }
+func (s TelnoVerifyCodeViewSlice) Len() int                      { return len(s) }
+func (s *TelnoVerifyCodeViewSlice) Slice() []TelnoVerifyCodeView { return []TelnoVerifyCodeView(*s) }
 
-func (s *TelnoVerifyCodeViewSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *TelnoVerifyCodeViewSlice) New(table string, index int, key string) (storage.Table, error) {
 	if table == "telno_verify_code" {
 		for len(*s) <= index {
 			x := TelnoVerifyCode{}
@@ -148,7 +148,7 @@ var (
 	telnoVerifyCodeViewRefs = map[string]storage.View{}
 )
 
-func (TelnoVerifyCodeView) Table() string { return TelnoVerifyCodeMetaVar.Name() }
+func (TelnoVerifyCodeView) TableMeta() storage.TableMeta { return TelnoVerifyCodeMetaVar }
 func (TelnoVerifyCodeView) Fields() storage.FieldList {
 	return storage.FieldSlice(TelnoVerifyCodeMetaVar.Fields())
 }

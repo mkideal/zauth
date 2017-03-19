@@ -134,11 +134,11 @@ func NewTokenSlice(cap int) *TokenSlice {
 	return &s
 }
 
-func (s TokenSlice) Len() int                                  { return len(s) }
-func (s TokenSlice) ReadonlyTable(i int) storage.ReadonlyTable { return s[i] }
-func (s *TokenSlice) Slice() []Token                           { return []Token(*s) }
+func (s TokenSlice) TableMeta() storage.TableMeta { return TokenMetaVar }
+func (s TokenSlice) Len() int                     { return len(s) }
+func (s *TokenSlice) Slice() []Token              { return []Token(*s) }
 
-func (s *TokenSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *TokenSlice) New(table string, index int, key string) (storage.Table, error) {
 	for len(*s) <= index {
 		*s = append(*s, Token{})
 	}
@@ -159,11 +159,11 @@ func NewTokenViewSlice(cap int) *TokenViewSlice {
 	return &s
 }
 
-func (s *TokenViewSlice) Slice() []TokenView {
-	return []TokenView(*s)
-}
+func (s TokenViewSlice) TableMeta() storage.TableMeta { return TokenMetaVar }
+func (s TokenViewSlice) Len() int                     { return len(s) }
+func (s *TokenViewSlice) Slice() []TokenView          { return []TokenView(*s) }
 
-func (s *TokenViewSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *TokenViewSlice) New(table string, index int, key string) (storage.Table, error) {
 	if table == "token" {
 		for len(*s) <= index {
 			x := Token{}
@@ -188,7 +188,7 @@ var (
 	tokenViewRefs = map[string]storage.View{}
 )
 
-func (TokenView) Table() string                 { return TokenMetaVar.Name() }
+func (TokenView) TableMeta() storage.TableMeta  { return TokenMetaVar }
 func (TokenView) Fields() storage.FieldList     { return storage.FieldSlice(TokenMetaVar.Fields()) }
 func (TokenView) Refs() map[string]storage.View { return tokenViewRefs }
 func (view *TokenView) tables() map[string]storage.Table {

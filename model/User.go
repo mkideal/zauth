@@ -22,16 +22,16 @@ var (
 // 用户信息
 type User struct {
 	Id                int64       `xorm:"pk BIGINT(20)"`       // 随机唯一Id
-	AccountType       AccountType `xorm:"BIGINT(20)"`          // 账号类型
+	AccountType       AccountType `xorm:"TEXT"`                // 账号类型
 	Account           string      `xorm:"VARCHAR(128) UNIQUE"` // 账号
 	Nickname          string      `xorm:"VARCHAR(64)"`         // 昵称
 	Avatar            string      `xorm:"VARCHAR(256)"`        // 头像
 	Country           string      `xorm:"VARCHAR(32)"`         // 国家
 	Province          string      `xorm:"VARCHAR(64)"`         // 省
 	City              string      `xorm:"VARCHAR(256)"`        // 城市
-	Gender            Gender      `xorm:"BIGINT(20)"`          // 性别
+	Gender            Gender      `xorm:"TEXT"`                // 性别
 	Birthday          string      `xorm:"VARCHAR(32)"`         // 生日
-	IdCardType        IdCardType  `xorm:"BIGINT(20)"`          // 身份证件类型
+	IdCardType        IdCardType  `xorm:"TEXT"`                // 身份证件类型
 	IdCard            string      `xorm:"VARCHAR(64)"`         // 证件唯一标识
 	EncryptedPassword string      `xorm:"VARCHAR(64)"`         // 加密后密码
 	PasswordSalt      string      `xorm:"VARCHAR(32)"`         // 加密密码的盐
@@ -95,11 +95,9 @@ func (x User) GetField(field string) (interface{}, bool) {
 func (x *User) SetField(field, value string) error {
 	switch field {
 	case UserMetaVar.F_account_type:
-		var tmp int
-		if err := typeconv.String2Int(&tmp, value); err != nil {
+		if err := typeconv.String2Object(&x.AccountType, value); err != nil {
 			return err
 		}
-		x.AccountType = AccountType(tmp)
 	case UserMetaVar.F_account:
 		x.Account = value
 	case UserMetaVar.F_nickname:
@@ -113,19 +111,15 @@ func (x *User) SetField(field, value string) error {
 	case UserMetaVar.F_city:
 		x.City = value
 	case UserMetaVar.F_gender:
-		var tmp int
-		if err := typeconv.String2Int(&tmp, value); err != nil {
+		if err := typeconv.String2Object(&x.Gender, value); err != nil {
 			return err
 		}
-		x.Gender = Gender(tmp)
 	case UserMetaVar.F_birthday:
 		x.Birthday = value
 	case UserMetaVar.F_id_card_type:
-		var tmp int
-		if err := typeconv.String2Int(&tmp, value); err != nil {
+		if err := typeconv.String2Object(&x.IdCardType, value); err != nil {
 			return err
 		}
-		x.IdCardType = IdCardType(tmp)
 	case UserMetaVar.F_id_card:
 		x.IdCard = value
 	case UserMetaVar.F_encrypted_password:
@@ -217,11 +211,11 @@ func NewUserSlice(cap int) *UserSlice {
 	return &s
 }
 
-func (s UserSlice) Len() int                                  { return len(s) }
-func (s UserSlice) ReadonlyTable(i int) storage.ReadonlyTable { return s[i] }
-func (s *UserSlice) Slice() []User                            { return []User(*s) }
+func (s UserSlice) TableMeta() storage.TableMeta { return UserMetaVar }
+func (s UserSlice) Len() int                     { return len(s) }
+func (s *UserSlice) Slice() []User               { return []User(*s) }
 
-func (s *UserSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *UserSlice) New(table string, index int, key string) (storage.Table, error) {
 	for len(*s) <= index {
 		*s = append(*s, User{})
 	}
@@ -242,11 +236,11 @@ func NewUserViewSlice(cap int) *UserViewSlice {
 	return &s
 }
 
-func (s *UserViewSlice) Slice() []UserView {
-	return []UserView(*s)
-}
+func (s UserViewSlice) TableMeta() storage.TableMeta { return UserMetaVar }
+func (s UserViewSlice) Len() int                     { return len(s) }
+func (s *UserViewSlice) Slice() []UserView           { return []UserView(*s) }
 
-func (s *UserViewSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *UserViewSlice) New(table string, index int, key string) (storage.Table, error) {
 	if table == "user" {
 		for len(*s) <= index {
 			x := User{}
@@ -271,7 +265,7 @@ var (
 	userViewRefs = map[string]storage.View{}
 )
 
-func (UserView) Table() string                 { return UserMetaVar.Name() }
+func (UserView) TableMeta() storage.TableMeta  { return UserMetaVar }
 func (UserView) Fields() storage.FieldList     { return storage.FieldSlice(UserMetaVar.Fields()) }
 func (UserView) Refs() map[string]storage.View { return userViewRefs }
 func (view *UserView) tables() map[string]storage.Table {

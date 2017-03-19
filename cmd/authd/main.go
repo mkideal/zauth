@@ -12,7 +12,6 @@ import (
 	"github.com/mkideal/pkg/service/discovery"
 
 	"bitbucket.org/mkideal/accountd/etc"
-	"bitbucket.org/mkideal/accountd/model"
 	"bitbucket.org/mkideal/accountd/server"
 )
 
@@ -59,12 +58,6 @@ var root = &cli.Command{
 			return err
 		}
 		defer argv.PidFile.Remove()
-
-		// initialize model
-		if err := model.Init(); err != nil {
-			log.Error("Error: %v", err)
-			return err
-		}
 
 		// run server
 		svr, err := server.New(argv.Config)

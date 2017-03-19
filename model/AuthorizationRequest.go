@@ -134,11 +134,11 @@ func NewAuthorizationRequestSlice(cap int) *AuthorizationRequestSlice {
 	return &s
 }
 
-func (s AuthorizationRequestSlice) Len() int                                  { return len(s) }
-func (s AuthorizationRequestSlice) ReadonlyTable(i int) storage.ReadonlyTable { return s[i] }
-func (s *AuthorizationRequestSlice) Slice() []AuthorizationRequest            { return []AuthorizationRequest(*s) }
+func (s AuthorizationRequestSlice) TableMeta() storage.TableMeta   { return AuthorizationRequestMetaVar }
+func (s AuthorizationRequestSlice) Len() int                       { return len(s) }
+func (s *AuthorizationRequestSlice) Slice() []AuthorizationRequest { return []AuthorizationRequest(*s) }
 
-func (s *AuthorizationRequestSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *AuthorizationRequestSlice) New(table string, index int, key string) (storage.Table, error) {
 	for len(*s) <= index {
 		*s = append(*s, AuthorizationRequest{})
 	}
@@ -159,11 +159,15 @@ func NewAuthorizationRequestViewSlice(cap int) *AuthorizationRequestViewSlice {
 	return &s
 }
 
+func (s AuthorizationRequestViewSlice) TableMeta() storage.TableMeta {
+	return AuthorizationRequestMetaVar
+}
+func (s AuthorizationRequestViewSlice) Len() int { return len(s) }
 func (s *AuthorizationRequestViewSlice) Slice() []AuthorizationRequestView {
 	return []AuthorizationRequestView(*s)
 }
 
-func (s *AuthorizationRequestViewSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *AuthorizationRequestViewSlice) New(table string, index int, key string) (storage.Table, error) {
 	if table == "authorization_request" {
 		for len(*s) <= index {
 			x := AuthorizationRequest{}
@@ -188,7 +192,7 @@ var (
 	authorizationRequestViewRefs = map[string]storage.View{}
 )
 
-func (AuthorizationRequestView) Table() string { return AuthorizationRequestMetaVar.Name() }
+func (AuthorizationRequestView) TableMeta() storage.TableMeta { return AuthorizationRequestMetaVar }
 func (AuthorizationRequestView) Fields() storage.FieldList {
 	return storage.FieldSlice(AuthorizationRequestMetaVar.Fields())
 }

@@ -94,11 +94,11 @@ func NewEmailVerifyCodeSlice(cap int) *EmailVerifyCodeSlice {
 	return &s
 }
 
-func (s EmailVerifyCodeSlice) Len() int                                  { return len(s) }
-func (s EmailVerifyCodeSlice) ReadonlyTable(i int) storage.ReadonlyTable { return s[i] }
-func (s *EmailVerifyCodeSlice) Slice() []EmailVerifyCode                 { return []EmailVerifyCode(*s) }
+func (s EmailVerifyCodeSlice) TableMeta() storage.TableMeta { return EmailVerifyCodeMetaVar }
+func (s EmailVerifyCodeSlice) Len() int                     { return len(s) }
+func (s *EmailVerifyCodeSlice) Slice() []EmailVerifyCode    { return []EmailVerifyCode(*s) }
 
-func (s *EmailVerifyCodeSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *EmailVerifyCodeSlice) New(table string, index int, key string) (storage.Table, error) {
 	for len(*s) <= index {
 		*s = append(*s, EmailVerifyCode{})
 	}
@@ -119,11 +119,11 @@ func NewEmailVerifyCodeViewSlice(cap int) *EmailVerifyCodeViewSlice {
 	return &s
 }
 
-func (s *EmailVerifyCodeViewSlice) Slice() []EmailVerifyCodeView {
-	return []EmailVerifyCodeView(*s)
-}
+func (s EmailVerifyCodeViewSlice) TableMeta() storage.TableMeta  { return EmailVerifyCodeMetaVar }
+func (s EmailVerifyCodeViewSlice) Len() int                      { return len(s) }
+func (s *EmailVerifyCodeViewSlice) Slice() []EmailVerifyCodeView { return []EmailVerifyCodeView(*s) }
 
-func (s *EmailVerifyCodeViewSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *EmailVerifyCodeViewSlice) New(table string, index int, key string) (storage.Table, error) {
 	if table == "email_verify_code" {
 		for len(*s) <= index {
 			x := EmailVerifyCode{}
@@ -148,7 +148,7 @@ var (
 	emailVerifyCodeViewRefs = map[string]storage.View{}
 )
 
-func (EmailVerifyCodeView) Table() string { return EmailVerifyCodeMetaVar.Name() }
+func (EmailVerifyCodeView) TableMeta() storage.TableMeta { return EmailVerifyCodeMetaVar }
 func (EmailVerifyCodeView) Fields() storage.FieldList {
 	return storage.FieldSlice(EmailVerifyCodeMetaVar.Fields())
 }

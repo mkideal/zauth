@@ -94,11 +94,11 @@ func NewSessionSlice(cap int) *SessionSlice {
 	return &s
 }
 
-func (s SessionSlice) Len() int                                  { return len(s) }
-func (s SessionSlice) ReadonlyTable(i int) storage.ReadonlyTable { return s[i] }
-func (s *SessionSlice) Slice() []Session                         { return []Session(*s) }
+func (s SessionSlice) TableMeta() storage.TableMeta { return SessionMetaVar }
+func (s SessionSlice) Len() int                     { return len(s) }
+func (s *SessionSlice) Slice() []Session            { return []Session(*s) }
 
-func (s *SessionSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *SessionSlice) New(table string, index int, key string) (storage.Table, error) {
 	for len(*s) <= index {
 		*s = append(*s, Session{})
 	}
@@ -119,11 +119,11 @@ func NewSessionViewSlice(cap int) *SessionViewSlice {
 	return &s
 }
 
-func (s *SessionViewSlice) Slice() []SessionView {
-	return []SessionView(*s)
-}
+func (s SessionViewSlice) TableMeta() storage.TableMeta { return SessionMetaVar }
+func (s SessionViewSlice) Len() int                     { return len(s) }
+func (s *SessionViewSlice) Slice() []SessionView        { return []SessionView(*s) }
 
-func (s *SessionViewSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *SessionViewSlice) New(table string, index int, key string) (storage.Table, error) {
 	if table == "session" {
 		for len(*s) <= index {
 			x := Session{}
@@ -148,7 +148,7 @@ var (
 	sessionViewRefs = map[string]storage.View{}
 )
 
-func (SessionView) Table() string                 { return SessionMetaVar.Name() }
+func (SessionView) TableMeta() storage.TableMeta  { return SessionMetaVar }
 func (SessionView) Fields() storage.FieldList     { return storage.FieldSlice(SessionMetaVar.Fields()) }
 func (SessionView) Refs() map[string]storage.View { return sessionViewRefs }
 func (view *SessionView) tables() map[string]storage.Table {

@@ -126,11 +126,11 @@ func NewClientSlice(cap int) *ClientSlice {
 	return &s
 }
 
-func (s ClientSlice) Len() int                                  { return len(s) }
-func (s ClientSlice) ReadonlyTable(i int) storage.ReadonlyTable { return s[i] }
-func (s *ClientSlice) Slice() []Client                          { return []Client(*s) }
+func (s ClientSlice) TableMeta() storage.TableMeta { return ClientMetaVar }
+func (s ClientSlice) Len() int                     { return len(s) }
+func (s *ClientSlice) Slice() []Client             { return []Client(*s) }
 
-func (s *ClientSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *ClientSlice) New(table string, index int, key string) (storage.Table, error) {
 	for len(*s) <= index {
 		*s = append(*s, Client{})
 	}
@@ -151,11 +151,11 @@ func NewClientViewSlice(cap int) *ClientViewSlice {
 	return &s
 }
 
-func (s *ClientViewSlice) Slice() []ClientView {
-	return []ClientView(*s)
-}
+func (s ClientViewSlice) TableMeta() storage.TableMeta { return ClientMetaVar }
+func (s ClientViewSlice) Len() int                     { return len(s) }
+func (s *ClientViewSlice) Slice() []ClientView         { return []ClientView(*s) }
 
-func (s *ClientViewSlice) New(table string, index int, key string) (storage.FieldSetter, error) {
+func (s *ClientViewSlice) New(table string, index int, key string) (storage.Table, error) {
 	if table == "client" {
 		for len(*s) <= index {
 			x := Client{}
@@ -180,7 +180,7 @@ var (
 	clientViewRefs = map[string]storage.View{}
 )
 
-func (ClientView) Table() string                 { return ClientMetaVar.Name() }
+func (ClientView) TableMeta() storage.TableMeta  { return ClientMetaVar }
 func (ClientView) Fields() storage.FieldList     { return storage.FieldSlice(ClientMetaVar.Fields()) }
 func (ClientView) Refs() map[string]storage.View { return clientViewRefs }
 func (view *ClientView) tables() map[string]storage.Table {
