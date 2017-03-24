@@ -24,7 +24,7 @@ func (svr *Server) handleTwoFactorAuth(w http.ResponseWriter, r *http.Request) {
 	var user *model.User
 	switch argv.AuthType {
 	case api.TwoFaType_Telno:
-		user = svr.telno2faAuth(w, r, argv.AuthId, argv.AuthCode)
+		user = svr.telno2faAuth(argv, w, r, argv.AuthId, argv.AuthCode)
 	case api.TwoFaType_Email:
 		user = svr.email2faAuth(w, r, argv.AuthId, argv.AuthCode)
 	default:
@@ -50,27 +50,33 @@ func (svr *Server) handleTwoFactorAuth(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (svr *Server) telno2faAuth(w http.ResponseWriter, r *http.Request, telno, code string) *model.User {
+func (svr *Server) telno2faAuth(argv *api.TwoFactorAuthReq, w http.ResponseWriter, r *http.Request, telno, code string) *model.User {
 	if !model.IsTelno(telno) {
 		log.Info("illegal telno `%s`", telno)
 		svr.errorResponse(w, r, api.ErrorCode_IllegalTelno)
 		return nil
 	}
-	vcode, err := svr.telnoVerifyCodeRepo.FindTelnoCode(telno)
-	if err != nil {
-		log.Error("find telno verify code %s error: %v", telno, err)
-		svr.errorResponse(w, r, err)
-		return nil
-	}
-	if vcode == nil {
-		log.Info("telno verify code for %s not found", telno)
-		svr.errorResponse(w, r, api.ErrorCode_VerifyCodeNotFound)
-		return nil
-	}
-	if model.IsExpired(vcode.ExpireAt) {
-		log.Info("telno verify code for %s expired", telno)
-		svr.errorResponse(w, r, api.ErrorCode_TelnoVerifyCodeExpired)
-		return nil
+	if !svr.config.IsWhiteTelno(telno) {
+		if argv.UseThirdVerifyService {
+			// 使用第三方验证码校验服务
+		} else {
+			vcode, err := svr.telnoVerifyCodeRepo.FindTelnoCode(telno)
+			if err != nil {
+				log.Error("find telno verify code %s error: %v", telno, err)
+				svr.errorResponse(w, r, err)
+				return nil
+			}
+			if vcode == nil {
+				log.Info("telno verify code for %s not found", telno)
+				svr.errorResponse(w, r, api.ErrorCode_VerifyCodeNotFound)
+				return nil
+			}
+			if model.IsExpired(vcode.ExpireAt) {
+				log.Info("telno verify code for %s expired", telno)
+				svr.errorResponse(w, r, api.ErrorCode_TelnoVerifyCodeExpired)
+				return nil
+			}
+		}
 	}
 	user, err := svr.userRepo.GetUserByAccount(telno)
 	if err != nil {
@@ -78,9 +84,17 @@ func (svr *Server) telno2faAuth(w http.ResponseWriter, r *http.Request, telno, c
 		svr.errorResponse(w, r, err)
 		return nil
 	} else if user == nil {
-		log.Info("telno %s not found", telno)
-		svr.errorResponse(w, r, err)
-		return nil
+		log.Info("TwoFactorAuth: new user for telno %s", telno)
+		user = new(model.User)
+		user.AccountType = model.AccountType_Telno
+		user.CreatedIp = httputil.IP(r)
+		user.Account = telno
+		user.Nickname = telno
+		if err := svr.userRepo.AddUser(user, ""); err != nil {
+			log.Error("add user %s error: %v", telno, err)
+			svr.errorResponse(w, r, err)
+			return nil
+		}
 	}
 	return user
 }

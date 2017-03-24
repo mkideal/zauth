@@ -38,7 +38,7 @@ type TokenRepository interface {
 }
 
 type TelnoVerifyCodeRepository interface {
-	NewTelnoCode(telno string, maxIntervalSeconds, expirationSeconds int64) (*model.TelnoVerifyCode, error)
+	NewTelnoCode(codeLength int, telno string, maxIntervalSeconds, expirationSeconds int64) (*model.TelnoVerifyCode, error)
 	FindTelnoCode(telno string) (*model.TelnoVerifyCode, error)
 	UpdateTelnoCode(vcode *model.TelnoVerifyCode, fields ...string) error
 	SendTelnoCode(vcode *model.TelnoVerifyCode, uri, un, pw, msgFormat string) error

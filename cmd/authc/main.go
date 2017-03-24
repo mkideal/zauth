@@ -19,6 +19,7 @@ import (
 )
 
 type Context struct {
+	Addr  string
 	Token api.TokenInfo
 	User  api.UserInfo
 	Error error
@@ -209,13 +210,14 @@ func prefix(ctx *Context) string {
 type argT struct {
 	cli.Helper
 	authc.Config
+	Address string `cli:"addr" usage:"authd http address"`
 }
 
 func main() {
 	cli.Run(new(argT), func(ctx *cli.Context) error {
 		argv := ctx.Argv().(*argT)
 		client := authc.NewClient(argv.Config)
-		_ = client
+		context.Addr = argv.Address
 		quit := false
 		for !quit {
 			line, err := prompt.Basic(prefix(context), false)
@@ -258,65 +260,65 @@ func execLine(client *authc.Client, line string) (err error, quit bool) {
 		req := new(api.AccountExistReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onAccountExist(client.AccountExist(req))
+			context.onAccountExist(client.AccountExist(context.Addr, req))
 		}
 	case "auto_signup":
 		req := new(api.AutoSignupReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onAutoSignup(client.AutoSignup(req))
+			context.onAutoSignup(client.AutoSignup(context.Addr, req))
 		}
 	case "signup":
 		req := new(api.SignupReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onSignup(client.Signup(req))
+			context.onSignup(client.Signup(context.Addr, req))
 		}
 	case "signin":
 		req := new(api.SigninReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onSignin(client.Signin(req))
+			context.onSignin(client.Signin(context.Addr, req))
 		}
 	case "signout":
 		req := new(api.SignoutReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onSignout(client.Signout(req))
+			context.onSignout(client.Signout(context.Addr, req))
 		}
 	case "token":
 		req := new(api.TokenReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onToken(client.Token(req))
+			context.onToken(client.Token(context.Addr, req))
 		}
 	case "token_auth":
 		req := new(api.TokenAuthReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onTokenAuth(client.TokenAuth(req))
+			context.onTokenAuth(client.TokenAuth(context.Addr, req))
 		}
 	case "sms", "smscode":
 		req := new(api.SMSCodeReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onSMSCode(client.SMSCode(req))
+			context.onSMSCode(client.SMSCode(context.Addr, req))
 		}
 	case "2fa", "2fa_auth":
 		req := new(api.TwoFactorAuthReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onTwoFactorAuth(client.TwoFactorAuth(req))
+			context.onTwoFactorAuth(client.TwoFactorAuth(context.Addr, req))
 		}
 	case "user":
 		req := new(api.UserReq)
 		err = context.parseRequest(args, req)
 		if err == nil {
-			context.onUser(client.User(req))
+			context.onUser(client.User(context.Addr, req))
 		}
 	case "help":
 		req := new(api.HelpReq)
-		context.onHelpRes(client.Help(req))
+		context.onHelpRes(client.Help(context.Addr, req))
 	case "p", "print":
 		for _, arg := range args {
 			context.outputJSON(value(arg))

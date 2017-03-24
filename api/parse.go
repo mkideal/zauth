@@ -295,15 +295,20 @@ func (argv *TwoFactorAuthReq) Parse(r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	argv.UseThirdVerifyService, err = httputil.ParseBool(r, "use_third_verify_service")
+	if err != nil {
+		return err
+	}
 
 	return err
 }
 
 func (argv *TwoFactorAuthReq) Values() url.Values {
 	return url.Values{
-		"auth_type": {typeconv.ToString(argv.AuthType)},
-		"auth_id":   {typeconv.ToString(argv.AuthId)},
-		"auth_code": {typeconv.ToString(argv.AuthCode)},
+		"auth_type":                {typeconv.ToString(argv.AuthType)},
+		"auth_id":                  {typeconv.ToString(argv.AuthId)},
+		"auth_code":                {typeconv.ToString(argv.AuthCode)},
+		"use_third_verify_service": {typeconv.ToString(argv.UseThirdVerifyService)},
 	}
 }
 

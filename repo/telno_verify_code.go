@@ -21,7 +21,7 @@ func NewTelnoVerifyCodeRepository(sqlRepo *SqlRepository) TelnoVerifyCodeReposit
 	return &telnoVerifyCodeRepository{SqlRepository: sqlRepo}
 }
 
-func (repo *telnoVerifyCodeRepository) NewTelnoCode(telno string, maxIntervalSeconds, expirationSeconds int64) (*model.TelnoVerifyCode, error) {
+func (repo *telnoVerifyCodeRepository) NewTelnoCode(codeLength int, telno string, maxIntervalSeconds, expirationSeconds int64) (*model.TelnoVerifyCode, error) {
 	vcode := &model.TelnoVerifyCode{Telno: telno}
 	found, err := repo.Get(vcode)
 	if err != nil {
@@ -29,13 +29,17 @@ func (repo *telnoVerifyCodeRepository) NewTelnoCode(telno string, maxIntervalSec
 	}
 	now := time.Now()
 	if found {
-		if model.DurationFrom(vcode.CreatedAt, now) < time.Duration(maxIntervalSeconds)*time.Second {
+		from, err := model.ParseTime(vcode.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		if now.Sub(from) < time.Duration(maxIntervalSeconds)*time.Second {
 			return nil, nil
 		}
 	}
 	vcode.CreatedAt = model.FormatTime(now)
 	vcode.ExpireAt = model.FormatTime(now.Add(time.Second * time.Duration(expirationSeconds)))
-	vcode.Code = random.String(6, nil, random.O_DIGIT)
+	vcode.Code = random.String(codeLength, nil, random.O_DIGIT)
 	if found {
 		if err := repo.Update(vcode); err != nil {
 			return nil, err

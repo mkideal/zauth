@@ -14,7 +14,6 @@ type HTTPClient interface {
 }
 
 type Config struct {
-	Address      string `cli:"address" usage:"account server addres" dft:"http://127.0.0.1:5200"`
 	ClientId     string `cli:"client-id" usage:"client id"`
 	ClientSecret string `cli:"client-secret" usage:"client secret"`
 	CookieName   string `cli:"cookie" usage:"cookie name" dft:"accountd"`
@@ -95,18 +94,14 @@ func NewClient(config Config) *Client {
 	return c
 }
 
-func (client *Client) ResetAddr(addr string) {
-	client.config.Address = addr
-}
-
-func (client *Client) url(router string) string {
+func (client *Client) url(address, router string) string {
 	if !strings.HasPrefix(router, "/") {
 		return router
 	}
-	if strings.HasSuffix(client.config.Address, "/") {
-		return client.config.Address + strings.TrimPrefix(router, "/")
+	if strings.HasSuffix(address, "/") {
+		return address + strings.TrimPrefix(router, "/")
 	}
-	return client.config.Address + router
+	return address + router
 }
 
 func (client *Client) beforeDoHTTP(r *http.Request, headers map[string]string) {
@@ -170,74 +165,74 @@ func (client *Client) handleResponse(resp *http.Response, err error, res interfa
 	return decoder.Decode(res)
 }
 
-func (client *Client) AccountExist(req *api.AccountExistReq) (res *api.AccountExistRes, err error) {
+func (client *Client) AccountExist(addr string, req *api.AccountExistReq) (res *api.AccountExistRes, err error) {
 	res = new(api.AccountExistRes)
-	err = client.get(client.url(client.config.Router.AccountExist), req, res, nil)
+	err = client.get(client.url(addr, client.config.Router.AccountExist), req, res, nil)
 	return
 }
 
-func (client *Client) AutoSignup(req *api.AutoSignupReq) (res *api.AutoSignupRes, err error) {
+func (client *Client) AutoSignup(addr string, req *api.AutoSignupReq) (res *api.AutoSignupRes, err error) {
 	res = new(api.AutoSignupRes)
-	err = client.post(client.url(client.config.Router.AutoSignup), req, res, map[string]string{
+	err = client.post(client.url(addr, client.config.Router.AutoSignup), req, res, map[string]string{
 		tagClientBasicAuth: "true",
 	})
 	return
 }
 
-func (client *Client) Signup(req *api.SignupReq) (res *api.SignupRes, err error) {
+func (client *Client) Signup(addr string, req *api.SignupReq) (res *api.SignupRes, err error) {
 	res = new(api.SignupRes)
-	err = client.post(client.url(client.config.Router.Signup), req, res, nil)
+	err = client.post(client.url(addr, client.config.Router.Signup), req, res, nil)
 	return
 }
 
-func (client *Client) Signin(req *api.SigninReq) (res *api.SigninRes, err error) {
+func (client *Client) Signin(addr string, req *api.SigninReq) (res *api.SigninRes, err error) {
 	res = new(api.SigninRes)
-	err = client.post(client.url(client.config.Router.Signin), req, res, nil)
+	err = client.post(client.url(addr, client.config.Router.Signin), req, res, nil)
 	return
 }
 
-func (client *Client) Signout(req *api.SignoutReq) (res *api.SignoutRes, err error) {
+func (client *Client) Signout(addr string, req *api.SignoutReq) (res *api.SignoutRes, err error) {
 	res = new(api.SignoutRes)
-	err = client.post(client.url(client.config.Router.Signout), req, res, nil)
+	err = client.post(client.url(addr, client.config.Router.Signout), req, res, nil)
 	return
 }
 
-func (client *Client) Token(req *api.TokenReq) (res *api.TokenRes, err error) {
+func (client *Client) Token(addr string, req *api.TokenReq) (res *api.TokenRes, err error) {
 	res = new(api.TokenRes)
-	err = client.post(client.url(client.config.Router.Token), req, res, map[string]string{
+	err = client.post(client.url(addr, client.config.Router.Token), req, res, map[string]string{
 		tagClientBasicAuth: "true",
 	})
 	return
 }
 
-func (client *Client) TokenAuth(req *api.TokenAuthReq) (res *api.TokenAuthRes, err error) {
+func (client *Client) TokenAuth(addr string, req *api.TokenAuthReq) (res *api.TokenAuthRes, err error) {
 	res = new(api.TokenAuthRes)
-	err = client.post(client.url(client.config.Router.TokenAuth), req, res, map[string]string{
+	err = client.post(client.url(addr, client.config.Router.TokenAuth), req, res, map[string]string{
 		"Authorization": oauth2.TokenHeaderPrefix + req.AccessToken,
 	})
 	return
 }
 
-func (client *Client) SMSCode(req *api.SMSCodeReq) (res *api.SMSCodeRes, err error) {
+func (client *Client) SMSCode(addr string, req *api.SMSCodeReq) (res *api.SMSCodeRes, err error) {
 	res = new(api.SMSCodeRes)
-	err = client.post(client.url(client.config.Router.SMSCode), req, res, nil)
+	err = client.post(client.url(addr, client.config.Router.SMSCode), req, res, nil)
 	return
 }
 
-func (client *Client) TwoFactorAuth(req *api.TwoFactorAuthReq) (res *api.TwoFactorAuthRes, err error) {
+func (client *Client) TwoFactorAuth(addr string, req *api.TwoFactorAuthReq) (res *api.TwoFactorAuthRes, err error) {
 	res = new(api.TwoFactorAuthRes)
-	err = client.post(client.url(client.config.Router.TwoFactorAuth), req, res, nil)
+	err = client.post(client.url(addr, client.config.Router.TwoFactorAuth), req, res, nil)
 	return
 }
 
-func (client *Client) User(req *api.UserReq) (res *api.UserRes, err error) {
+func (client *Client) User(addr string, req *api.UserReq) (res *api.UserRes, err error) {
 	res = new(api.UserRes)
-	err = client.get(client.url(client.config.Router.User), req, res, nil)
+	err = client.get(client.url(addr, client.config.Router.User), req, res, nil)
 	return
 }
 
-func (client *Client) Help(req *api.HelpReq) (res *api.HelpRes, err error) {
+func (client *Client) Help(addr string, req *api.HelpReq) (res *api.HelpRes, err error) {
 	res = new(api.HelpRes)
-	err = client.get(client.url(client.config.Router.Help), req, res, nil)
+	err = client.get(client.url(addr, client.config.Router.Help), req, res, nil)
 	return
 }

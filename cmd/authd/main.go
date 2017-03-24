@@ -18,7 +18,7 @@ import (
 type argT struct {
 	cli.Helper
 	config.ConfigBase
-	Version       bool         `cli:"!v,version" usage:"display version"`
+	Version       bool         `cli:"!v,version" usage:"display version" json:"-"`
 	PidFile       clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/authd.pid"`
 	LogLevel      logger.Level `cli:"log-level" usage:"log level: trace/debug/info/warn/error/fatal" dft:"info"`
 	LogProviders  string       `cli:"log-providers" usage:"log providers seperated by /" dft:"colored_console/file"`

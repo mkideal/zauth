@@ -25,41 +25,6 @@ import (
 	_ "bitbucket.org/mkideal/accountd/third_party/wechat"
 )
 
-const (
-	Debug   = "debug"
-	Release = "release"
-)
-
-type Config struct {
-	Driver                     string `cli:"driver" usage:"sql database driver: mysql" dft:"mysql"`
-	DataSourceName             string `cli:"dsn" usage:"data source name for specified driver" dft:"$ACCOUNT_DSN"`
-	ThirdParty                 string `cli:"third-party" usage:"third party modules which seperated by ,"`
-	Addr                       string `cli:"addr" usage:"HTTP address" dft:"127.0.0.1:5200"`
-	Mode                       string `cli:"m,mode" usage:"running mode: debug/release" dft:"release"`
-	CookieKey                  string `cli:"cookie" usage:"cookie key" dft:"authd"`
-	SessionExpireDuration      int64  `cli:"session-expire-duration" usage:"session expire duration(seconds)" dft:"3600"`
-	HTMLDir                    string `cli:"html" usage:"HTML static directory" dft:"html"`
-	HTMLRoouter                string `cli:"html-router" usage:"HTML static files router" dft:"/"`
-	TelnoVerifyCodeMaxInterval int64  `cli:"sms-max-interval" usage:"SMS code max interval seconds" dft:"60"`
-	TelnoVerifyCodeExpiration  int64  `cli:"sms-expiration" usage:"SMS code expiration seconds" dft:"300"`
-
-	SMS `cli:"-"`
-
-	Pages
-}
-
-type SMS struct {
-	SMSURL       string `cli:"sms-url" usage:"SMS url address" dft:"http://sms.253.com/msg/send"`
-	SMSUsername  string `cli:"sms-un" usage:"SMS username" dft:"N9930301"`
-	SMSPassword  string `cli:"sms-pw" usage:"SMS password" dft:"YuaDHCvb4K7479"`
-	SMSMsgFormat string `cli:"sms-format" usage:"SMS message format" dft:"【253云通讯】你的短信验证为: %s"`
-}
-
-type Pages struct {
-	Authorize string `cli:"page-authorize" usage:"web page URL for authorize" dft:"/authorize.html"`
-	Login     string `cli:"page-login" usage:"web page URL for login" dft:"/login.html"`
-}
-
 type Server struct {
 	config        Config
 	third_parties map[string]third_party.Client

@@ -28,7 +28,7 @@ func (svr *Server) handleSMSCode(w http.ResponseWriter, r *http.Request) {
 		maxInterval = svr.config.TelnoVerifyCodeMaxInterval
 		expiration  = svr.config.TelnoVerifyCodeExpiration
 	)
-	vcode, err := svr.telnoVerifyCodeRepo.NewTelnoCode(argv.Telno, maxInterval, expiration)
+	vcode, err := svr.telnoVerifyCodeRepo.NewTelnoCode(svr.config.TelnoVerifyCodeLength, argv.Telno, maxInterval, expiration)
 	if err != nil {
 		log.Error("%s: new telno verify code for %s error: %v", argv.CommandName(), argv.Telno, err)
 		svr.errorResponse(w, r, err)
@@ -46,8 +46,5 @@ func (svr *Server) handleSMSCode(w http.ResponseWriter, r *http.Request) {
 		svr.telnoVerifyCodeRepo.RemoveTelnoCode(argv.Telno)
 		return
 	}
-	svr.response(w, r, api.SMSCodeRes{
-		Code:     vcode.Code,
-		ExpireAt: vcode.ExpireAt,
-	})
+	svr.response(w, r, api.SMSCodeRes{})
 }

@@ -320,9 +320,10 @@ type SMSCodeRes struct {
 
 // 两阶段认证
 type TwoFactorAuthReq struct {
-	AuthType string `json:"auth_type" cli:"t"` // telno or email
-	AuthId   string `json:"auth_id" cli:"i"`
-	AuthCode string `json:"auth_code" cli:"c"`
+	AuthType              string `json:"auth_type" cli:"t"` // telno or email
+	AuthId                string `json:"auth_id" cli:"i"`
+	AuthCode              string `json:"auth_code" cli:"c"`
+	UseThirdVerifyService bool   `json:"use_third_verify_service" cli:"third"`
 }
 
 func (TwoFactorAuthReq) CommandName() string   { return "TwoFactorAuth" }

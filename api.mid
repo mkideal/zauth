@@ -183,15 +183,14 @@ protocol SMSCodeReq `method:"POST"` {
 }
 
 protocol SMSCodeRes {
-    string code;
-    string expireAt;
 }
 
 // 两阶段认证
 protocol TwoFactorAuthReq `method:"POST"` {
-    string authType; # `cli:"t"` // telno or email
-    string authId;   # `cli:"i"`
-    string authCode; # `cli:"c"`
+    string authType;            # `cli:"t"` // telno or email
+    string authId;              # `cli:"i"`
+    string authCode;            # `cli:"c"`
+    bool useThirdVerifyService; # `cli:"third"`
 }
 
 protocol TwoFactorAuthRes {
