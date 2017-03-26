@@ -23,7 +23,7 @@ var (
 type AuthorizationRequest struct {
 	AuthorizationCode string `xorm:"pk VARCHAR(64)"` // 认证码
 	CreatedAt         string `xorm:"VARCHAR(32)"`    // 创建时间
-	RedirectURI       string `xorm:"VARCHAR(256)"`   // 重定向URI
+	RedirectUri       string `xorm:"VARCHAR(256)"`   // 重定向URI
 	ResponseType      string `xorm:"VARCHAR(32)"`    // 返回类型
 	State             string `xorm:"VARCHAR(128)"`   // 自定义状态
 	ClientId          string `xorm:"VARCHAR(32)"`    // 客户端Id
@@ -49,7 +49,7 @@ func (x AuthorizationRequest) GetField(field string) (interface{}, bool) {
 	case AuthorizationRequestMetaVar.F_created_at:
 		return x.CreatedAt, true
 	case AuthorizationRequestMetaVar.F_redirect_uri:
-		return x.RedirectURI, true
+		return x.RedirectUri, true
 	case AuthorizationRequestMetaVar.F_response_type:
 		return x.ResponseType, true
 	case AuthorizationRequestMetaVar.F_state:
@@ -71,7 +71,7 @@ func (x *AuthorizationRequest) SetField(field, value string) error {
 	case AuthorizationRequestMetaVar.F_created_at:
 		x.CreatedAt = value
 	case AuthorizationRequestMetaVar.F_redirect_uri:
-		x.RedirectURI = value
+		x.RedirectUri = value
 	case AuthorizationRequestMetaVar.F_response_type:
 		x.ResponseType = value
 	case AuthorizationRequestMetaVar.F_state:

@@ -9,12 +9,31 @@ import (
 	"time"
 )
 
+// 字符串慢比较函数,字节比较次数等于 got 的长度
+func slowEq(expected, got string) bool {
+	l1, l2 := len(expected), len(got)
+	eq := l1 == l2
+	for i := 0; i < l1 && i < l2; i++ {
+		if expected[i] != got[i] {
+			eq = false
+		}
+	}
+	// 这个for循环没有改变结果的实际意义,因为如果 l1 != l2, eq 已经为 false
+	// 这个for循环的目的在于保证字符串的字节比较次数等于必定等于 l2,即参数 got 的长度
+	for i := l1; i < l2; i++ {
+		if got[i] == byte(0) {
+			eq = false
+		}
+	}
+	return eq
+}
+
 func ValidateClient(client *Client, clientSecret string) bool {
-	return clientSecret == client.Secret
+	return slowEq(clientSecret, client.Secret)
 }
 
 func ValidatePassword(user *User, password string) bool {
-	return user.EncryptedPassword == EncryptPassword(password, user.PasswordSalt)
+	return slowEq(user.EncryptedPassword, EncryptPassword(password, user.PasswordSalt))
 }
 
 func EncryptPassword(password, salt string) string {

@@ -33,6 +33,7 @@ enum ErrorCode {
     Unsupported2FaType      = 417404,
     FailedToSendSMSCode     = 417405,
     ThirdPartyError         = 417406,
+    TokenExpired            = 417407,
 }
 
 struct UserInfo {

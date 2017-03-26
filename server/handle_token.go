@@ -98,6 +98,8 @@ func (svr *Server) grantByRefreshToken(w http.ResponseWriter, r *http.Request, a
 	token, err := svr.tokenRepo.RefreshToken(argv.RefreshToken, argv.Scope)
 	if err != nil {
 		return err
+	} else if token == nil {
+		return api.ErrorCode_TokenNotFound
 	}
 
 	svr.response(w, r, api.TokenRes{

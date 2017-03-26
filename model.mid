@@ -67,28 +67,28 @@ protocol Client {
     string description; #                        // 应用描述
     string logo;        # `bits:"256"`           // Logo 地址
     string scope;       #                        // 授权范围
-    string homepageURL; # `bits:"256"`           // 主页地址
-    string callbackURL; # `bits:"256"`           // 回调地址
+    string homepageUrl; # `bits:"256"`           // 主页地址
+    string callbackUrl; # `bits:"256"`           // 回调地址
 }
 
 // 访问令牌
 protocol Token {
-    string accessToken;   # `key:"true" bits:"64" opt:"UNIQUE"` // 令牌
-    int64 uid;            #                                     // 用户Id
-    string createdAt;     # `bits:"32"`                         // 创建时间
-    string modifiedAt;    # `bits:"32"`                         // 修改时间
-    string expireAt;      # `bits:"32"`                         // 到期时间
-    string refreshToken;  # `bits:"64" opt:"UNIQUE"`            // 刷新用令牌
-    string resourceOwner; # `bits:"32"`                         // 资源所有者
-    string clientId;      # `bits:"32"`                         // 客户Id
-    string scope;         #                                     // 可访问权限范围
+    string accessToken;          # `key:"true" bits:"64" opt:"UNIQUE"` // 令牌
+    int64 uid;                   #                                     // 用户Id
+    string createdAt;            # `bits:"32"`                         // 创建时间
+    string accessTokenExpireAt;  # `bits:"32"`                         // accessToken到期时间
+    string refreshToken;         # `bits:"64" opt:"UNIQUE"`            // 刷新用令牌
+    string refreshTokenExpireAt; # `bits:"32"`                         // refreshToken到期时间
+    string resourceOwner;        # `bits:"32"`                         // 资源所有者
+    string clientId;             # `bits:"32"`                         // 客户Id
+    string scope;                #                                     // 可访问权限范围
 }
 
 // 认证请求
 protocol AuthorizationRequest {
     string authorizationCode; # `key:"true" bits:"64"` // 认证码
     string createdAt;         # `bits:"32"`            // 创建时间
-    string redirectURI;       # `bits:"256"`           // 重定向URI
+    string redirectUri;       # `bits:"256"`           // 重定向URI
     string responseType;      # `bits:"32"`            // 返回类型
     string state;             # `bits:"128"`           // 自定义状态
     string clientId;          # `bits:"32"`            // 客户端Id

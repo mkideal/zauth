@@ -61,7 +61,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 		authErr := api.NewError(string(oauth2.ErrorUnsupportedResponseType), "must-be-code")
 		log.Info("%s: response_type must be `code`, but got `%s`", argv.CommandName(), argv.ResponseType)
 		params := authErr.EncodeWith(values)
-		uri := fmt.Sprintf("%s?%s", client.CallbackURL, params)
+		uri := fmt.Sprintf("%s?%s", client.CallbackUrl, params)
 		http.Redirect(w, r, uri, http.StatusFound)
 		return
 	}
@@ -75,7 +75,7 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 		log.Error("%s: NewAuthRequest error: %v", argv.CommandName(), err)
 		authErr := api.WrapError(err)
 		params := authErr.EncodeWith(values)
-		uri := fmt.Sprintf("%s?%s", client.CallbackURL, params)
+		uri := fmt.Sprintf("%s?%s", client.CallbackUrl, params)
 		http.Redirect(w, r, uri, http.StatusFound)
 		return
 	}
@@ -84,6 +84,6 @@ func (svr *Server) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 		"code":  {ar.AuthorizationCode},
 		"state": {argv.State},
 	}.Encode()
-	uri := fmt.Sprintf("%s?%s", client.CallbackURL, params)
+	uri := fmt.Sprintf("%s?%s", client.CallbackUrl, params)
 	http.Redirect(w, r, uri, http.StatusFound)
 }

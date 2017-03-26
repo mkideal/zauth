@@ -23,7 +23,7 @@ func (repo authorizationRequestRepository) NewAuthRequest(client *model.Client, 
 		ClientId:          client.Id,
 		Uid:               uid,
 		State:             state,
-		RedirectURI:       client.CallbackURL,
+		RedirectUri:       client.CallbackUrl,
 		ResponseType:      responseType,
 	}
 	err := repo.Insert(ar)

@@ -242,7 +242,7 @@ func makeTokenInfo(token *model.Token) api.TokenInfo {
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
 		Scope:        token.Scope,
-		ExpireAt:     token.ExpireAt,
+		ExpireAt:     token.AccessTokenExpireAt,
 	}
 }
 

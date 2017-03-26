@@ -53,6 +53,7 @@ const (
 	ErrorCode_Unsupported2FaType      ErrorCode = 417404
 	ErrorCode_FailedToSendSMSCode     ErrorCode = 417405
 	ErrorCode_ThirdPartyError         ErrorCode = 417406
+	ErrorCode_TokenExpired            ErrorCode = 417407
 )
 
 func (x ErrorCode) Status() int {
@@ -113,6 +114,8 @@ func (x ErrorCode) Error() string {
 		return "e_failed_to_send_smscode"
 	case ErrorCode_ThirdPartyError:
 		return "e_third_party_error"
+	case ErrorCode_TokenExpired:
+		return "e_token_expired"
 
 	}
 	return "e_unknown_error"
@@ -314,8 +317,6 @@ func (SMSCodeReq) CommandMethod() string { return "POST" }
 var _ = registerCommand(&SMSCodeReq{})
 
 type SMSCodeRes struct {
-	Code     string `json:"code"`
-	ExpireAt string `json:"expire_at"`
 }
 
 // 两阶段认证

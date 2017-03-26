@@ -27,8 +27,8 @@ type Client struct {
 	Description string `xorm:"TEXT"`           // 应用描述
 	Logo        string `xorm:"VARCHAR(256)"`   // Logo 地址
 	Scope       string `xorm:"TEXT"`           // 授权范围
-	HomepageURL string `xorm:"VARCHAR(256)"`   // 主页地址
-	CallbackURL string `xorm:"VARCHAR(256)"`   // 回调地址
+	HomepageUrl string `xorm:"VARCHAR(256)"`   // 主页地址
+	CallbackUrl string `xorm:"VARCHAR(256)"`   // 回调地址
 
 }
 
@@ -56,9 +56,9 @@ func (x Client) GetField(field string) (interface{}, bool) {
 	case ClientMetaVar.F_scope:
 		return x.Scope, true
 	case ClientMetaVar.F_homepage_url:
-		return x.HomepageURL, true
+		return x.HomepageUrl, true
 	case ClientMetaVar.F_callback_url:
-		return x.CallbackURL, true
+		return x.CallbackUrl, true
 	}
 	return nil, false
 }
@@ -76,9 +76,9 @@ func (x *Client) SetField(field, value string) error {
 	case ClientMetaVar.F_scope:
 		x.Scope = value
 	case ClientMetaVar.F_homepage_url:
-		x.HomepageURL = value
+		x.HomepageUrl = value
 	case ClientMetaVar.F_callback_url:
-		x.CallbackURL = value
+		x.CallbackUrl = value
 	}
 	return nil
 }

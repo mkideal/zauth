@@ -54,6 +54,10 @@ func WithCity(city string) UserAddOption {
 }
 
 func (repo userRepository) AddUser(user *model.User, plainPassword string, opts ...UserAddOption) error {
+	if plainPassword == "" {
+		mode := random.O_DIGIT | random.O_LOWER_CHAR | random.O_UPPER_CHAR
+		plainPassword = random.String(16, random.CryptoSource, mode)
+	}
 	// initialize user
 	if user.CreatedAt == "" {
 		user.CreatedAt = model.FormatTime(time.Now())
