@@ -23,6 +23,8 @@ type Config struct {
 	TelnoVerifyCodeMaxInterval int64  `cli:"sms-max-interval" usage:"SMS code max interval seconds" dft:"60"`
 	TelnoVerifyCodeExpiration  int64  `cli:"sms-expiration" usage:"SMS code expiration seconds" dft:"300"`
 	TelnoVerifyCodeLength      int    `cli:"sms-length" usage:"length of SMS code, must be in range [3,8]" dft:"6"`
+	EnableTelnoVerify          bool   `cli:"sms-enable" usage:"enable telno verify" dft:"true"`
+	SendTelnoVerifyCode        bool   `cli:"sms-send" usage:"send telno code verify message or not" dft:"true"`
 
 	SMS `cli:"-"`
 
@@ -38,6 +40,9 @@ func (config Config) Validate(ctx *cli.Context) error {
 }
 
 func (config Config) IsWhiteTelno(telno string) bool {
+	if !config.EnableTelnoVerify {
+		return true
+	}
 	for _, x := range config.WhiteTelnoList {
 		if x == telno {
 			return true

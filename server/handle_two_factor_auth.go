@@ -58,7 +58,7 @@ func (svr *Server) telno2faAuth(argv *api.TwoFactorAuthReq, w http.ResponseWrite
 	}
 	if !svr.config.IsWhiteTelno(telno) {
 		if argv.UseThirdVerifyService {
-			// 使用第三方验证码校验服务
+			// TODO: use third party verify service
 		} else {
 			vcode, err := svr.telnoVerifyCodeRepo.FindTelnoCode(telno)
 			if err != nil {

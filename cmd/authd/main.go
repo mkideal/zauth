@@ -32,7 +32,7 @@ const successPrefix = "authd start ok"
 
 var root = &cli.Command{
 	Name: "authd",
-	Desc: "authd service",
+	Desc: "authorization service",
 	Argv: func() interface{} { return new(argT) },
 
 	Fn: func(ctx *cli.Context) error {

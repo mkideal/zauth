@@ -40,11 +40,13 @@ func (svr *Server) handleSMSCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sms := svr.config.SMS
-	if err := svr.telnoVerifyCodeRepo.SendTelnoCode(vcode, sms.SMSURL, sms.SMSUsername, sms.SMSPassword, sms.SMSMsgFormat); err != nil {
-		log.Warn("send SMS code to telno %s error: %v", argv.Telno, err)
-		svr.errorResponse(w, r, api.ErrorCode_FailedToSendSMSCode.NewError(err.Error()))
-		svr.telnoVerifyCodeRepo.RemoveTelnoCode(argv.Telno)
-		return
+	if svr.config.SendTelnoVerifyCode {
+		if err := svr.telnoVerifyCodeRepo.SendTelnoCode(vcode, sms.SMSURL, sms.SMSUsername, sms.SMSPassword, sms.SMSMsgFormat); err != nil {
+			log.Warn("send SMS code to telno %s error: %v", argv.Telno, err)
+			svr.errorResponse(w, r, api.ErrorCode_FailedToSendSMSCode.NewError(err.Error()))
+			svr.telnoVerifyCodeRepo.RemoveTelnoCode(argv.Telno)
+			return
+		}
 	}
 	svr.response(w, r, api.SMSCodeRes{})
 }
