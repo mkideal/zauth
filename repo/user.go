@@ -107,7 +107,7 @@ func (repo userRepository) GetUser(uid int64) (*model.User, error) {
 
 func (repo userRepository) GetUserByAccount(account string) (*model.User, error) {
 	user := &model.User{Account: account}
-	found, err := repo.Get(user, model.UserMetaVar.F_account)
+	found, err := repo.Get(user, user.Meta().F_account)
 	if !found || err != nil {
 		user = nil
 	}
@@ -115,5 +115,6 @@ func (repo userRepository) GetUserByAccount(account string) (*model.User, error)
 }
 
 func (repo userRepository) AccountExist(account string) (bool, error) {
-	return repo.Exist(&model.User{Account: account}, model.UserMetaVar.F_account)
+	user := &model.User{Account: account}
+	return repo.Exist(user, user.Meta().F_account)
 }

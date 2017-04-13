@@ -32,8 +32,9 @@ func NewSession() *Session {
 	return &Session{}
 }
 
-func (Session) Meta() storage.TableMeta { return SessionMetaVar }
-func (x Session) Key() interface{}      { return x.Id }
+func (Session) Meta() SessionMeta            { return sessionMetaVar }
+func (Session) TableMeta() storage.TableMeta { return sessionMetaVar }
+func (x Session) Key() interface{}           { return x.Id }
 func (x *Session) SetKey(value string) error {
 	x.Id = value
 	return nil
@@ -41,11 +42,11 @@ func (x *Session) SetKey(value string) error {
 
 func (x Session) GetField(field string) (interface{}, bool) {
 	switch field {
-	case SessionMetaVar.F_uid:
+	case sessionMetaVar.F_uid:
 		return x.Uid, true
-	case SessionMetaVar.F_created_at:
+	case sessionMetaVar.F_created_at:
 		return x.CreatedAt, true
-	case SessionMetaVar.F_expire_at:
+	case sessionMetaVar.F_expire_at:
 		return x.ExpireAt, true
 	}
 	return nil, false
@@ -53,11 +54,11 @@ func (x Session) GetField(field string) (interface{}, bool) {
 
 func (x *Session) SetField(field, value string) error {
 	switch field {
-	case SessionMetaVar.F_uid:
+	case sessionMetaVar.F_uid:
 		return typeconv.String2Int64(&x.Uid, value)
-	case SessionMetaVar.F_created_at:
+	case sessionMetaVar.F_created_at:
 		x.CreatedAt = value
-	case SessionMetaVar.F_expire_at:
+	case sessionMetaVar.F_expire_at:
 		x.ExpireAt = value
 	}
 	return nil
@@ -74,16 +75,16 @@ func (SessionMeta) Name() string     { return "session" }
 func (SessionMeta) Key() string      { return "id" }
 func (SessionMeta) Fields() []string { return _session_fields }
 
-var SessionMetaVar = &SessionMeta{
+var sessionMetaVar = SessionMeta{
 	F_uid:        "uid",
 	F_created_at: "created_at",
 	F_expire_at:  "expire_at",
 }
 
 var _session_fields = []string{
-	SessionMetaVar.F_uid,
-	SessionMetaVar.F_created_at,
-	SessionMetaVar.F_expire_at,
+	sessionMetaVar.F_uid,
+	sessionMetaVar.F_created_at,
+	sessionMetaVar.F_expire_at,
 }
 
 // Slice
@@ -94,7 +95,7 @@ func NewSessionSlice(cap int) *SessionSlice {
 	return &s
 }
 
-func (s SessionSlice) TableMeta() storage.TableMeta { return SessionMetaVar }
+func (s SessionSlice) TableMeta() storage.TableMeta { return sessionMetaVar }
 func (s SessionSlice) Len() int                     { return len(s) }
 func (s *SessionSlice) Slice() []Session            { return []Session(*s) }
 
@@ -119,7 +120,7 @@ func NewSessionViewSlice(cap int) *SessionViewSlice {
 	return &s
 }
 
-func (s SessionViewSlice) TableMeta() storage.TableMeta { return SessionMetaVar }
+func (s SessionViewSlice) TableMeta() storage.TableMeta { return sessionMetaVar }
 func (s SessionViewSlice) Len() int                     { return len(s) }
 func (s *SessionViewSlice) Slice() []SessionView        { return []SessionView(*s) }
 
@@ -148,8 +149,8 @@ var (
 	sessionViewRefs = map[string]storage.View{}
 )
 
-func (SessionView) TableMeta() storage.TableMeta  { return SessionMetaVar }
-func (SessionView) Fields() storage.FieldList     { return storage.FieldSlice(SessionMetaVar.Fields()) }
+func (SessionView) TableMeta() storage.TableMeta  { return sessionMetaVar }
+func (SessionView) Fields() storage.FieldList     { return storage.FieldSlice(sessionMetaVar.Fields()) }
 func (SessionView) Refs() map[string]storage.View { return sessionViewRefs }
 func (view *SessionView) tables() map[string]storage.Table {
 	m := make(map[string]storage.Table)

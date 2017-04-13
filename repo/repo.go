@@ -82,7 +82,7 @@ func writeOpError(n int64, err error) error {
 
 func where(m storage.ReadonlyTable, byFields ...string) (query string, values []interface{}, err error) {
 	if len(byFields) == 0 {
-		query = fmt.Sprintf("%s = ?", m.Meta().Key())
+		query = fmt.Sprintf("%s = ?", m.TableMeta().Key())
 		values = []interface{}{m.Key()}
 	} else {
 		var buf bytes.Buffer
@@ -93,7 +93,7 @@ func where(m storage.ReadonlyTable, byFields ...string) (query string, values []
 			fmt.Fprintf(&buf, "%s = ?", field)
 			value, found := m.GetField(field)
 			if !found {
-				err = fmt.Errorf("table %s does not contain field %s", m.Meta().Name(), field)
+				err = fmt.Errorf("table %s does not contain field %s", m.TableMeta().Name(), field)
 				return
 			}
 			values = append(values, value)
@@ -109,7 +109,7 @@ func (repo SqlRepository) Insert(m interface{}) error {
 
 func (repo SqlRepository) Update(m storage.ReadonlyTable, fields ...string) error {
 	if len(fields) == 0 {
-		fields = m.Meta().Fields()
+		fields = m.TableMeta().Fields()
 	}
 	query, values, err := where(m)
 	if err != nil {

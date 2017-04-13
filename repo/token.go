@@ -61,7 +61,7 @@ func (repo tokenRepository) GetToken(accessToken string) (*model.Token, error) {
 
 func (repo tokenRepository) RefreshToken(refreshToken, scope string) (*model.Token, error) {
 	token := &model.Token{RefreshToken: refreshToken}
-	meta := model.TokenMetaVar
+	meta := token.Meta()
 	// get token by refreshToken
 	found, err := repo.Get(token, meta.F_refresh_token)
 	if !found || err != nil {

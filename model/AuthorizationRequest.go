@@ -37,8 +37,9 @@ func NewAuthorizationRequest() *AuthorizationRequest {
 	return &AuthorizationRequest{}
 }
 
-func (AuthorizationRequest) Meta() storage.TableMeta { return AuthorizationRequestMetaVar }
-func (x AuthorizationRequest) Key() interface{}      { return x.AuthorizationCode }
+func (AuthorizationRequest) Meta() AuthorizationRequestMeta { return authorizationRequestMetaVar }
+func (AuthorizationRequest) TableMeta() storage.TableMeta   { return authorizationRequestMetaVar }
+func (x AuthorizationRequest) Key() interface{}             { return x.AuthorizationCode }
 func (x *AuthorizationRequest) SetKey(value string) error {
 	x.AuthorizationCode = value
 	return nil
@@ -46,21 +47,21 @@ func (x *AuthorizationRequest) SetKey(value string) error {
 
 func (x AuthorizationRequest) GetField(field string) (interface{}, bool) {
 	switch field {
-	case AuthorizationRequestMetaVar.F_created_at:
+	case authorizationRequestMetaVar.F_created_at:
 		return x.CreatedAt, true
-	case AuthorizationRequestMetaVar.F_redirect_uri:
+	case authorizationRequestMetaVar.F_redirect_uri:
 		return x.RedirectUri, true
-	case AuthorizationRequestMetaVar.F_response_type:
+	case authorizationRequestMetaVar.F_response_type:
 		return x.ResponseType, true
-	case AuthorizationRequestMetaVar.F_state:
+	case authorizationRequestMetaVar.F_state:
 		return x.State, true
-	case AuthorizationRequestMetaVar.F_client_id:
+	case authorizationRequestMetaVar.F_client_id:
 		return x.ClientId, true
-	case AuthorizationRequestMetaVar.F_uid:
+	case authorizationRequestMetaVar.F_uid:
 		return x.Uid, true
-	case AuthorizationRequestMetaVar.F_granted_scopes:
+	case authorizationRequestMetaVar.F_granted_scopes:
 		return x.GrantedScopes, true
-	case AuthorizationRequestMetaVar.F_requested_scopes:
+	case authorizationRequestMetaVar.F_requested_scopes:
 		return x.RequestedScopes, true
 	}
 	return nil, false
@@ -68,21 +69,21 @@ func (x AuthorizationRequest) GetField(field string) (interface{}, bool) {
 
 func (x *AuthorizationRequest) SetField(field, value string) error {
 	switch field {
-	case AuthorizationRequestMetaVar.F_created_at:
+	case authorizationRequestMetaVar.F_created_at:
 		x.CreatedAt = value
-	case AuthorizationRequestMetaVar.F_redirect_uri:
+	case authorizationRequestMetaVar.F_redirect_uri:
 		x.RedirectUri = value
-	case AuthorizationRequestMetaVar.F_response_type:
+	case authorizationRequestMetaVar.F_response_type:
 		x.ResponseType = value
-	case AuthorizationRequestMetaVar.F_state:
+	case authorizationRequestMetaVar.F_state:
 		x.State = value
-	case AuthorizationRequestMetaVar.F_client_id:
+	case authorizationRequestMetaVar.F_client_id:
 		x.ClientId = value
-	case AuthorizationRequestMetaVar.F_uid:
+	case authorizationRequestMetaVar.F_uid:
 		return typeconv.String2Int64(&x.Uid, value)
-	case AuthorizationRequestMetaVar.F_granted_scopes:
+	case authorizationRequestMetaVar.F_granted_scopes:
 		x.GrantedScopes = value
-	case AuthorizationRequestMetaVar.F_requested_scopes:
+	case authorizationRequestMetaVar.F_requested_scopes:
 		x.RequestedScopes = value
 	}
 	return nil
@@ -104,7 +105,7 @@ func (AuthorizationRequestMeta) Name() string     { return "authorization_reques
 func (AuthorizationRequestMeta) Key() string      { return "authorization_code" }
 func (AuthorizationRequestMeta) Fields() []string { return _authorization_request_fields }
 
-var AuthorizationRequestMetaVar = &AuthorizationRequestMeta{
+var authorizationRequestMetaVar = AuthorizationRequestMeta{
 	F_created_at:       "created_at",
 	F_redirect_uri:     "redirect_uri",
 	F_response_type:    "response_type",
@@ -116,14 +117,14 @@ var AuthorizationRequestMetaVar = &AuthorizationRequestMeta{
 }
 
 var _authorization_request_fields = []string{
-	AuthorizationRequestMetaVar.F_created_at,
-	AuthorizationRequestMetaVar.F_redirect_uri,
-	AuthorizationRequestMetaVar.F_response_type,
-	AuthorizationRequestMetaVar.F_state,
-	AuthorizationRequestMetaVar.F_client_id,
-	AuthorizationRequestMetaVar.F_uid,
-	AuthorizationRequestMetaVar.F_granted_scopes,
-	AuthorizationRequestMetaVar.F_requested_scopes,
+	authorizationRequestMetaVar.F_created_at,
+	authorizationRequestMetaVar.F_redirect_uri,
+	authorizationRequestMetaVar.F_response_type,
+	authorizationRequestMetaVar.F_state,
+	authorizationRequestMetaVar.F_client_id,
+	authorizationRequestMetaVar.F_uid,
+	authorizationRequestMetaVar.F_granted_scopes,
+	authorizationRequestMetaVar.F_requested_scopes,
 }
 
 // Slice
@@ -134,7 +135,7 @@ func NewAuthorizationRequestSlice(cap int) *AuthorizationRequestSlice {
 	return &s
 }
 
-func (s AuthorizationRequestSlice) TableMeta() storage.TableMeta   { return AuthorizationRequestMetaVar }
+func (s AuthorizationRequestSlice) TableMeta() storage.TableMeta   { return authorizationRequestMetaVar }
 func (s AuthorizationRequestSlice) Len() int                       { return len(s) }
 func (s *AuthorizationRequestSlice) Slice() []AuthorizationRequest { return []AuthorizationRequest(*s) }
 
@@ -160,7 +161,7 @@ func NewAuthorizationRequestViewSlice(cap int) *AuthorizationRequestViewSlice {
 }
 
 func (s AuthorizationRequestViewSlice) TableMeta() storage.TableMeta {
-	return AuthorizationRequestMetaVar
+	return authorizationRequestMetaVar
 }
 func (s AuthorizationRequestViewSlice) Len() int { return len(s) }
 func (s *AuthorizationRequestViewSlice) Slice() []AuthorizationRequestView {
@@ -192,9 +193,9 @@ var (
 	authorizationRequestViewRefs = map[string]storage.View{}
 )
 
-func (AuthorizationRequestView) TableMeta() storage.TableMeta { return AuthorizationRequestMetaVar }
+func (AuthorizationRequestView) TableMeta() storage.TableMeta { return authorizationRequestMetaVar }
 func (AuthorizationRequestView) Fields() storage.FieldList {
-	return storage.FieldSlice(AuthorizationRequestMetaVar.Fields())
+	return storage.FieldSlice(authorizationRequestMetaVar.Fields())
 }
 func (AuthorizationRequestView) Refs() map[string]storage.View { return authorizationRequestViewRefs }
 func (view *AuthorizationRequestView) tables() map[string]storage.Table {

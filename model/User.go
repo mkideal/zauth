@@ -46,47 +46,48 @@ func NewUser() *User {
 	return &User{}
 }
 
-func (User) Meta() storage.TableMeta { return UserMetaVar }
-func (x User) Key() interface{}      { return x.Id }
+func (User) Meta() UserMeta               { return userMetaVar }
+func (User) TableMeta() storage.TableMeta { return userMetaVar }
+func (x User) Key() interface{}           { return x.Id }
 func (x *User) SetKey(value string) error {
 	return typeconv.String2Int64(&x.Id, value)
 }
 
 func (x User) GetField(field string) (interface{}, bool) {
 	switch field {
-	case UserMetaVar.F_account_type:
+	case userMetaVar.F_account_type:
 		return x.AccountType, true
-	case UserMetaVar.F_account:
+	case userMetaVar.F_account:
 		return x.Account, true
-	case UserMetaVar.F_nickname:
+	case userMetaVar.F_nickname:
 		return x.Nickname, true
-	case UserMetaVar.F_avatar:
+	case userMetaVar.F_avatar:
 		return x.Avatar, true
-	case UserMetaVar.F_country:
+	case userMetaVar.F_country:
 		return x.Country, true
-	case UserMetaVar.F_province:
+	case userMetaVar.F_province:
 		return x.Province, true
-	case UserMetaVar.F_city:
+	case userMetaVar.F_city:
 		return x.City, true
-	case UserMetaVar.F_gender:
+	case userMetaVar.F_gender:
 		return x.Gender, true
-	case UserMetaVar.F_birthday:
+	case userMetaVar.F_birthday:
 		return x.Birthday, true
-	case UserMetaVar.F_id_card_type:
+	case userMetaVar.F_id_card_type:
 		return x.IdCardType, true
-	case UserMetaVar.F_id_card:
+	case userMetaVar.F_id_card:
 		return x.IdCard, true
-	case UserMetaVar.F_encrypted_password:
+	case userMetaVar.F_encrypted_password:
 		return x.EncryptedPassword, true
-	case UserMetaVar.F_password_salt:
+	case userMetaVar.F_password_salt:
 		return x.PasswordSalt, true
-	case UserMetaVar.F_created_at:
+	case userMetaVar.F_created_at:
 		return x.CreatedAt, true
-	case UserMetaVar.F_created_ip:
+	case userMetaVar.F_created_ip:
 		return x.CreatedIp, true
-	case UserMetaVar.F_last_login_at:
+	case userMetaVar.F_last_login_at:
 		return x.LastLoginAt, true
-	case UserMetaVar.F_last_login_ip:
+	case userMetaVar.F_last_login_ip:
 		return x.LastLoginIp, true
 	}
 	return nil, false
@@ -94,45 +95,45 @@ func (x User) GetField(field string) (interface{}, bool) {
 
 func (x *User) SetField(field, value string) error {
 	switch field {
-	case UserMetaVar.F_account_type:
+	case userMetaVar.F_account_type:
 		if err := typeconv.String2Object(&x.AccountType, value); err != nil {
 			return err
 		}
-	case UserMetaVar.F_account:
+	case userMetaVar.F_account:
 		x.Account = value
-	case UserMetaVar.F_nickname:
+	case userMetaVar.F_nickname:
 		x.Nickname = value
-	case UserMetaVar.F_avatar:
+	case userMetaVar.F_avatar:
 		x.Avatar = value
-	case UserMetaVar.F_country:
+	case userMetaVar.F_country:
 		x.Country = value
-	case UserMetaVar.F_province:
+	case userMetaVar.F_province:
 		x.Province = value
-	case UserMetaVar.F_city:
+	case userMetaVar.F_city:
 		x.City = value
-	case UserMetaVar.F_gender:
+	case userMetaVar.F_gender:
 		if err := typeconv.String2Object(&x.Gender, value); err != nil {
 			return err
 		}
-	case UserMetaVar.F_birthday:
+	case userMetaVar.F_birthday:
 		x.Birthday = value
-	case UserMetaVar.F_id_card_type:
+	case userMetaVar.F_id_card_type:
 		if err := typeconv.String2Object(&x.IdCardType, value); err != nil {
 			return err
 		}
-	case UserMetaVar.F_id_card:
+	case userMetaVar.F_id_card:
 		x.IdCard = value
-	case UserMetaVar.F_encrypted_password:
+	case userMetaVar.F_encrypted_password:
 		x.EncryptedPassword = value
-	case UserMetaVar.F_password_salt:
+	case userMetaVar.F_password_salt:
 		x.PasswordSalt = value
-	case UserMetaVar.F_created_at:
+	case userMetaVar.F_created_at:
 		x.CreatedAt = value
-	case UserMetaVar.F_created_ip:
+	case userMetaVar.F_created_ip:
 		x.CreatedIp = value
-	case UserMetaVar.F_last_login_at:
+	case userMetaVar.F_last_login_at:
 		x.LastLoginAt = value
-	case UserMetaVar.F_last_login_ip:
+	case userMetaVar.F_last_login_ip:
 		x.LastLoginIp = value
 	}
 	return nil
@@ -163,7 +164,7 @@ func (UserMeta) Name() string     { return "user" }
 func (UserMeta) Key() string      { return "id" }
 func (UserMeta) Fields() []string { return _user_fields }
 
-var UserMetaVar = &UserMeta{
+var userMetaVar = UserMeta{
 	F_account_type:       "account_type",
 	F_account:            "account",
 	F_nickname:           "nickname",
@@ -184,23 +185,23 @@ var UserMetaVar = &UserMeta{
 }
 
 var _user_fields = []string{
-	UserMetaVar.F_account_type,
-	UserMetaVar.F_account,
-	UserMetaVar.F_nickname,
-	UserMetaVar.F_avatar,
-	UserMetaVar.F_country,
-	UserMetaVar.F_province,
-	UserMetaVar.F_city,
-	UserMetaVar.F_gender,
-	UserMetaVar.F_birthday,
-	UserMetaVar.F_id_card_type,
-	UserMetaVar.F_id_card,
-	UserMetaVar.F_encrypted_password,
-	UserMetaVar.F_password_salt,
-	UserMetaVar.F_created_at,
-	UserMetaVar.F_created_ip,
-	UserMetaVar.F_last_login_at,
-	UserMetaVar.F_last_login_ip,
+	userMetaVar.F_account_type,
+	userMetaVar.F_account,
+	userMetaVar.F_nickname,
+	userMetaVar.F_avatar,
+	userMetaVar.F_country,
+	userMetaVar.F_province,
+	userMetaVar.F_city,
+	userMetaVar.F_gender,
+	userMetaVar.F_birthday,
+	userMetaVar.F_id_card_type,
+	userMetaVar.F_id_card,
+	userMetaVar.F_encrypted_password,
+	userMetaVar.F_password_salt,
+	userMetaVar.F_created_at,
+	userMetaVar.F_created_ip,
+	userMetaVar.F_last_login_at,
+	userMetaVar.F_last_login_ip,
 }
 
 // Slice
@@ -211,7 +212,7 @@ func NewUserSlice(cap int) *UserSlice {
 	return &s
 }
 
-func (s UserSlice) TableMeta() storage.TableMeta { return UserMetaVar }
+func (s UserSlice) TableMeta() storage.TableMeta { return userMetaVar }
 func (s UserSlice) Len() int                     { return len(s) }
 func (s *UserSlice) Slice() []User               { return []User(*s) }
 
@@ -236,7 +237,7 @@ func NewUserViewSlice(cap int) *UserViewSlice {
 	return &s
 }
 
-func (s UserViewSlice) TableMeta() storage.TableMeta { return UserMetaVar }
+func (s UserViewSlice) TableMeta() storage.TableMeta { return userMetaVar }
 func (s UserViewSlice) Len() int                     { return len(s) }
 func (s *UserViewSlice) Slice() []UserView           { return []UserView(*s) }
 
@@ -265,8 +266,8 @@ var (
 	userViewRefs = map[string]storage.View{}
 )
 
-func (UserView) TableMeta() storage.TableMeta  { return UserMetaVar }
-func (UserView) Fields() storage.FieldList     { return storage.FieldSlice(UserMetaVar.Fields()) }
+func (UserView) TableMeta() storage.TableMeta  { return userMetaVar }
+func (UserView) Fields() storage.FieldList     { return storage.FieldSlice(userMetaVar.Fields()) }
 func (UserView) Refs() map[string]storage.View { return userViewRefs }
 func (view *UserView) tables() map[string]storage.Table {
 	m := make(map[string]storage.Table)

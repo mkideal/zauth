@@ -54,6 +54,6 @@ func (svr *Server) handleTokenAuth(w http.ResponseWriter, r *http.Request) {
 	})
 	user.LastLoginAt = model.FormatTime(time.Now())
 	user.LastLoginIp = ip
-	meta := model.UserMetaVar
+	meta := user.Meta()
 	svr.userRepo.UpdateUser(user, meta.F_last_login_at, meta.F_last_login_ip)
 }

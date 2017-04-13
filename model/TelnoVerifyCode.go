@@ -32,8 +32,9 @@ func NewTelnoVerifyCode() *TelnoVerifyCode {
 	return &TelnoVerifyCode{}
 }
 
-func (TelnoVerifyCode) Meta() storage.TableMeta { return TelnoVerifyCodeMetaVar }
-func (x TelnoVerifyCode) Key() interface{}      { return x.Telno }
+func (TelnoVerifyCode) Meta() TelnoVerifyCodeMeta    { return telnoVerifyCodeMetaVar }
+func (TelnoVerifyCode) TableMeta() storage.TableMeta { return telnoVerifyCodeMetaVar }
+func (x TelnoVerifyCode) Key() interface{}           { return x.Telno }
 func (x *TelnoVerifyCode) SetKey(value string) error {
 	x.Telno = value
 	return nil
@@ -41,11 +42,11 @@ func (x *TelnoVerifyCode) SetKey(value string) error {
 
 func (x TelnoVerifyCode) GetField(field string) (interface{}, bool) {
 	switch field {
-	case TelnoVerifyCodeMetaVar.F_code:
+	case telnoVerifyCodeMetaVar.F_code:
 		return x.Code, true
-	case TelnoVerifyCodeMetaVar.F_created_at:
+	case telnoVerifyCodeMetaVar.F_created_at:
 		return x.CreatedAt, true
-	case TelnoVerifyCodeMetaVar.F_expire_at:
+	case telnoVerifyCodeMetaVar.F_expire_at:
 		return x.ExpireAt, true
 	}
 	return nil, false
@@ -53,11 +54,11 @@ func (x TelnoVerifyCode) GetField(field string) (interface{}, bool) {
 
 func (x *TelnoVerifyCode) SetField(field, value string) error {
 	switch field {
-	case TelnoVerifyCodeMetaVar.F_code:
+	case telnoVerifyCodeMetaVar.F_code:
 		x.Code = value
-	case TelnoVerifyCodeMetaVar.F_created_at:
+	case telnoVerifyCodeMetaVar.F_created_at:
 		x.CreatedAt = value
-	case TelnoVerifyCodeMetaVar.F_expire_at:
+	case telnoVerifyCodeMetaVar.F_expire_at:
 		x.ExpireAt = value
 	}
 	return nil
@@ -74,16 +75,16 @@ func (TelnoVerifyCodeMeta) Name() string     { return "telno_verify_code" }
 func (TelnoVerifyCodeMeta) Key() string      { return "telno" }
 func (TelnoVerifyCodeMeta) Fields() []string { return _telno_verify_code_fields }
 
-var TelnoVerifyCodeMetaVar = &TelnoVerifyCodeMeta{
+var telnoVerifyCodeMetaVar = TelnoVerifyCodeMeta{
 	F_code:       "code",
 	F_created_at: "created_at",
 	F_expire_at:  "expire_at",
 }
 
 var _telno_verify_code_fields = []string{
-	TelnoVerifyCodeMetaVar.F_code,
-	TelnoVerifyCodeMetaVar.F_created_at,
-	TelnoVerifyCodeMetaVar.F_expire_at,
+	telnoVerifyCodeMetaVar.F_code,
+	telnoVerifyCodeMetaVar.F_created_at,
+	telnoVerifyCodeMetaVar.F_expire_at,
 }
 
 // Slice
@@ -94,7 +95,7 @@ func NewTelnoVerifyCodeSlice(cap int) *TelnoVerifyCodeSlice {
 	return &s
 }
 
-func (s TelnoVerifyCodeSlice) TableMeta() storage.TableMeta { return TelnoVerifyCodeMetaVar }
+func (s TelnoVerifyCodeSlice) TableMeta() storage.TableMeta { return telnoVerifyCodeMetaVar }
 func (s TelnoVerifyCodeSlice) Len() int                     { return len(s) }
 func (s *TelnoVerifyCodeSlice) Slice() []TelnoVerifyCode    { return []TelnoVerifyCode(*s) }
 
@@ -119,7 +120,7 @@ func NewTelnoVerifyCodeViewSlice(cap int) *TelnoVerifyCodeViewSlice {
 	return &s
 }
 
-func (s TelnoVerifyCodeViewSlice) TableMeta() storage.TableMeta  { return TelnoVerifyCodeMetaVar }
+func (s TelnoVerifyCodeViewSlice) TableMeta() storage.TableMeta  { return telnoVerifyCodeMetaVar }
 func (s TelnoVerifyCodeViewSlice) Len() int                      { return len(s) }
 func (s *TelnoVerifyCodeViewSlice) Slice() []TelnoVerifyCodeView { return []TelnoVerifyCodeView(*s) }
 
@@ -148,9 +149,9 @@ var (
 	telnoVerifyCodeViewRefs = map[string]storage.View{}
 )
 
-func (TelnoVerifyCodeView) TableMeta() storage.TableMeta { return TelnoVerifyCodeMetaVar }
+func (TelnoVerifyCodeView) TableMeta() storage.TableMeta { return telnoVerifyCodeMetaVar }
 func (TelnoVerifyCodeView) Fields() storage.FieldList {
-	return storage.FieldSlice(TelnoVerifyCodeMetaVar.Fields())
+	return storage.FieldSlice(telnoVerifyCodeMetaVar.Fields())
 }
 func (TelnoVerifyCodeView) Refs() map[string]storage.View { return telnoVerifyCodeViewRefs }
 func (view *TelnoVerifyCodeView) tables() map[string]storage.Table {

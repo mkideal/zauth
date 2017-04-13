@@ -37,8 +37,9 @@ func NewToken() *Token {
 	return &Token{}
 }
 
-func (Token) Meta() storage.TableMeta { return TokenMetaVar }
-func (x Token) Key() interface{}      { return x.AccessToken }
+func (Token) Meta() TokenMeta              { return tokenMetaVar }
+func (Token) TableMeta() storage.TableMeta { return tokenMetaVar }
+func (x Token) Key() interface{}           { return x.AccessToken }
 func (x *Token) SetKey(value string) error {
 	x.AccessToken = value
 	return nil
@@ -46,21 +47,21 @@ func (x *Token) SetKey(value string) error {
 
 func (x Token) GetField(field string) (interface{}, bool) {
 	switch field {
-	case TokenMetaVar.F_uid:
+	case tokenMetaVar.F_uid:
 		return x.Uid, true
-	case TokenMetaVar.F_created_at:
+	case tokenMetaVar.F_created_at:
 		return x.CreatedAt, true
-	case TokenMetaVar.F_access_token_expire_at:
+	case tokenMetaVar.F_access_token_expire_at:
 		return x.AccessTokenExpireAt, true
-	case TokenMetaVar.F_refresh_token:
+	case tokenMetaVar.F_refresh_token:
 		return x.RefreshToken, true
-	case TokenMetaVar.F_refresh_token_expire_at:
+	case tokenMetaVar.F_refresh_token_expire_at:
 		return x.RefreshTokenExpireAt, true
-	case TokenMetaVar.F_resource_owner:
+	case tokenMetaVar.F_resource_owner:
 		return x.ResourceOwner, true
-	case TokenMetaVar.F_client_id:
+	case tokenMetaVar.F_client_id:
 		return x.ClientId, true
-	case TokenMetaVar.F_scope:
+	case tokenMetaVar.F_scope:
 		return x.Scope, true
 	}
 	return nil, false
@@ -68,21 +69,21 @@ func (x Token) GetField(field string) (interface{}, bool) {
 
 func (x *Token) SetField(field, value string) error {
 	switch field {
-	case TokenMetaVar.F_uid:
+	case tokenMetaVar.F_uid:
 		return typeconv.String2Int64(&x.Uid, value)
-	case TokenMetaVar.F_created_at:
+	case tokenMetaVar.F_created_at:
 		x.CreatedAt = value
-	case TokenMetaVar.F_access_token_expire_at:
+	case tokenMetaVar.F_access_token_expire_at:
 		x.AccessTokenExpireAt = value
-	case TokenMetaVar.F_refresh_token:
+	case tokenMetaVar.F_refresh_token:
 		x.RefreshToken = value
-	case TokenMetaVar.F_refresh_token_expire_at:
+	case tokenMetaVar.F_refresh_token_expire_at:
 		x.RefreshTokenExpireAt = value
-	case TokenMetaVar.F_resource_owner:
+	case tokenMetaVar.F_resource_owner:
 		x.ResourceOwner = value
-	case TokenMetaVar.F_client_id:
+	case tokenMetaVar.F_client_id:
 		x.ClientId = value
-	case TokenMetaVar.F_scope:
+	case tokenMetaVar.F_scope:
 		x.Scope = value
 	}
 	return nil
@@ -104,7 +105,7 @@ func (TokenMeta) Name() string     { return "token" }
 func (TokenMeta) Key() string      { return "access_token" }
 func (TokenMeta) Fields() []string { return _token_fields }
 
-var TokenMetaVar = &TokenMeta{
+var tokenMetaVar = TokenMeta{
 	F_uid:                     "uid",
 	F_created_at:              "created_at",
 	F_access_token_expire_at:  "access_token_expire_at",
@@ -116,14 +117,14 @@ var TokenMetaVar = &TokenMeta{
 }
 
 var _token_fields = []string{
-	TokenMetaVar.F_uid,
-	TokenMetaVar.F_created_at,
-	TokenMetaVar.F_access_token_expire_at,
-	TokenMetaVar.F_refresh_token,
-	TokenMetaVar.F_refresh_token_expire_at,
-	TokenMetaVar.F_resource_owner,
-	TokenMetaVar.F_client_id,
-	TokenMetaVar.F_scope,
+	tokenMetaVar.F_uid,
+	tokenMetaVar.F_created_at,
+	tokenMetaVar.F_access_token_expire_at,
+	tokenMetaVar.F_refresh_token,
+	tokenMetaVar.F_refresh_token_expire_at,
+	tokenMetaVar.F_resource_owner,
+	tokenMetaVar.F_client_id,
+	tokenMetaVar.F_scope,
 }
 
 // Slice
@@ -134,7 +135,7 @@ func NewTokenSlice(cap int) *TokenSlice {
 	return &s
 }
 
-func (s TokenSlice) TableMeta() storage.TableMeta { return TokenMetaVar }
+func (s TokenSlice) TableMeta() storage.TableMeta { return tokenMetaVar }
 func (s TokenSlice) Len() int                     { return len(s) }
 func (s *TokenSlice) Slice() []Token              { return []Token(*s) }
 
@@ -159,7 +160,7 @@ func NewTokenViewSlice(cap int) *TokenViewSlice {
 	return &s
 }
 
-func (s TokenViewSlice) TableMeta() storage.TableMeta { return TokenMetaVar }
+func (s TokenViewSlice) TableMeta() storage.TableMeta { return tokenMetaVar }
 func (s TokenViewSlice) Len() int                     { return len(s) }
 func (s *TokenViewSlice) Slice() []TokenView          { return []TokenView(*s) }
 
@@ -188,8 +189,8 @@ var (
 	tokenViewRefs = map[string]storage.View{}
 )
 
-func (TokenView) TableMeta() storage.TableMeta  { return TokenMetaVar }
-func (TokenView) Fields() storage.FieldList     { return storage.FieldSlice(TokenMetaVar.Fields()) }
+func (TokenView) TableMeta() storage.TableMeta  { return tokenMetaVar }
+func (TokenView) Fields() storage.FieldList     { return storage.FieldSlice(tokenMetaVar.Fields()) }
 func (TokenView) Refs() map[string]storage.View { return tokenViewRefs }
 func (view *TokenView) tables() map[string]storage.Table {
 	m := make(map[string]storage.Table)

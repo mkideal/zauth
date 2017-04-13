@@ -32,8 +32,9 @@ func NewEmailVerifyCode() *EmailVerifyCode {
 	return &EmailVerifyCode{}
 }
 
-func (EmailVerifyCode) Meta() storage.TableMeta { return EmailVerifyCodeMetaVar }
-func (x EmailVerifyCode) Key() interface{}      { return x.Email }
+func (EmailVerifyCode) Meta() EmailVerifyCodeMeta    { return emailVerifyCodeMetaVar }
+func (EmailVerifyCode) TableMeta() storage.TableMeta { return emailVerifyCodeMetaVar }
+func (x EmailVerifyCode) Key() interface{}           { return x.Email }
 func (x *EmailVerifyCode) SetKey(value string) error {
 	x.Email = value
 	return nil
@@ -41,11 +42,11 @@ func (x *EmailVerifyCode) SetKey(value string) error {
 
 func (x EmailVerifyCode) GetField(field string) (interface{}, bool) {
 	switch field {
-	case EmailVerifyCodeMetaVar.F_code:
+	case emailVerifyCodeMetaVar.F_code:
 		return x.Code, true
-	case EmailVerifyCodeMetaVar.F_created_at:
+	case emailVerifyCodeMetaVar.F_created_at:
 		return x.CreatedAt, true
-	case EmailVerifyCodeMetaVar.F_expire_at:
+	case emailVerifyCodeMetaVar.F_expire_at:
 		return x.ExpireAt, true
 	}
 	return nil, false
@@ -53,11 +54,11 @@ func (x EmailVerifyCode) GetField(field string) (interface{}, bool) {
 
 func (x *EmailVerifyCode) SetField(field, value string) error {
 	switch field {
-	case EmailVerifyCodeMetaVar.F_code:
+	case emailVerifyCodeMetaVar.F_code:
 		x.Code = value
-	case EmailVerifyCodeMetaVar.F_created_at:
+	case emailVerifyCodeMetaVar.F_created_at:
 		x.CreatedAt = value
-	case EmailVerifyCodeMetaVar.F_expire_at:
+	case emailVerifyCodeMetaVar.F_expire_at:
 		x.ExpireAt = value
 	}
 	return nil
@@ -74,16 +75,16 @@ func (EmailVerifyCodeMeta) Name() string     { return "email_verify_code" }
 func (EmailVerifyCodeMeta) Key() string      { return "email" }
 func (EmailVerifyCodeMeta) Fields() []string { return _email_verify_code_fields }
 
-var EmailVerifyCodeMetaVar = &EmailVerifyCodeMeta{
+var emailVerifyCodeMetaVar = EmailVerifyCodeMeta{
 	F_code:       "code",
 	F_created_at: "created_at",
 	F_expire_at:  "expire_at",
 }
 
 var _email_verify_code_fields = []string{
-	EmailVerifyCodeMetaVar.F_code,
-	EmailVerifyCodeMetaVar.F_created_at,
-	EmailVerifyCodeMetaVar.F_expire_at,
+	emailVerifyCodeMetaVar.F_code,
+	emailVerifyCodeMetaVar.F_created_at,
+	emailVerifyCodeMetaVar.F_expire_at,
 }
 
 // Slice
@@ -94,7 +95,7 @@ func NewEmailVerifyCodeSlice(cap int) *EmailVerifyCodeSlice {
 	return &s
 }
 
-func (s EmailVerifyCodeSlice) TableMeta() storage.TableMeta { return EmailVerifyCodeMetaVar }
+func (s EmailVerifyCodeSlice) TableMeta() storage.TableMeta { return emailVerifyCodeMetaVar }
 func (s EmailVerifyCodeSlice) Len() int                     { return len(s) }
 func (s *EmailVerifyCodeSlice) Slice() []EmailVerifyCode    { return []EmailVerifyCode(*s) }
 
@@ -119,7 +120,7 @@ func NewEmailVerifyCodeViewSlice(cap int) *EmailVerifyCodeViewSlice {
 	return &s
 }
 
-func (s EmailVerifyCodeViewSlice) TableMeta() storage.TableMeta  { return EmailVerifyCodeMetaVar }
+func (s EmailVerifyCodeViewSlice) TableMeta() storage.TableMeta  { return emailVerifyCodeMetaVar }
 func (s EmailVerifyCodeViewSlice) Len() int                      { return len(s) }
 func (s *EmailVerifyCodeViewSlice) Slice() []EmailVerifyCodeView { return []EmailVerifyCodeView(*s) }
 
@@ -148,9 +149,9 @@ var (
 	emailVerifyCodeViewRefs = map[string]storage.View{}
 )
 
-func (EmailVerifyCodeView) TableMeta() storage.TableMeta { return EmailVerifyCodeMetaVar }
+func (EmailVerifyCodeView) TableMeta() storage.TableMeta { return emailVerifyCodeMetaVar }
 func (EmailVerifyCodeView) Fields() storage.FieldList {
-	return storage.FieldSlice(EmailVerifyCodeMetaVar.Fields())
+	return storage.FieldSlice(emailVerifyCodeMetaVar.Fields())
 }
 func (EmailVerifyCodeView) Refs() map[string]storage.View { return emailVerifyCodeViewRefs }
 func (view *EmailVerifyCodeView) tables() map[string]storage.Table {

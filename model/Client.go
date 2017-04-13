@@ -36,8 +36,9 @@ func NewClient() *Client {
 	return &Client{}
 }
 
-func (Client) Meta() storage.TableMeta { return ClientMetaVar }
-func (x Client) Key() interface{}      { return x.Id }
+func (Client) Meta() ClientMeta             { return clientMetaVar }
+func (Client) TableMeta() storage.TableMeta { return clientMetaVar }
+func (x Client) Key() interface{}           { return x.Id }
 func (x *Client) SetKey(value string) error {
 	x.Id = value
 	return nil
@@ -45,19 +46,19 @@ func (x *Client) SetKey(value string) error {
 
 func (x Client) GetField(field string) (interface{}, bool) {
 	switch field {
-	case ClientMetaVar.F_secret:
+	case clientMetaVar.F_secret:
 		return x.Secret, true
-	case ClientMetaVar.F_name:
+	case clientMetaVar.F_name:
 		return x.Name, true
-	case ClientMetaVar.F_description:
+	case clientMetaVar.F_description:
 		return x.Description, true
-	case ClientMetaVar.F_logo:
+	case clientMetaVar.F_logo:
 		return x.Logo, true
-	case ClientMetaVar.F_scope:
+	case clientMetaVar.F_scope:
 		return x.Scope, true
-	case ClientMetaVar.F_homepage_url:
+	case clientMetaVar.F_homepage_url:
 		return x.HomepageUrl, true
-	case ClientMetaVar.F_callback_url:
+	case clientMetaVar.F_callback_url:
 		return x.CallbackUrl, true
 	}
 	return nil, false
@@ -65,19 +66,19 @@ func (x Client) GetField(field string) (interface{}, bool) {
 
 func (x *Client) SetField(field, value string) error {
 	switch field {
-	case ClientMetaVar.F_secret:
+	case clientMetaVar.F_secret:
 		x.Secret = value
-	case ClientMetaVar.F_name:
+	case clientMetaVar.F_name:
 		x.Name = value
-	case ClientMetaVar.F_description:
+	case clientMetaVar.F_description:
 		x.Description = value
-	case ClientMetaVar.F_logo:
+	case clientMetaVar.F_logo:
 		x.Logo = value
-	case ClientMetaVar.F_scope:
+	case clientMetaVar.F_scope:
 		x.Scope = value
-	case ClientMetaVar.F_homepage_url:
+	case clientMetaVar.F_homepage_url:
 		x.HomepageUrl = value
-	case ClientMetaVar.F_callback_url:
+	case clientMetaVar.F_callback_url:
 		x.CallbackUrl = value
 	}
 	return nil
@@ -98,7 +99,7 @@ func (ClientMeta) Name() string     { return "client" }
 func (ClientMeta) Key() string      { return "id" }
 func (ClientMeta) Fields() []string { return _client_fields }
 
-var ClientMetaVar = &ClientMeta{
+var clientMetaVar = ClientMeta{
 	F_secret:       "secret",
 	F_name:         "name",
 	F_description:  "description",
@@ -109,13 +110,13 @@ var ClientMetaVar = &ClientMeta{
 }
 
 var _client_fields = []string{
-	ClientMetaVar.F_secret,
-	ClientMetaVar.F_name,
-	ClientMetaVar.F_description,
-	ClientMetaVar.F_logo,
-	ClientMetaVar.F_scope,
-	ClientMetaVar.F_homepage_url,
-	ClientMetaVar.F_callback_url,
+	clientMetaVar.F_secret,
+	clientMetaVar.F_name,
+	clientMetaVar.F_description,
+	clientMetaVar.F_logo,
+	clientMetaVar.F_scope,
+	clientMetaVar.F_homepage_url,
+	clientMetaVar.F_callback_url,
 }
 
 // Slice
@@ -126,7 +127,7 @@ func NewClientSlice(cap int) *ClientSlice {
 	return &s
 }
 
-func (s ClientSlice) TableMeta() storage.TableMeta { return ClientMetaVar }
+func (s ClientSlice) TableMeta() storage.TableMeta { return clientMetaVar }
 func (s ClientSlice) Len() int                     { return len(s) }
 func (s *ClientSlice) Slice() []Client             { return []Client(*s) }
 
@@ -151,7 +152,7 @@ func NewClientViewSlice(cap int) *ClientViewSlice {
 	return &s
 }
 
-func (s ClientViewSlice) TableMeta() storage.TableMeta { return ClientMetaVar }
+func (s ClientViewSlice) TableMeta() storage.TableMeta { return clientMetaVar }
 func (s ClientViewSlice) Len() int                     { return len(s) }
 func (s *ClientViewSlice) Slice() []ClientView         { return []ClientView(*s) }
 
@@ -180,8 +181,8 @@ var (
 	clientViewRefs = map[string]storage.View{}
 )
 
-func (ClientView) TableMeta() storage.TableMeta  { return ClientMetaVar }
-func (ClientView) Fields() storage.FieldList     { return storage.FieldSlice(ClientMetaVar.Fields()) }
+func (ClientView) TableMeta() storage.TableMeta  { return clientMetaVar }
+func (ClientView) Fields() storage.FieldList     { return storage.FieldSlice(clientMetaVar.Fields()) }
 func (ClientView) Refs() map[string]storage.View { return clientViewRefs }
 func (view *ClientView) tables() map[string]storage.Table {
 	m := make(map[string]storage.Table)
