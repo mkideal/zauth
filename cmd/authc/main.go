@@ -14,8 +14,8 @@ import (
 	"github.com/mkideal/cli"
 	"github.com/mkideal/pkg/typeconv"
 
-	"bitbucket.org/mkideal/accountd/api"
-	"bitbucket.org/mkideal/accountd/api/go/authc"
+	"github.com/mkideal/accountd/api"
+	"github.com/mkideal/accountd/api/go/authc"
 )
 
 type Context struct {

@@ -14,15 +14,15 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"bitbucket.org/mkideal/accountd/api"
-	"bitbucket.org/mkideal/accountd/model"
-	"bitbucket.org/mkideal/accountd/oauth2"
-	"bitbucket.org/mkideal/accountd/repo"
-	"bitbucket.org/mkideal/accountd/third_party"
+	"github.com/mkideal/accountd/api"
+	"github.com/mkideal/accountd/model"
+	"github.com/mkideal/accountd/oauth2"
+	"github.com/mkideal/accountd/repo"
+	"github.com/mkideal/accountd/third_party"
 
 	// third_party
-	_ "bitbucket.org/mkideal/accountd/third_party/qq"
-	_ "bitbucket.org/mkideal/accountd/third_party/wechat"
+	_ "github.com/mkideal/accountd/third_party/qq"
+	_ "github.com/mkideal/accountd/third_party/wechat"
 )
 
 type Server struct {

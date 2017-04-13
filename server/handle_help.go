@@ -7,7 +7,7 @@ import (
 	"github.com/mkideal/pkg/netutil/httputil"
 	"github.com/mkideal/pkg/textutil/namemapper"
 
-	"bitbucket.org/mkideal/accountd/api"
+	"github.com/mkideal/accountd/api"
 )
 
 func (svr *Server) handleHelp(w http.ResponseWriter, r *http.Request) {

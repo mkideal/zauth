@@ -7,8 +7,8 @@ import (
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
 
-	"bitbucket.org/mkideal/accountd/api"
-	"bitbucket.org/mkideal/accountd/model"
+	"github.com/mkideal/accountd/api"
+	"github.com/mkideal/accountd/model"
 )
 
 func (svr *Server) handleTokenAuth(w http.ResponseWriter, r *http.Request) {

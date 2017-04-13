@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"bitbucket.org/mkideal/accountd/oauth2"
+	"github.com/mkideal/accountd/oauth2"
 )
 
 const (

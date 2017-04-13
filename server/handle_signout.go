@@ -6,7 +6,7 @@ import (
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
 
-	"bitbucket.org/mkideal/accountd/api"
+	"github.com/mkideal/accountd/api"
 )
 
 func (svr *Server) handleSignout(w http.ResponseWriter, r *http.Request) {

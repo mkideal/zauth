@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"bitbucket.org/mkideal/accountd/model"
+	"github.com/mkideal/accountd/model"
 )
 
 // client names

@@ -11,8 +11,8 @@ import (
 	"github.com/mkideal/pkg/osutil/signal"
 	"github.com/mkideal/pkg/service/discovery"
 
-	"bitbucket.org/mkideal/accountd/etc"
-	"bitbucket.org/mkideal/accountd/server"
+	"github.com/mkideal/accountd/etc"
+	"github.com/mkideal/accountd/server"
 )
 
 type argT struct {

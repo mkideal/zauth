@@ -6,9 +6,9 @@ import (
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
 
-	"bitbucket.org/mkideal/accountd/api"
-	"bitbucket.org/mkideal/accountd/model"
-	"bitbucket.org/mkideal/accountd/oauth2"
+	"github.com/mkideal/accountd/api"
+	"github.com/mkideal/accountd/model"
+	"github.com/mkideal/accountd/oauth2"
 )
 
 func (svr *Server) handleToken(w http.ResponseWriter, r *http.Request) {

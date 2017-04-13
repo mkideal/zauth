@@ -6,10 +6,10 @@ import (
 	"github.com/mkideal/log"
 	"github.com/mkideal/pkg/netutil/httputil"
 
-	"bitbucket.org/mkideal/accountd/api"
-	"bitbucket.org/mkideal/accountd/model"
-	"bitbucket.org/mkideal/accountd/repo"
-	"bitbucket.org/mkideal/accountd/third_party"
+	"github.com/mkideal/accountd/api"
+	"github.com/mkideal/accountd/model"
+	"github.com/mkideal/accountd/repo"
+	"github.com/mkideal/accountd/third_party"
 )
 
 func (svr *Server) handleSignup(w http.ResponseWriter, r *http.Request) {

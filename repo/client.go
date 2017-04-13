@@ -1,7 +1,7 @@
 package repo
 
 import (
-	"bitbucket.org/mkideal/accountd/model"
+	"github.com/mkideal/accountd/model"
 )
 
 type clientRepository struct {

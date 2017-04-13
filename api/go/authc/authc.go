@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"bitbucket.org/mkideal/accountd/api"
-	"bitbucket.org/mkideal/accountd/oauth2"
+	"github.com/mkideal/accountd/api"
+	"github.com/mkideal/accountd/oauth2"
 )
 
 type HTTPClient interface {

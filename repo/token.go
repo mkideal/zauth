@@ -6,8 +6,8 @@ import (
 
 	"github.com/mkideal/pkg/math/random"
 
-	"bitbucket.org/mkideal/accountd/api"
-	"bitbucket.org/mkideal/accountd/model"
+	"github.com/mkideal/accountd/api"
+	"github.com/mkideal/accountd/model"
 )
 
 type tokenRepository struct {

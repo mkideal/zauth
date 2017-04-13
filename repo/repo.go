@@ -8,7 +8,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/midlang/mid/x/go/storage"
 
-	"bitbucket.org/mkideal/accountd/model"
+	"github.com/mkideal/accountd/model"
 )
 
 type UserAddOption func(user *model.User)

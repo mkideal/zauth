@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"bitbucket.org/mkideal/accountd/model"
-	"bitbucket.org/mkideal/accountd/third_party"
+	"github.com/mkideal/accountd/model"
+	"github.com/mkideal/accountd/third_party"
 )
 
 const (

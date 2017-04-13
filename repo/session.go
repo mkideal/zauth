@@ -3,7 +3,7 @@ package repo
 import (
 	"github.com/mkideal/pkg/math/random"
 
-	"bitbucket.org/mkideal/accountd/model"
+	"github.com/mkideal/accountd/model"
 )
 
 type sessionRepository struct {
