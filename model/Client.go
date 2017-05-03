@@ -5,7 +5,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/midlang/mid/x/go/storage"
+	"github.com/mkideal/pkg/storage"
 	"github.com/mkideal/pkg/typeconv"
 	"gopkg.in/redis.v5"
 )

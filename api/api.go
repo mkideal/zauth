@@ -109,7 +109,7 @@ func (x ErrorCode) Error() string {
 	case ErrorCode_TelnoVerifyCodeExpired:
 		return "e_telno_verify_code_expired"
 	case ErrorCode_Unsupported2FaType:
-		return "e_Unsupported2FaType"
+		return "e_unsupported2_fa_type"
 	case ErrorCode_FailedToSendSMSCode:
 		return "e_failed_to_send_smscode"
 	case ErrorCode_ThirdPartyError:
