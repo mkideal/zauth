@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/go-xorm/xorm"
-	"github.com/midlang/mid/x/go/storage"
+	"github.com/mkideal/pkg/storage"
 
 	"github.com/mkideal/accountd/model"
 )

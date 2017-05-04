@@ -17,7 +17,7 @@ import (
 
 type argT struct {
 	cli.Helper
-	config.ConfigBase
+	config.CommandLineConfig
 	Version       bool         `cli:"!v,version" usage:"display version" json:"-"`
 	PidFile       clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/authd.pid"`
 	LogLevel      logger.Level `cli:"log-level" usage:"log level: trace/debug/info/warn/error/fatal" dft:"info"`
@@ -41,7 +41,7 @@ var root = &cli.Command{
 			printVersion(ctx)
 			return nil
 		}
-		if err := argv.ConfigBase.Init(argv); err != nil {
+		if err := argv.CommandLineConfig.Init(argv); err != nil {
 			log.Error("Error: %v", err)
 			return err
 		}
