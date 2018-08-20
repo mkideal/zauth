@@ -7,7 +7,6 @@ import (
 	clix "github.com/mkideal/cli/ext"
 	"github.com/mkideal/log"
 	"github.com/mkideal/log/logger"
-	"github.com/mkideal/pkg/config"
 	"github.com/mkideal/pkg/osutil/signal"
 	"github.com/mkideal/pkg/service/discovery"
 
@@ -17,7 +16,6 @@ import (
 
 type argT struct {
 	cli.Helper
-	config.CommandLineConfig
 	Version       bool         `cli:"!v,version" usage:"display version" json:"-"`
 	PidFile       clix.PidFile `cli:"pid" usage:"pid filepath" dft:"./var/authd.pid"`
 	LogLevel      logger.Level `cli:"log-level" usage:"log level: trace/debug/info/warn/error/fatal" dft:"info"`
@@ -41,10 +39,6 @@ var root = &cli.Command{
 			printVersion(ctx)
 			return nil
 		}
-		if err := argv.CommandLineConfig.Init(argv); err != nil {
-			log.Error("Error: %v", err)
-			return err
-		}
 
 		// initialize log
 		log.Init(argv.LogProviders, argv.LogOpts)
@@ -55,6 +49,7 @@ var root = &cli.Command{
 		// check pid file
 		if err := argv.PidFile.New(); err != nil {
 			log.Error("Error: %v", err)
+			cli.DaemonResponse(err.Error())
 			return err
 		}
 		defer argv.PidFile.Remove()
@@ -63,10 +58,12 @@ var root = &cli.Command{
 		svr, err := server.New(argv.Config)
 		if err != nil {
 			log.Error("Error: %v", err)
+			cli.DaemonResponse(err.Error())
 			return err
 		}
 		if err := svr.Run(); err != nil {
 			log.Error("Error: %v", err)
+			cli.DaemonResponse(err.Error())
 			return err
 		}
 
@@ -76,6 +73,7 @@ var root = &cli.Command{
 			discoveryClient = &discovery.Discovery{EtcdEndpoints: argv.EtcdEndpoints}
 			if err := discoveryClient.Init(); err != nil {
 				log.Error("Error: init discovery: %v", err)
+				cli.DaemonResponse(err.Error())
 				return err
 			}
 			discovery.Interval(*discoveryClient, func(ttl *discovery.TTL) {
@@ -118,7 +116,7 @@ var daemon = &cli.Command{
 }
 
 func main() {
-	defer log.Uninit(nil)
+	defer log.Uninit(log.InitConsole(log.LvWARN))
 	err := cli.Root(root,
 		cli.Tree(daemon),
 	).Run(os.Args[1:])

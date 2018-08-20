@@ -1,22 +1,21 @@
 #!/bin/bash
 
-app=./accountd
-daemon=true
-pidfile=./accountd.pid
+app=./authd
+pidfile=./authd.pid
 log_level=trace
 log_providers=file
 log_opts="dir=./log"
 etcd="127.0.0.1:2379"
-service_name="accountd"
-third_party="wechat/qq"
-addr=127.0.0.1:5200
+service_name="authd"
+third_party="wechat,qq"
+addr=0.0.0.0:5200
 mode=release
-cookie_key=accountd
+cookie_key=authd_cookie
 session_expire_duration=3600
-html_dir=html
+html=html
 html_router=/
 
-$app -d $daemon \
+$app daemon \
 	--pid $pidfile \
 	--log-level $log_level \
 	--log-providers $log_providers \
@@ -28,5 +27,5 @@ $app -d $daemon \
 	--mode $mode \
 	--cookie $cookie_key \
 	--session-expire-duration $session_expire_duration \
-	--html-dir $html_dir \
-	--html-router $html_router \
+	--html $html \
+	--html-router $html_router 

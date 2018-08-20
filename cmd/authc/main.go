@@ -204,7 +204,7 @@ func value(s string) (res interface{}) {
 }
 
 func prefix(ctx *Context) string {
-	return fmt.Sprintf("~%d$ ", ctx.User.Id)
+	return fmt.Sprintf("~%d$", ctx.User.Id)
 }
 
 type argT struct {
@@ -318,7 +318,8 @@ func execLine(client *authc.Client, line string) (err error, quit bool) {
 		}
 	case "help":
 		req := new(api.HelpReq)
-		context.onHelpRes(client.Help(context.Addr, req))
+		res, err := client.Help(context.Addr, req)
+		context.onHelpRes(res, err)
 	case "p", "print":
 		for _, arg := range args {
 			context.outputJSON(value(arg))

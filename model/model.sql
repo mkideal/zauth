@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 	PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `client` (
 	`id` VARCHAR(32)   COMMENT 'oauth 客户端唯一Id',
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `client` (
 	PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `token` (
 	`access_token` VARCHAR(64) UNIQUE  COMMENT '令牌',
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `token` (
 	PRIMARY KEY (`access_token`)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `authorization_request` (
 	`authorization_code` VARCHAR(64)   COMMENT '认证码',
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `authorization_request` (
 	PRIMARY KEY (`authorization_code`)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `telno_verify_code` (
 	`telno` VARCHAR(32)   COMMENT '手机号码',
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `telno_verify_code` (
 	PRIMARY KEY (`telno`)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `email_verify_code` (
 	`email` VARCHAR(64)   COMMENT 'email 地址',
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `email_verify_code` (
 	PRIMARY KEY (`email`)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `session` (
 	`id` VARCHAR(32)   COMMENT '唯一Id,用作cookie',
@@ -96,5 +96,5 @@ CREATE TABLE IF NOT EXISTS `session` (
 	PRIMARY KEY (`id`)
 )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+DEFAULT CHARACTER SET = utf8mb4;
 

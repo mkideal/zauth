@@ -104,7 +104,7 @@ func New(name string) (Client, error) {
 	defer mu.Unlock()
 	f, ok := clients[name]
 	if !ok {
-		return nil, errClientNotFound
+		return nil, errors.New("third party client `" + name + "` not found")
 	}
 	return f(), nil
 }
